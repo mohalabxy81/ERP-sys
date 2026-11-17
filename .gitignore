@@ -1,0 +1,29 @@
+# Mimar Enterprise Construction ERP - .gitignore
+
+# Python & Runtime
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.venv/
+
+# Editor & System Files
+.vscode/
+.idea/
+*.swp
+*.swo
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Large Raw Source Backups
+*.bak
+source-documents/*.zip
+source-documents/*.bak
+
+# Temporary & Log files
+*.log

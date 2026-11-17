@@ -1,0 +1,88 @@
+/* ==========================================================================
+   FORMS.CSS - Inputs, Modals, Buttons, Context Switchers & Toast
+   ========================================================================== */
+.btn {
+  padding: 7px 16px; border-radius: var(--radius-sm); border: none;
+  font-family: inherit; font-size: 13px; font-weight: 700;
+  cursor: pointer; display: inline-flex; align-items: center; gap: 8px;
+  transition: all var(--transition); text-decoration: none;
+}
+.btn-primary { background: var(--teal); color: white; }
+.btn-primary:hover { background: var(--teal-dark); }
+.btn-outline { background: transparent; border: 1.5px solid var(--line); color: var(--ink); }
+.btn-outline:hover { border-color: var(--teal); color: var(--teal); background: var(--teal-light); }
+.btn-sm { padding: 5px 11px; font-size: 12px; }
+.btn-success { background: var(--green); color: white; }
+.btn-danger { background: var(--red); color: white; }
+.btn-amber { background: var(--amber); color: white; }
+
+.context-switcher {
+  display: flex; align-items: center; gap: 8px; background: var(--canvas);
+  padding: 5px 12px; border-radius: 10px; border: 1.5px solid var(--line);
+}
+.context-switcher i { color: var(--teal); font-size: 14px; }
+.context-select {
+  border: none; background: transparent; font-family: inherit; font-size: 13px;
+  font-weight: 700; color: var(--ink); cursor: pointer; outline: none;
+}
+.context-select option { background: white; color: var(--ink); }
+
+.toolbar {
+  display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin-bottom: 18px;
+}
+.search-input {
+  flex: 1; min-width: 220px; padding: 8px 14px; border: 1.5px solid var(--line);
+  border-radius: var(--radius-sm); font-family: inherit; font-size: 13px;
+  background: var(--card-bg); outline: none; transition: border-color var(--transition);
+}
+.search-input:focus { border-color: var(--teal); }
+.filter-dropdown {
+  padding: 8px 14px; border: 1.5px solid var(--line);
+  border-radius: var(--radius-sm); font-family: inherit; font-size: 13px;
+  background: var(--card-bg); cursor: pointer; outline: none;
+}
+
+.modal-overlay {
+  position: fixed; inset: 0; background: rgba(11,25,44,0.6);
+  display: none; align-items: center; justify-content: center;
+  z-index: 200; backdrop-filter: blur(4px);
+}
+.modal-overlay.show { display: flex; }
+.modal-card {
+  background: var(--card-bg); border-radius: var(--radius-lg);
+  width: 92%; max-width: 680px; max-height: 85vh;
+  overflow-y: auto; box-shadow: var(--shadow-lg);
+}
+.modal-header {
+  padding: 16px 24px; border-bottom: 1px solid var(--line);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.modal-header h3 { font-size: 16px; font-weight: 800; }
+.modal-close {
+  width: 32px; height: 32px; border-radius: var(--radius-sm); border: none;
+  background: var(--canvas); cursor: pointer; font-size: 18px;
+  display: flex; align-items: center; justify-content: center;
+}
+.modal-body { padding: 22px; }
+.form-group { margin-bottom: 14px; }
+.form-group label {
+  display: block; font-size: 12px; font-weight: 700;
+  margin-bottom: 5px; color: var(--muted);
+}
+.form-group input, .form-group select, .form-group textarea {
+  width: 100%; padding: 8px 12px; border: 1.5px solid var(--line);
+  border-radius: var(--radius-sm); font-family: inherit; font-size: 13px; outline: none;
+}
+.form-group input:focus, .form-group select:focus { border-color: var(--teal); }
+.form-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.form-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+
+.toast-notice {
+  position: fixed; bottom: 24px; left: 24px;
+  padding: 12px 20px; border-radius: 10px;
+  background: var(--navy); color: white;
+  font-size: 13px; font-weight: 700; z-index: 300;
+  box-shadow: var(--shadow-lg); opacity: 0; transform: translateY(15px);
+  transition: all 0.3s ease; pointer-events: none;
+}
+.toast-notice.show { opacity: 1; transform: translateY(0); }

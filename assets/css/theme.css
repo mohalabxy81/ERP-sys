@@ -1,0 +1,35 @@
+/* ==========================================================================
+   THEME.CSS - Commercial ERP Design Tokens, Variables & Color Palette
+   ========================================================================== */
+:root {
+  --navy: #0B192C;
+  --navy2: #1E3E62;
+  --navy3: #122842;
+  --teal: #008DDA;
+  --teal-light: #E0F4FF;
+  --teal-dark: #006094;
+  --ink: #111827;
+  --muted: #64748B;
+  --line: #E2E8F0;
+  --canvas: #F8FAFC;
+  --card-bg: #FFFFFF;
+  --amber: #FF6500;
+  --amber-bg: #FFF3E0;
+  --red: #E11D48;
+  --red-bg: #FFE4E6;
+  --green: #059669;
+  --green-bg: #D1FAE5;
+  --blue: #2563EB;
+  --blue-bg: #DBEAFE;
+  --purple: #7C3AED;
+  --purple-bg: #EDE9FE;
+  --radius-sm: 6px;
+  --radius: 12px;
+  --radius-lg: 16px;
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+  --shadow: 0 4px 6px -1px rgba(0,0,0,0.07), 0 2px 4px -2px rgba(0,0,0,0.05);
+  --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -4px rgba(0,0,0,0.05);
+  --transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  --font-main: 'Cairo', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-num: 'Tajawal', monospace;
+}
