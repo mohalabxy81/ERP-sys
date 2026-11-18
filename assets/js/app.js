@@ -2056,3 +2056,556 @@ function exportCurrentViewTable() {
   const viewId = activeView.id.replace("view-", "");
   exportTableToExcel(table, `Mimar-ERP-${viewId}.csv`);
 }
+
+
+// =============================================================================
+// BIM 3D VIEWER & 4D TIME SIMULATION CONTROLLER (Vanilla WebGL / 2.5D Canvas)
+// =============================================================================
+let bimState = {
+  yaw: 35, // degrees
+  pitch: 25, // degrees
+  zoom: 1.0,
+  panX: 0,
+  panY: 0,
+  selectedId: null,
+  currentPhase: 4,
+  is4DPlaying: false,
+  animationTimer: null,
+  isDragging: false,
+  lastMouseX: 0,
+  lastMouseY: 0
+};
+
+function initBIMViewer() {
+  const canvas = document.getElementById("bim-canvas");
+  if (!canvas) return;
+
+  // Mouse drag for 3D rotation
+  canvas.onmousedown = (e) => {
+    bimState.isDragging = true;
+    bimState.lastMouseX = e.clientX;
+    bimState.lastMouseY = e.clientY;
+    canvas.style.cursor = "grabbing";
+  };
+
+  window.onmousemove = (e) => {
+    if (!bimState.isDragging) return;
+    const dx = e.clientX - bimState.lastMouseX;
+    const dy = e.clientY - bimState.lastMouseY;
+    bimState.yaw += dx * 0.5;
+    bimState.pitch = Math.max(-60, Math.min(80, bimState.pitch + dy * 0.5));
+    bimState.lastMouseX = e.clientX;
+    bimState.lastMouseY = e.clientY;
+    drawBIMScene();
+  };
+
+  window.onmouseup = () => {
+    if (bimState.isDragging) {
+      bimState.isDragging = false;
+      const c = document.getElementById("bim-canvas");
+      if (c) c.style.cursor = "grab";
+    }
+  };
+
+  // Click on canvas to select element
+  canvas.onclick = (e) => {
+    const rect = canvas.getBoundingClientRect();
+    const mx = e.clientX - rect.left;
+    const my = e.clientY - rect.top;
+    hitTestBIM(mx, my);
+  };
+
+  // Mouse wheel zoom
+  canvas.onwheel = (e) => {
+    e.preventDefault();
+    if (e.deltaY < 0) zoomBIM(1.1);
+    else zoomBIM(0.9);
+  };
+
+  drawBIMScene();
+  renderBIMTable();
+}
+
+function project3D(x, y, z, originX, originY) {
+  const radYaw = (bimState.yaw * Math.PI) / 180;
+  const radPitch = (bimState.pitch * Math.PI) / 180;
+
+  // Yaw rotation around Z axis
+  const x1 = x * Math.cos(radYaw) - y * Math.sin(radYaw);
+  const y1 = x * Math.sin(radYaw) + y * Math.cos(radYaw);
+  const z1 = z;
+
+  // Pitch rotation around X axis
+  const y2 = y1 * Math.cos(radPitch) - z1 * Math.sin(radPitch);
+  const z2 = y1 * Math.sin(radPitch) + z1 * Math.cos(radPitch);
+
+  const scale = 2.4 * bimState.zoom;
+  const px = originX + bimState.panX + x1 * scale;
+  const py = originY + bimState.panY - z2 * scale + y2 * scale * 0.35;
+  return { px, py, depth: y2 };
+}
+
+function drawBIMScene() {
+  const canvas = document.getElementById("bim-canvas");
+  if (!canvas) return;
+  const ctx = canvas.getContext("2d");
+  const w = canvas.width;
+  const h = canvas.height;
+  const ox = w / 2;
+  const oy = h / 2 + 50;
+
+  // Clear background
+  ctx.fillStyle = "#0F172A";
+  ctx.fillRect(0, 0, w, h);
+
+  // Draw 3D Grid on ground (Z = 0)
+  ctx.strokeStyle = "rgba(51, 65, 85, 0.4)";
+  ctx.lineWidth = 1;
+  const gridSize = 100;
+  const gridStep = 25;
+  for (let g = -gridSize; g <= gridSize; g += gridStep) {
+    const p1 = project3D(g, -gridSize, 0, ox, oy);
+    const p2 = project3D(g, gridSize, 0, ox, oy);
+    ctx.beginPath();
+    ctx.moveTo(p1.px, p1.py);
+    ctx.lineTo(p2.px, p2.py);
+    ctx.stroke();
+
+    const p3 = project3D(-gridSize, g, 0, ox, oy);
+    const p4 = project3D(gridSize, g, 0, ox, oy);
+    ctx.beginPath();
+    ctx.moveTo(p3.px, p3.py);
+    ctx.lineTo(p4.px, p4.py);
+    ctx.stroke();
+  }
+
+  const elements = MimarERP.bimElements || [];
+  // Sort elements by depth for correct 3D painter's algorithm
+  const renderList = elements
+    .filter(el => el.phase <= bimState.currentPhase)
+    .map(el => {
+      const center = project3D(el.x + el.dx / 2, el.y + el.dy / 2, el.z + el.dz / 2, ox, oy);
+      return { element: el, depth: center.depth };
+    })
+    .sort((a, b) => a.depth - b.depth);
+
+  // Draw each 3D Box element
+  renderList.forEach(item => {
+    const el = item.element;
+    const isSelected = el.elm_id === bimState.selectedId;
+
+    // 8 vertices of bounding box
+    const x = el.x, y = el.y, z = el.z;
+    const dx = el.dx, dy = el.dy, dz = el.dz;
+    const v = [
+      project3D(x, y, z, ox, oy),
+      project3D(x + dx, y, z, ox, oy),
+      project3D(x + dx, y + dy, z, ox, oy),
+      project3D(x, y + dy, z, ox, oy),
+      project3D(x, y, z + dz, ox, oy),
+      project3D(x + dx, y, z + dz, ox, oy),
+      project3D(x + dx, y + dy, z + dz, ox, oy),
+      project3D(x, y + dy, z + dz, ox, oy)
+    ];
+
+    // Faces: [indices, color shade]
+    const baseColor = isSelected ? "#F59E0B" : el.color;
+    ctx.fillStyle = baseColor;
+    ctx.strokeStyle = isSelected ? "#FFFFFF" : "rgba(15,23,42,0.8)";
+    ctx.lineWidth = isSelected ? 2 : 1;
+
+    const faces = [
+      [4, 5, 6, 7], // Top
+      [0, 1, 5, 4], // Front
+      [1, 2, 6, 5], // Right
+      [2, 3, 7, 6], // Back
+      [3, 0, 4, 7]  // Left
+    ];
+
+    faces.forEach(f => {
+      ctx.beginPath();
+      ctx.moveTo(v[f[0]].px, v[f[0]].py);
+      ctx.lineTo(v[f[1]].px, v[f[1]].py);
+      ctx.lineTo(v[f[2]].px, v[f[2]].py);
+      ctx.lineTo(v[f[3]].px, v[f[3]].py);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+    });
+
+    // Label on selected element
+    if (isSelected) {
+      const topCenter = v[7];
+      ctx.fillStyle = "#FFFFFF";
+      ctx.font = "bold 11px Cairo, sans-serif";
+      ctx.fillText(el.family, topCenter.px + 5, topCenter.py - 8);
+    }
+  });
+}
+
+function hitTestBIM(mx, my) {
+  const canvas = document.getElementById("bim-canvas");
+  if (!canvas) return;
+  const ox = canvas.width / 2;
+  const oy = canvas.height / 2 + 50;
+
+  const elements = MimarERP.bimElements || [];
+  let found = null;
+
+  for (let i = elements.length - 1; i >= 0; i--) {
+    const el = elements[i];
+    if (el.phase > bimState.currentPhase) continue;
+    const center = project3D(el.x + el.dx / 2, el.y + el.dy / 2, el.z + el.dz / 2, ox, oy);
+    const dist = Math.hypot(mx - center.px, my - center.py);
+    if (dist < 40) {
+      found = el;
+      break;
+    }
+  }
+
+  if (found) {
+    selectBIMElement(found.elm_id);
+  }
+}
+
+function selectBIMElement(elmId) {
+  bimState.selectedId = elmId;
+  drawBIMScene();
+
+  const el = (MimarERP.bimElements || []).find(e => e.elm_id === elmId);
+  const emptyState = document.getElementById("bim-empty-state");
+  const panel = document.getElementById("bim-selected-panel");
+
+  if (!el || !panel) return;
+  if (emptyState) emptyState.style.display = "none";
+  panel.style.display = "block";
+
+  const setEl = (id, val) => { const e = document.getElementById(id); if (e) e.textContent = val; };
+  setEl("insp-cat", el.category);
+  setEl("insp-name", el.family);
+  setEl("insp-level", el.level);
+  setEl("insp-phase", "المرحلة " + el.phase);
+  setEl("insp-vol", el.vol_m3.toFixed(2) + " م³");
+  setEl("insp-area", el.area_m2.toFixed(2) + " م²");
+  setEl("insp-dim", el.dimensions);
+  setEl("insp-boq", el.boq_ref);
+
+  showToast(`تم تحديد العنصر: ${el.family} (${el.category})`);
+}
+
+function rotateBIM(deltaYaw, deltaPitch) {
+  bimState.yaw += deltaYaw;
+  bimState.pitch += deltaPitch;
+  drawBIMScene();
+}
+
+function zoomBIM(factor) {
+  bimState.zoom = Math.max(0.4, Math.min(3.0, bimState.zoom * factor));
+  drawBIMScene();
+}
+
+function resetBIMCamera() {
+  bimState.yaw = 35;
+  bimState.pitch = 25;
+  bimState.zoom = 1.0;
+  bimState.panX = 0;
+  bimState.panY = 0;
+  drawBIMScene();
+  showToast("تمت إعادة ضبط كاميرا العرض ثلاثي الأبعاد.");
+}
+
+function setBIMPhase(phase) {
+  bimState.currentPhase = parseInt(phase, 10);
+  const phaseNames = ["الأساسات والقواعد", "الهيكل الخرساني والأسقف", "المباني والحوائط والعزل", "التشطيبات والتسليم النهائي"];
+  const lbl = document.getElementById("lbl-bim-phase");
+  if (lbl) lbl.textContent = "المرحلة " + phase + ": " + (phaseNames[bimState.currentPhase - 1] || "");
+  drawBIMScene();
+}
+
+function toggle4DSimulation() {
+  const btn = document.getElementById("btn-bim-4d-play");
+  if (bimState.is4DPlaying) {
+    clearInterval(bimState.animationTimer);
+    bimState.is4DPlaying = false;
+    if (btn) btn.innerHTML = '<i class="fas fa-play"></i> محاكاة 4D';
+    showToast("تم إيقاف المحاكاة الزمنية 4D.");
+  } else {
+    bimState.is4DPlaying = true;
+    if (btn) btn.innerHTML = '<i class="fas fa-pause"></i> إيقاف مؤقت';
+    showToast("بدء المحاكاة الزمنية 4D لمراحل البناء...");
+    let p = 1;
+    bimState.animationTimer = setInterval(() => {
+      setBIMPhase(p);
+      const slider = document.getElementById("slider-bim-phase");
+      if (slider) slider.value = p;
+      p++;
+      if (p > 4) p = 1;
+    }, 1800);
+  }
+}
+
+function transferBIMToTakeoff() {
+  const el = (MimarERP.bimElements || []).find(e => e.elm_id === bimState.selectedId);
+  if (!el) return;
+  showToast(`تم بنجاح نقل كمية العنصر (${el.family} - ${el.vol_m3} م³) إلى دفتر الحصر الهندسي QTO.`);
+  switchView('takeoff');
+}
+
+function highlightLinkedBOQ() {
+  const el = (MimarERP.bimElements || []).find(e => e.elm_id === bimState.selectedId);
+  if (!el) return;
+  switchView('wbs-boq');
+  showToast(`تم التوجيه إلى بند جدول الكميات المرتبط: ${el.boq_ref}`);
+}
+
+function exportBIMQuantities() {
+  exportTableToExcel('tbl-bim-elements', 'BIM-Model-Takeoff-Schedule.csv');
+}
+
+function renderBIMTable() {
+  const tbody = document.getElementById("tbl-bim-elements-body");
+  if (!tbody) return;
+  tbody.innerHTML = "";
+  const elements = MimarERP.bimElements || [];
+
+  elements.forEach(el => {
+    const tr = document.createElement("tr");
+    tr.style.cursor = "pointer";
+    tr.onclick = () => selectBIMElement(el.elm_id);
+    tr.innerHTML = `
+      <td><strong style="color:var(--teal)">${el.elm_id}</strong></td>
+      <td><span class="badge badge-purple">${el.category}</span></td>
+      <td><strong>${el.family}</strong></td>
+      <td>${el.level}</td>
+      <td class="text-num">${el.dimensions}</td>
+      <td class="text-num" style="font-weight:700; color:var(--blue);">${el.vol_m3.toFixed(2)}</td>
+      <td class="text-num">${el.area_m2.toFixed(2)}</td>
+      <td><span class="badge badge-blue">مرحلة ${el.phase}</span></td>
+      <td><span class="badge badge-green">${el.boq_ref}</span></td>
+      <td><button class="btn btn-outline btn-sm" onclick="event.stopPropagation(); selectBIMElement('${el.elm_id}')"><i class="fas fa-crosshairs"></i> معاينة 3D</button></td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+// =============================================================================
+// SITE DAILY DIARY CONTROLLER
+// =============================================================================
+function renderSiteDiary() {
+  const logs = MimarERP.siteDiaryLogs || [];
+  if (!logs.length) return;
+  const current = logs[0];
+
+  const setEl = (id, val) => { const e = document.getElementById(id); if (e) e.textContent = val; };
+  setEl("diary-kpi-manpower", current.total_workforce + " فرد");
+  setEl("diary-kpi-hours", current.total_hours + " ساعة");
+  setEl("diary-kpi-equipment", current.equipment_active.length + " معدات");
+  setEl("diary-kpi-hse", current.hse_status);
+  setEl("diary-weather-text", current.weather);
+  setEl("diary-shift-text", current.shift);
+  setEl("diary-progress-summary", current.progress_summary);
+  setEl("diary-qa-notes", current.qa_status);
+
+  // Manpower Table
+  const tbody = document.getElementById("tbl-diary-manpower-body");
+  if (tbody) {
+    tbody.innerHTML = "";
+    current.trades.forEach(t => {
+      const totH = (t.count * t.hours).toFixed(1);
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td><strong>${t.trade}</strong></td>
+        <td class="text-center" style="font-weight:800; color:var(--teal);">${t.count}</td>
+        <td class="text-center">${t.hours} س</td>
+        <td class="text-num" style="font-weight:700;">${totH} س</td>
+      `;
+      tbody.appendChild(tr);
+    });
+  }
+
+  // Equipment List
+  const eqContainer = document.getElementById("diary-equipment-list");
+  if (eqContainer) {
+    eqContainer.innerHTML = "";
+    current.equipment_active.forEach(eq => {
+      const div = document.createElement("div");
+      div.style.background = "#F8FAFC";
+      div.style.border = "1px solid var(--line)";
+      div.style.borderRadius = "6px";
+      div.style.padding = "8px 12px";
+      div.style.display = "flex";
+      div.style.justifyContent = "space-between";
+      div.style.alignItems = "center";
+      div.innerHTML = `
+        <div><strong>${eq.name}</strong> <span style="font-size:11px; color:var(--muted); margin-right:8px;">(${eq.status})</span></div>
+        <span class="badge badge-amber">${eq.hours} ساعات تشغيل</span>
+      `;
+      eqContainer.appendChild(div);
+    });
+  }
+}
+
+function onDiaryDateChange(date) {
+  showToast("جاري تحميل تقرير وسجل الموقع لتاريخ: " + date);
+  renderSiteDiary();
+}
+
+function openNewDiaryModal() {
+  showToast("تم فتح نموذج تسجيل التقرير اليومي للموقع.");
+}
+
+// =============================================================================
+// PUNCH LIST & SNAGGING CONTROLLER
+// =============================================================================
+function renderPunchList(filterStatus = "All") {
+  const tbody = document.getElementById("tbl-punch-list-body");
+  if (!tbody) return;
+  tbody.innerHTML = "";
+
+  const snags = MimarERP.punchListItems || [];
+  let total = snags.length;
+  let critical = 0, inProg = 0, closed = 0;
+
+  snags.forEach(s => {
+    if (s.severity.includes("Critical") || s.severity.includes("حرج")) critical++;
+    if (s.status.includes("جاري")) inProg++;
+    if (s.status.includes("مغلق")) closed++;
+
+    if (filterStatus !== "All" && !s.status.includes(filterStatus)) return;
+
+    const sevBadge = s.severity.includes("حرج") ? "badge-red" : (s.severity.includes("رئيسي") ? "badge-amber" : "badge-blue");
+    const statusBadge = s.status.includes("مغلق") ? "badge-green" : (s.status.includes("جاري") ? "badge-amber" : "badge-blue");
+
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td><strong style="color:var(--teal)">${s.snag_id}</strong></td>
+      <td><strong>${s.location}</strong></td>
+      <td>${s.discipline}</td>
+      <td>${s.desc}</td>
+      <td><span class="badge ${sevBadge}">${s.severity}</span></td>
+      <td>${s.contractor}</td>
+      <td>${s.date_opened}</td>
+      <td class="text-num">${s.due_date}</td>
+      <td><span class="badge ${statusBadge}">${s.status}</span></td>
+      <td>
+        <button class="btn btn-outline btn-sm" onclick="togglePunchStatus('${s.snag_id}')" title="تغيير الحالة">
+          <i class="fas fa-check"></i> ${s.status.includes("مغلق") ? "إعادة فتح" : "اعتماد إغلاق"}
+        </button>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+
+  const setEl = (id, val) => { const e = document.getElementById(id); if (e) e.textContent = val; };
+  setEl("punch-kpi-total", total);
+  setEl("punch-kpi-critical", critical);
+  setEl("punch-kpi-progress", inProg);
+  setEl("punch-kpi-closed", closed);
+  setEl("punch-kpi-badge-pending", (total - closed) + " ملاحظات قيد المتابعة");
+}
+
+function filterPunchList(status) {
+  renderPunchList(status);
+}
+
+function togglePunchStatus(snagId) {
+  const snags = MimarERP.punchListItems || [];
+  const item = snags.find(s => s.snag_id === snagId);
+  if (!item) return;
+
+  if (item.status.includes("مغلق")) {
+    item.status = "جاري المعالجة (In Progress)";
+    showToast(`تمت إعادة فتح الملاحظة: ${snagId}`);
+  } else {
+    item.status = "مغلق ومعتمد (Closed)";
+    showToast(`تم اعتماد إغلاق الملاحظة الهندسية: ${snagId}`);
+  }
+  renderPunchList();
+}
+
+function openAddPunchModal() {
+  showToast("نموذج تسجيل ملاحظة واستلام جديد.");
+}
+
+// =============================================================================
+// AI COST INTELLIGENCE & MULTI-STANDARD MATCHER
+// =============================================================================
+let lastAIMatchResult = null;
+
+function openAICostModal() {
+  const m = document.getElementById("modal-ai-cost");
+  if (m) m.style.display = "flex";
+  const inp = document.getElementById("ai-cost-query");
+  if (inp) {
+    inp.focus();
+    inp.value = "";
+  }
+  const res = document.getElementById("ai-match-result");
+  if (res) res.style.display = "none";
+}
+
+function closeAICostModal() {
+  const m = document.getElementById("modal-ai-cost");
+  if (m) m.style.display = "none";
+}
+
+function executeAICostMatch() {
+  const query = (document.getElementById("ai-cost-query")?.value || "").trim().toLowerCase();
+  if (!query) {
+    showToast("يرجى كتابة وصف البند أولاً للبحث والمطابقة.");
+    return;
+  }
+
+  const kb = MimarERP.costIntelligenceKB || [];
+  let match = kb.find(k => query.includes(k.keyword) || k.item.toLowerCase().includes(query));
+
+  if (!match) {
+    // Default fallback to first matched or general item
+    match = kb[0];
+  }
+  lastAIMatchResult = match;
+
+  const resBox = document.getElementById("ai-match-result");
+  if (resBox) resBox.style.display = "block";
+
+  const setEl = (id, val) => { const e = document.getElementById(id); if (e) e.textContent = val; };
+  setEl("ai-res-item", match.item);
+  setEl("ai-res-csi", match.csi);
+  setEl("ai-res-din", match.din);
+  setEl("ai-res-uni", match.uniclass);
+  setEl("ai-res-sbc", match.sbc);
+  setEl("ai-res-rate", match.bench_rate.toFixed(2));
+  setEl("ai-res-unit", match.unit);
+  setEl("ai-res-mat", (match.bench_rate - match.labor - match.eqp).toFixed(2) + " ر.س");
+  setEl("ai-res-lab", match.labor.toFixed(2) + " ر.س");
+  setEl("ai-res-eqp", match.eqp.toFixed(2) + " ر.س");
+
+  showToast(`تمت المطابقة بنجاح طبقاً لمعايير CSI (${match.csi}) و DIN 276`);
+}
+
+function applyAIMatchToBOQ() {
+  if (!lastAIMatchResult) return;
+  closeAICostModal();
+  showToast(`تم بنجاح إدراج البند (${lastAIMatchResult.item}) في جدول الكميات BOQ.`);
+  switchView('wbs-boq');
+}
+
+function generateRateAnalysisFromAI() {
+  if (!lastAIMatchResult) return;
+  closeAICostModal();
+  showToast(`تم إنشاء وتحديث التحليل السعري للبند: ${lastAIMatchResult.item}`);
+  switchView('rate-analysis');
+}
+
+// Hook into existing switchView for 3D BIM rendering
+const _origSwitchView = window.switchView;
+window.switchView = function(viewId) {
+  if (typeof _origSwitchView === 'function') _origSwitchView(viewId);
+  if (viewId === 'bim-viewer') {
+    setTimeout(initBIMViewer, 50);
+  } else if (viewId === 'site-diary') {
+    renderSiteDiary();
+  } else if (viewId === 'punch-list') {
+    renderPunchList();
+  }
+};

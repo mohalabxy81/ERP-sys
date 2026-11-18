@@ -180,5 +180,97 @@ window.MimarERP = {
     {"sub_id":"SUB-2026-03","contractor_name":"مؤسسة إتقان الجبس وأعمال الديكور","scope":"أسقف معلقة جبس بورد مقاوم رطوبة","original_value":50200.00,"approved_vos":0.00,"executed_measured":11400.00,"approved_billings":11400.00,"retention_pct":10.0,"retention_val":1140.00,"net_paid":10260.00,"status":"قيد التنفيذ بالموقع"},
     {"sub_id":"SUB-2026-04","contractor_name":"شركة التقنية الهندسية الكهروميكانيكية","scope":"أعمال تأسيس وتمديد السباكة والكهرباء","original_value":81300.00,"approved_vos":3500.00,"executed_measured":32000.00,"approved_billings":32000.00,"retention_pct":10.0,"retention_val":3200.00,"net_paid":28800.00,"status":"قيد التنفيذ بالموقع"},
     {"sub_id":"SUB-2026-05","contractor_name":"مؤسسة سرعة الإنجاز للياسة والديكور","scope":"أعمال مصنعية اللياسة الداخلية والخارجية","original_value":25800.00,"approved_vos":0.00,"executed_measured":25800.00,"approved_billings":25800.00,"retention_pct":10.0,"retention_val":2580.00,"net_paid":23220.00,"status":"مكتمل ومسلّم"}
+  ],
+
+  // =========================================================================
+  // BIM & 3D MODEL TAKEOFF DATA (IFC / Revit Element Quantities & Geometry)
+  // =========================================================================
+  bimElements: [
+    {"elm_id":"BIM-FND-01","category":"IfcFooting","family":"قواعد منفصلة F1","level":"الأساسات","dimensions":"2.50×2.50×0.60","vol_m3":3.75,"area_m2":6.25,"length_m":2.5,"phase":1,"boq_ref":"BOQ-CONC-01","color":"#94A3B8","x":-40,"y":-20,"z":0,"dx":30,"dy":30,"dz":15},
+    {"elm_id":"BIM-FND-02","category":"IfcFooting","family":"قواعد شريطية F2","level":"الأساسات","dimensions":"12.00×1.20×0.50","vol_m3":7.20,"area_m2":14.40,"length_m":12.0,"phase":1,"boq_ref":"BOQ-CONC-01","color":"#94A3B8","x":20,"y":-20,"z":0,"dx":50,"dy":20,"dz":15},
+    {"elm_id":"BIM-COL-01","category":"IfcColumn","family":"أعمدة خرسانية C1","level":"الدور الأرضي","dimensions":"0.30×0.60×3.40","vol_m3":0.61,"area_m2":6.12,"length_m":3.4,"phase":2,"boq_ref":"BOQ-01","color":"#60A5FA","x":-35,"y":-15,"z":15,"dx":10,"dy":15,"dz":40},
+    {"elm_id":"BIM-COL-02","category":"IfcColumn","family":"أعمدة خرسانية C2","level":"الدور الأرضي","dimensions":"0.30×0.70×3.40","vol_m3":0.71,"area_m2":6.80,"length_m":3.4,"phase":2,"boq_ref":"BOQ-01","color":"#60A5FA","x":30,"y":-15,"z":15,"dx":10,"dy":15,"dz":40},
+    {"elm_id":"BIM-SLB-01","category":"IfcSlab","family":"بلاطة سقف مصمتة S20","level":"الدور الأول","dimensions":"14.00×12.00×0.20","vol_m3":33.60,"area_m2":168.00,"length_m":14.0,"phase":2,"boq_ref":"BOQ-CONC-02","color":"#38BDF8","x":-50,"y":-30,"z":55,"dx":110,"dy":75,"dz":10},
+    {"elm_id":"BIM-WAL-01","category":"IfcWall","family":"حوائط بلك ولياسة داخلية","level":"الدور الأرضي","dimensions":"12.00×0.20×3.20","vol_m3":7.68,"area_m2":76.80,"length_m":12.0,"phase":3,"boq_ref":"BOQ-01","color":"#FBBF24","x":-45,"y":-25,"z":15,"dx":100,"dy":8,"dz":40},
+    {"elm_id":"BIM-WAL-02","category":"IfcWall","family":"لياسة خارجية وبروفايل","level":"الواجهة الرئيسية","dimensions":"14.00×0.20×7.00","vol_m3":19.60,"area_m2":196.00,"length_m":14.0,"phase":3,"boq_ref":"BOQ-02","color":"#FB923C","x":-50,"y":35,"z":15,"dx":110,"dy":8,"dz":75},
+    {"elm_id":"BIM-ROF-01","category":"IfcRoof","family":"عزل فوم بولي يوريثان للسطح","level":"السطح","dimensions":"12.00×10.00×0.05","vol_m3":6.00,"area_m2":120.00,"length_m":12.0,"phase":4,"boq_ref":"BOQ-03","color":"#4ADE80","x":-45,"y":-25,"z":90,"dx":100,"dy":65,"dz":8},
+    {"elm_id":"BIM-WIN-01","category":"IfcWindow","family":"شبابيك سرايا دبل جلاس W1","level":"الدور الأرضي","dimensions":"1.50×1.80×0.10","vol_m3":0.27,"area_m2":2.70,"length_m":1.5,"phase":4,"boq_ref":"BOQ-ALM-01","color":"#A78BFA","x":-20,"y":37,"z":25,"dx":20,"dy":5,"dz":20},
+    {"elm_id":"BIM-DRS-01","category":"IfcDoor","family":"أبواب خشب WPC فاخرة D1","level":"الدور الأرضي","dimensions":"1.00×2.20×0.15","vol_m3":0.33,"area_m2":2.20,"length_m":1.0,"phase":4,"boq_ref":"BOQ-DRS-01","color":"#F472B6","x":10,"y":37,"z":15,"dx":15,"dy":5,"dz":28}
+  ],
+
+  // =========================================================================
+  // SITE DAILY DIARY & FIELD MANPOWER LOG
+  // =========================================================================
+  siteDiaryLogs: [
+    {
+      "date": "2026-03-25",
+      "weather": "مشمس صافٍ · 29°C · سرعة الرياح 12 كم/س",
+      "shift": "صباحية (7:00 ص - 4:30 م)",
+      "total_hours": 9.5,
+      "total_workforce": 64,
+      "trades": [
+        {"trade": "مهندسون ومشرفو موقع", "count": 4, "hours": 9.5},
+        {"trade": "نجارو مسلح وقوالب", "count": 12, "hours": 9.5},
+        {"trade": "حدادو تسليح", "count": 10, "hours": 9.5},
+        {"trade": "معلمو ومبيضو لياسة", "count": 14, "hours": 9.5},
+        {"trade": "فنيو عزل وأرضيات", "count": 8, "hours": 9.5},
+        {"trade": "عمالة مساندة ونظافة", "count": 16, "hours": 9.5}
+      ],
+      "equipment_active": [
+        {"name": "كرين برجي Liebherr", "hours": 8.0, "status": "تشغيل ممتاز"},
+        {"name": "خلاطة مونة وونش تشوين", "hours": 7.5, "status": "تشغيل كامل"},
+        {"name": "ماكينة قص وثني حديد", "hours": 6.0, "status": "تشغيل كامل"}
+      ],
+      "progress_summary": "استكمال طرطشة وبؤج الدور الأرضي بمساحة 240 م²، فرد طبقة العزل الأسمنتي لحمامات الدور الأول واختبار الغمر 48 ساعة، تجهيز تسليح أعمدة ملحق السطح.",
+      "hse_status": "سجل آمن 100% · صفر حوادث · فحص سلامة السقالات معتمد · ارتداء كامل لمهمات PPE",
+      "qa_status": "تم تقديم طلب فحص WIR-PL-04 للياسة وتم اعتماده بملاحظة تنعيم الزوايا."
+    },
+    {
+      "date": "2026-03-24",
+      "weather": "غائم جزئياً · 26°C · رطوبة 40%",
+      "shift": "صباحية (7:00 ص - 4:00 م)",
+      "total_hours": 9.0,
+      "total_workforce": 58,
+      "trades": [
+        {"trade": "مهندسون ومشرفو موقع", "count": 4, "hours": 9.0},
+        {"trade": "نجارو مسلح", "count": 10, "hours": 9.0},
+        {"trade": "حدادو تسليح", "count": 8, "hours": 9.0},
+        {"trade": "معلمو لياسة", "count": 16, "hours": 9.0},
+        {"trade": "عمالة مساندة", "count": 20, "hours": 9.0}
+      ],
+      "equipment_active": [
+        {"name": "كرين برجي", "hours": 7.0, "status": "تشغيل"},
+        {"name": "خلاطة مونة", "hours": 8.0, "status": "تشغيل"}
+      ],
+      "progress_summary": "توريد 1000 كيس أسمنت و 40 طن حديد وفحص شهادات المطابقة، إنهاء شبك الزوايا لفتحات الشبابيك بالدور الأرضي.",
+      "hse_status": "صفر حوادث · فحص طفايات الحريق وتأمين ممرات المشاة",
+      "qa_status": "اعتماد توريد حديد سابك بموجب شهادة المنشأ والاختبار الميكانيكي"
+    }
+  ],
+
+  // =========================================================================
+  // PUNCH LIST & SNAGGING INSPECTION REGISTER
+  // =========================================================================
+  punchListItems: [
+    {"snag_id":"PNC-001","location":"الدور الأرضي - المجلس الرئيسي","discipline":"أعمال اللياسة","desc":"عدم استواء زاوية اللياسة بجوار فتحة الشباك الشرقي ووجود تعريج خفيف","severity":"ثانوي (Minor)","contractor":"مؤسسة سرعة الإنجاز للياسة","date_opened":"2026-03-20","due_date":"2026-03-27","status":"جاري المعالجة"},
+    {"snag_id":"PNC-002","location":"الدور الأول - حمام الماستر","discipline":"عوازل مائية","desc":"إعادة عمل رقبة زجاجة إضافية عند زاوية ماسورة الصرف الرأسي قبل اختبار الغمر","severity":"حرج (Critical)","contractor":"شركة رواد العزل المتطورة","date_opened":"2026-03-22","due_date":"2026-03-25","status":"مغلق ومعتمد"},
+    {"snag_id":"PNC-003","location":"الواجهة الشمالية - مدخل الفيلا","discipline":"ألمنيوم وزجاج","desc":"ضبط كاوتش إحكام الإغلاق (EPDM Gasket) للضلفة المتحركة لشباك الصالة","severity":"ثانوي (Minor)","contractor":"مصنع البراك للألمنيوم","date_opened":"2026-03-23","due_date":"2026-03-28","status":"مفتوح (Open)"},
+    {"snag_id":"PNC-004","location":"سقف الدور الأول - الممر الداخلي","discipline":"أسقف جبسية","desc":"إضافة علاقات تثبيت إضافية للزاوية المحيطية كل 40 سم طبقاً لمواصفات Knauf","severity":"رئيسي (Major)","contractor":"مؤسسة إتقان الجبس","date_opened":"2026-03-21","due_date":"2026-03-26","status":"جاري المعالجة"},
+    {"snag_id":"PNC-005","location":"غرفة الكهرباء الرئيسية","discipline":"كهروميكانيك MEP","desc":"استكمال وضع ملصقات التحذير وكروت تعريف القواطع في لوحة التوزيع DB-G","severity":"رئيسي (Major)","contractor":"شركة التقنية الكهروميكانيكية","date_opened":"2026-03-24","due_date":"2026-03-29","status":"مفتوح (Open)"},
+    {"snag_id":"PNC-006","location":"السطح والمحلق العلوي","discipline":"عوازل حرارية","desc":"تأمين تثبيت شرائح الألمنيوم (Aluminum Flashing) حول سترة السطح","severity":"ثانوي (Minor)","contractor":"شركة رواد العزل المتطورة","date_opened":"2026-03-18","due_date":"2026-03-22","status":"مغلق ومعتمد"}
+  ],
+
+  // =========================================================================
+  // AI COST INTELLIGENCE & MULTI-STANDARD CLASSIFICATION KNOWLEDGE BASE
+  // =========================================================================
+  costIntelligenceKB: [
+    {"keyword":"خرسانة","csi":"03 30 00","din":"300 - Bauwerk","uniclass":"Pr_20_85_15","sbc":"SBC 304","item":"خرسانة مسلحة عيار 350 كجم مقاومة للأملاح","unit":"م³","bench_rate":245.0,"labor":35.0,"eqp":25.0},
+    {"keyword":"حديد","csi":"03 21 00","din":"300 - Bauwerk","uniclass":"Pr_20_85_71","sbc":"SBC 304","item":"حديد تسليح عالي المقاومة گريد 60 مقاسات 8-32 مم","unit":"طن","bench_rate":2850.0,"labor":450.0,"eqp":50.0},
+    {"keyword":"لياسة","csi":"09 24 00","din":"340 - Innenwände","uniclass":"Pr_25_71_63","sbc":"SBC 1101","item":"لياسة أسمنتية داخلية وخارجية سماكة 20-25 مم","unit":"م²","bench_rate":30.35,"labor":18.0,"eqp":2.5},
+    {"keyword":"عزل","csi":"07 14 00","din":"360 - Dächer","uniclass":"Pr_25_57_96","sbc":"SBC 601","item":"عزل مائي وحراري فوم بولي يوريثان كثافة 45 كجم/م³","unit":"م²","bench_rate":58.0,"labor":12.0,"eqp":8.0},
+    {"keyword":"سيراميك","csi":"09 30 00","din":"350 - Deckenbeläge","uniclass":"Pr_25_71_14","sbc":"SBC 1101","item":"سيراميك وبورسلان أرضيات وحوائط مع غراء C2TE وترويبة","unit":"م²","bench_rate":64.5,"labor":25.0,"eqp":1.5},
+    {"keyword":"جبس","csi":"09 51 00","din":"350 - Deckenbeläge","uniclass":"Pr_25_71_23","sbc":"SBC 1101","item":"أسقف معلقة جبس بورد مقاوم للرطوبة MR سماكة 12.5 مم","unit":"م²","bench_rate":55.5,"labor":24.0,"eqp":3.0},
+    {"keyword":"ألمنيوم","csi":"08 51 23","din":"330 - Außenwände","uniclass":"Pr_30_59_87","sbc":"SBC 201","item":"شبابيك وواجهات ألمنيوم سرايا دبل جلاس عازل للصوت","unit":"م²","bench_rate":650.0,"labor":80.0,"eqp":20.0},
+    {"keyword":"دهان","csi":"09 91 00","din":"340 - Innenwände","uniclass":"Pr_25_71_57","sbc":"SBC 1101","item":"دهانات مائية داخلية وبروفايل خارجي ديكوري مع معجون","unit":"م²","bench_rate":28.0,"labor":14.0,"eqp":2.0}
   ]
 };
