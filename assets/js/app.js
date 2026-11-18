@@ -517,23 +517,45 @@ function renderProjectsTable() {
   const tbody = document.querySelector("#tbl-projects-list tbody");
   if (!tbody) return;
   tbody.innerHTML = "";
-  MimarERP.projects.forEach(p => {
+
+  const prjList = MimarERP.projects || [];
+  let totVal = 0;
+  let totDirect = 0;
+  let totProgress = 0;
+
+  prjList.forEach(p => {
     const comp = MimarERP.companies.find(c => c.company_id === p.company_id);
     const client = MimarERP.partners.find(bp => bp.partner_id === p.client_id);
+    const contractVal = p.contract_value_incl_vat || p.contract_value || 0;
+    const directVal = p.direct_cost_budget || 0;
+    const prog = p.physical_progress_pct || 0;
+
+    totVal += contractVal;
+    totDirect += directVal;
+    totProgress += prog;
+
     const tr = document.createElement("tr");
     tr.innerHTML = `
-      <td class="text-num"><strong>${p.project_code}</strong></td>
+      <td class="text-num"><strong style="color:var(--teal)">${p.project_code}</strong></td>
       <td><strong>${p.project_name_ar}</strong></td>
       <td>${comp ? comp.company_name_ar : '-'}</td>
       <td>${client ? client.partner_name : '-'}</td>
-      <td class="text-num">${p.contract_value.toLocaleString()}</td>
-      <td class="text-num">${p.direct_cost_budget.toLocaleString()}</td>
+      <td class="text-num" style="font-weight:700;">${contractVal.toLocaleString("ar-SA", {maximumFractionDigits: 0})}</td>
+      <td class="text-num">${directVal.toLocaleString("ar-SA", {maximumFractionDigits: 0})}</td>
       <td class="text-center">${p.contract_duration_days} يوم</td>
-      <td class="text-center"><strong style="color:var(--green)">${p.physical_progress_pct}%</strong></td>
-      <td><span class="badge badge-green">${p.status}</span></td>
+      <td class="text-center"><strong style="color:var(--green)">${prog}%</strong></td>
+      <td><span class="badge ${p.status==='In Progress'?'badge-green':(p.status==='Mobilization'?'badge-blue':'badge-amber')}">${p.status}</span></td>
     `;
     tbody.appendChild(tr);
   });
+
+  const setEl = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+  setEl("prj-kpi-total-val", (totVal / 1000000).toFixed(2) + " م ر.س");
+  setEl("prj-kpi-count", prjList.length + " مشاريع");
+  setEl("prj-kpi-direct-cost", (totDirect / 1000000).toFixed(2) + " م ر.س");
+  const avgProg = prjList.length > 0 ? (totProgress / prjList.length).toFixed(1) : 0;
+  setEl("prj-kpi-avg-progress", avgProg + "%");
+  setEl("prj-kpi-badge-active", prjList.length + " مشاريع نشطة");
 }
 
 function renderWBSBOQTree() {
@@ -628,44 +650,108 @@ function renderTakeoffTable() {
 }
 
 function renderRateAnalysisCards() {
+  const tableBody = document.querySelector("#tbl-rate-analysis-main tbody");
   const container = document.getElementById("rate-analysis-container");
-  if (!container) return;
-  container.innerHTML = "";
-  MimarERP.rateAnalysis.forEach(ra => {
-    const totalComp = ra.components.reduce((acc, c) => acc + (c.cost || 0), 0);
-    const card = document.createElement("div");
-    card.className = "card";
-    card.innerHTML = `
-      <div class="card-header" style="background:#0F2B46; color:white; cursor:pointer;" onclick="this.nextElementSibling.classList.toggle('active')">
-        <h3 style="color:white;"><i class="fas fa-layer-group"></i> ${ra.boq_id} - ${ra.item_name}</h3>
-        <span style="font-size:14px; font-weight:800;">${totalComp.toFixed(2)} ر.س / ${ra.unit}</span>
-      </div>
-      <div class="card-body" style="padding:0; display:block;">
-        <div class="table-wrapper">
-          <table>
-            <thead><tr>
-              <th>نوع المورد</th><th>اسم المورد والمواصفة</th><th>معدل الاستهلاك للوحدة</th>
-              <th>الوحدة</th><th>سعر الأساس</th><th>الهالك %</th><th>تكلفة المكون للوحدة (ر.س)</th>
-            </tr></thead>
-            <tbody>
-              ${ra.components.map(c => `
-                <tr>
-                  <td><span class="badge ${c.type==='Material'?'badge-blue':(c.type==='Labor'?'badge-green':'badge-amber')}">${c.type}</span></td>
-                  <td><strong>${c.name}</strong></td>
-                  <td class="text-num">${c.qty_per_unit}</td>
-                  <td class="text-center">${c.unit}</td>
-                  <td class="text-num">${c.rate.toFixed(2)}</td>
-                  <td class="text-num">${c.waste_pct}%</td>
-                  <td class="text-num" style="font-weight:700;">${c.cost.toFixed(2)}</td>
-                </tr>
-              `).join('')}
-            </tbody>
-          </table>
+  if (!tableBody && !container) return;
+
+  const raList = MimarERP.rateAnalysis || [];
+  const boqList = MimarERP.boq || [];
+
+  let totDirect = 0;
+  let totLabor = 0;
+  let totMaterial = 0;
+  let grandTotalValue = 0;
+  let totalUnitSelling = 0;
+
+  if (tableBody) tableBody.innerHTML = "";
+  if (container) container.innerHTML = "";
+
+  raList.forEach(ra => {
+    // Match BOQ item to get approved quantity
+    const boqItem = boqList.find(b => b.id === ra.boq_id) || {};
+    const qty = boqItem.qty_approved || 1;
+    const directCost = ra.direct_cost || (ra.total_material + ra.total_labor + (ra.total_equipment || 0) + (ra.total_subcontract || 0));
+    const sellingUnit = ra.selling_price_excl_vat || (directCost * 1.25);
+    const itemTotal = qty * sellingUnit;
+
+    totDirect += (directCost * qty);
+    totLabor += ((ra.total_labor || 0) * qty);
+    totMaterial += ((ra.total_material || 0) * qty);
+    grandTotalValue += itemTotal;
+    totalUnitSelling += sellingUnit;
+
+    // 1. Populate Main Table Row
+    if (tableBody) {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td><strong style="color:var(--teal)">${ra.boq_id}</strong></td>
+        <td><strong>${ra.item_name}</strong></td>
+        <td class="text-center">${ra.unit}</td>
+        <td class="text-num">${qty.toLocaleString("ar-SA")}</td>
+        <td class="text-num">${(ra.total_material || 0).toLocaleString("ar-SA", {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+        <td class="text-num">${(ra.total_labor || 0).toLocaleString("ar-SA", {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+        <td class="text-num">${ra.target_profit_pct || 12}%</td>
+        <td class="text-num" style="font-weight:700; color:var(--blue);">${sellingUnit.toLocaleString("ar-SA", {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+        <td class="text-num" style="font-weight:800; color:var(--navy);">${itemTotal.toLocaleString("ar-SA", {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+      `;
+      tableBody.appendChild(tr);
+    }
+
+    // 2. Populate Detail Collapsible Card
+    if (container) {
+      const totalComp = (ra.components || []).reduce((acc, c) => acc + (c.cost || 0), 0);
+      const card = document.createElement("div");
+      card.className = "card";
+      card.style.marginBottom = "12px";
+      card.innerHTML = `
+        <div class="card-header" style="background:#0F2B46; color:white; cursor:pointer;" onclick="const b=this.nextElementSibling; b.style.display=b.style.display==='none'?'block':'none';">
+          <h3 style="color:white; font-size:14px;"><i class="fas fa-layer-group"></i> ${ra.boq_id} - ${ra.item_name}</h3>
+          <div style="display:flex; gap:12px; align-items:center;">
+            <span style="font-size:13px; color:#94A3B8;">تكلفة الوحدة المباشرة: <strong>${directCost.toFixed(2)} ر.س</strong></span>
+            <span style="font-size:13px; font-weight:800; color:#38BDF8;">سعر البيع: ${sellingUnit.toFixed(2)} ر.س / ${ra.unit}</span>
+            <i class="fas fa-chevron-down" style="font-size:12px; color:#94A3B8;"></i>
+          </div>
         </div>
-      </div>
-    `;
-    container.appendChild(card);
+        <div class="card-body" style="padding:0; display:none;">
+          <div class="table-wrapper">
+            <table>
+              <thead><tr>
+                <th>نوع المورد</th><th>اسم المورد والمواصفة</th><th>معدل الاستهلاك للوحدة</th>
+                <th>الوحدة</th><th>سعر الأساس</th><th>الهالك %</th><th>تكلفة المكون للوحدة (ر.س)</th>
+              </tr></thead>
+              <tbody>
+                ${(ra.components || []).map(c => `
+                  <tr>
+                    <td><span class="badge ${c.type==='Material'?'badge-blue':(c.type==='Labor'?'badge-green':'badge-amber')}">${c.type}</span></td>
+                    <td><strong>${c.name}</strong></td>
+                    <td class="text-num">${c.qty_per_unit}</td>
+                    <td class="text-center">${c.unit}</td>
+                    <td class="text-num">${(c.rate || 0).toFixed(2)}</td>
+                    <td class="text-num">${c.waste_pct || 0}%</td>
+                    <td class="text-num" style="font-weight:700;">${(c.cost || 0).toFixed(2)}</td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      `;
+      container.appendChild(card);
+    }
   });
+
+  // Update KPI Cards
+  const setEl = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+  setEl("ra-kpi-total-items", raList.length);
+  const laborPct = totDirect > 0 ? ((totLabor / totDirect) * 100).toFixed(1) : "0.0";
+  const matPct = totDirect > 0 ? ((totMaterial / totDirect) * 100).toFixed(1) : "0.0";
+  setEl("ra-kpi-avg-labor", laborPct + "%");
+  setEl("ra-kpi-avg-material", matPct + "%");
+  setEl("ra-kpi-total-value", grandTotalValue.toLocaleString("ar-SA", {maximumFractionDigits: 0}));
+
+  // Update Table Footers
+  setEl("ra-foot-total-unit", totalUnitSelling.toLocaleString("ar-SA", {minimumFractionDigits: 2, maximumFractionDigits: 2}));
+  setEl("ra-foot-grand-total", grandTotalValue.toLocaleString("ar-SA", {minimumFractionDigits: 2, maximumFractionDigits: 2}));
 }
 
 function renderProcurementTable() {
@@ -711,43 +797,88 @@ function renderProcurementTable() {
 function renderInventoryTable() {
   const tbody = document.querySelector("#tbl-inventory tbody");
   if (!tbody) return;
-  tbody.innerHTML = `
-    <tr>
-      <td class="text-num">INV-TX-101</td><td><span class="badge badge-green">استلام (GRN)</span></td>
-      <td>مستودع المشروع الميداني</td><td>أسمنت بورتلاندي عادي 50 كجم</td>
-      <td class="text-num">B-2026-03</td><td class="text-num">1,000</td><td class="text-num">-</td>
-      <td class="text-num">16.50</td><td>WBS-09.1 اللياسة</td><td class="text-num">2026-03-05</td>
-    </tr>
-    <tr>
-      <td class="text-num">INV-TX-102</td><td><span class="badge badge-amber">صرف تشغيل (Issue)</span></td>
-      <td>مستودع المشروع الميداني</td><td>أسمنت بورتلاندي عادي 50 كجم</td>
-      <td class="text-num">B-2026-03</td><td class="text-num">-</td><td class="text-num">450</td>
-      <td class="text-num">16.50</td><td>WBS-09.1.1 لياسة الحوائط</td><td class="text-num">2026-03-12</td>
-    </tr>
-  `;
+  tbody.innerHTML = "";
+
+  const ledger = MimarERP.inventoryLedger || [];
+  let totInVal = 0;
+  let totIssuedVal = 0;
+  const warehouses = new Set();
+
+  ledger.forEach(item => {
+    warehouses.add(item.warehouse);
+    const inVal = (item.qty_in || 0) * (item.unit_cost || 0);
+    const outVal = (item.qty_out || 0) * (item.unit_cost || 0);
+    totInVal += inVal;
+    totIssuedVal += outVal;
+
+    const typeBadge = item.tx_type.includes("استلام") ? "badge-green" :
+                      (item.tx_type.includes("صرف") ? "badge-amber" : "badge-blue");
+
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td class="text-num"><strong style="color:var(--teal)">${item.tx_id}</strong></td>
+      <td><span class="badge ${typeBadge}">${item.tx_type}</span></td>
+      <td>${item.warehouse}</td>
+      <td><strong>${item.item_name}</strong></td>
+      <td class="text-num">${item.batch_no}</td>
+      <td class="text-num" style="color:var(--green); font-weight:700;">${item.qty_in > 0 ? item.qty_in.toLocaleString("ar-SA") : '-'}</td>
+      <td class="text-num" style="color:var(--amber); font-weight:700;">${item.qty_out > 0 ? item.qty_out.toLocaleString("ar-SA") : '-'}</td>
+      <td class="text-num">${item.unit_cost.toLocaleString("ar-SA", {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+      <td><span class="badge badge-blue">${item.wbs_ref}</span></td>
+      <td class="text-num">${item.tx_date}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+
+  const currentStockVal = Math.max(0, totInVal - totIssuedVal);
+  const setEl = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+  setEl("inv-kpi-total-val", currentStockVal.toLocaleString("ar-SA", {maximumFractionDigits: 0}) + " ر.س");
+  setEl("inv-kpi-tx-count", ledger.length + " حركة");
+  setEl("inv-kpi-issued-val", totIssuedVal.toLocaleString("ar-SA", {maximumFractionDigits: 0}) + " ر.س");
+  setEl("inv-kpi-warehouse-count", warehouses.size + " مستودعات");
 }
 
 function renderSubcontractsTable() {
   const tbody = document.querySelector("#tbl-subcontracts tbody");
   if (!tbody) return;
-  tbody.innerHTML = `
-    <tr>
-      <td class="text-num"><strong>SUB-2026-01</strong></td>
-      <td>شركة رواد العزل المتطورة (Waterseal)</td>
-      <td>عزل الأسطح بولي يوريثان والحمامات</td>
-      <td class="text-num">7,890.00</td><td class="text-num">0.00</td><td class="text-num">7,890.00</td>
-      <td class="text-num">7,890.00</td><td class="text-num">789.00</td><td class="text-num">7,101.00</td>
-      <td><span class="badge badge-green">منجز 100%</span></td>
-    </tr>
-    <tr>
-      <td class="text-num"><strong>SUB-2026-02</strong></td>
-      <td>مصنع البراك للألمنيوم والواجهات</td>
-      <td>أبواب ونوافذ ألمنيوم معزول وزجاج مزدوج</td>
-      <td class="text-num">11,568.00</td><td class="text-num">0.00</td><td class="text-num">9,250.00</td>
-      <td class="text-num">9,250.00</td><td class="text-num">925.00</td><td class="text-num">8,325.00</td>
-      <td><span class="badge badge-blue">جاري التنفيذ 80%</span></td>
-    </tr>
-  `;
+  tbody.innerHTML = "";
+
+  const subs = MimarERP.subcontractsMaster || [];
+  let totVal = 0;
+  let totMeasured = 0;
+  let totRetention = 0;
+  let totPaid = 0;
+
+  subs.forEach(s => {
+    const totalCommitment = s.original_value + (s.approved_vos || 0);
+    totVal += totalCommitment;
+    totMeasured += (s.executed_measured || 0);
+    totRetention += (s.retention_val || 0);
+    totPaid += (s.net_paid || 0);
+
+    const statusBadge = s.status === "مكتمل ومسلّم" ? "badge-green" : "badge-blue";
+
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td class="text-num"><strong style="color:var(--purple)">${s.sub_id}</strong></td>
+      <td><strong>${s.contractor_name}</strong></td>
+      <td>${s.scope}</td>
+      <td class="text-num">${s.original_value.toLocaleString("ar-SA", {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+      <td class="text-num">${(s.approved_vos || 0).toLocaleString("ar-SA", {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+      <td class="text-num" style="font-weight:700;">${(s.executed_measured || 0).toLocaleString("ar-SA", {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+      <td class="text-num">${(s.approved_billings || 0).toLocaleString("ar-SA", {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+      <td class="text-num" style="color:var(--amber); font-weight:700;">${(s.retention_val || 0).toLocaleString("ar-SA", {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+      <td class="text-num" style="color:var(--green); font-weight:800;">${(s.net_paid || 0).toLocaleString("ar-SA", {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+      <td><span class="badge ${statusBadge}">${s.status}</span></td>
+    `;
+    tbody.appendChild(tr);
+  });
+
+  const setEl = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+  setEl("sub-kpi-total-val", totVal.toLocaleString("ar-SA", {maximumFractionDigits: 0}) + " ر.س");
+  setEl("sub-kpi-measured-val", totMeasured.toLocaleString("ar-SA", {maximumFractionDigits: 0}) + " ر.س");
+  setEl("sub-kpi-retention-val", totRetention.toLocaleString("ar-SA", {maximumFractionDigits: 0}) + " ر.س");
+  setEl("sub-kpi-paid-val", totPaid.toLocaleString("ar-SA", {maximumFractionDigits: 0}) + " ر.س");
 }
 
 function renderScheduleTable() {
@@ -837,35 +968,411 @@ function renderDrawingsTable() {
 function renderSelectedReport(repType) {
   const container = document.getElementById("report-view-container");
   if (!container) return;
+
+  const prj = getActiveProject();
+  const comp = getActiveCompany();
+  const dateStr = new Date().toLocaleDateString('ar-SA', { year: 'numeric', month: 'long', day: 'numeric' });
+
+  // Standard report header template
+  const makeReportHeader = (title, subtitle, badgeText, badgeClass="badge-blue") => `
+    <div class="card-header" style="background:#FFFFFF; border-bottom:2px solid var(--line); padding:20px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+      <div>
+        <div style="font-size:11px; font-weight:800; color:var(--teal); text-transform:uppercase; margin-bottom:4px;">${comp.company_name_ar} · ${prj.project_name_ar} (${prj.project_code})</div>
+        <h3 style="font-size:18px; font-weight:800; color:var(--navy); margin:0;">${title}</h3>
+        <p style="color:var(--muted); font-size:12px; margin:4px 0 0 0;">${subtitle}</p>
+      </div>
+      <div style="text-align:left;">
+        <span class="badge ${badgeClass}" style="font-size:12px; margin-bottom:4px; display:inline-block;">${badgeText}</span>
+        <div style="font-size:11px; color:var(--muted);">تاريخ الإصدار: <strong>${dateStr}</strong></div>
+      </div>
+    </div>
+  `;
+
   if (repType === "rep-cvr") {
     container.innerHTML = `
-      <div class="card-header"><h3>تقرير التكلفة والقيمة والمصالحة الشهرية (Monthly Cost Value Reconciliation - CVR)</h3></div>
-      <div class="card-body">
-        <div class="table-wrapper">
-          <table>
-            <thead><tr>
-              <th>حزمة الأعمال</th><th>قيمة العقد المعتمد</th><th>التكلفة المباشرة المقدرة</th>
-              <th>القيمة المعتمدة بالمستخلصات</th><th>التكلفة الفعلية المحققة (AC)</th>
-              <th>الربح المحقق دفترياً</th><th>هامش الربحية %</th>
-            </tr></thead>
-            <tbody>
-              <tr>
-                <td>WBS-09 التشطيبات المعمارية</td><td class="text-num">125,850.00</td><td class="text-num">84,320.00</td>
-                <td class="text-num">78,400.00</td><td class="text-num">51,200.00</td>
-                <td class="text-num" style="color:var(--green)">+27,200.00</td><td class="text-center">34.7%</td>
-              </tr>
-              <tr>
-                <td>WBS-07 العوازل المائية والحرارية</td><td class="text-num">29,750.00</td><td class="text-num">19,930.00</td>
-                <td class="text-num">29,750.00</td><td class="text-num">19,930.00</td>
-                <td class="text-num" style="color:var(--green)">+9,820.00</td><td class="text-center">33.0%</td>
-              </tr>
-            </tbody>
-          </table>
+      <div class="card" style="margin-bottom:0;">
+        ${makeReportHeader(
+          "تقرير التكلفة والقيمة والمصالحة الشهرية (Cost Value Reconciliation - CVR)",
+          "تحليل المقارنة بين الإيرادات المعتمدة بالمستخلصات والتكاليف الفعلية لتحديد الربحية اللحظية",
+          "CVR Closed Month",
+          "badge-green"
+        )}
+        <div class="card-body" style="padding:20px;">
+          <!-- KPI Summary -->
+          <div class="kpi-grid" style="margin-bottom:20px; grid-template-columns:repeat(5, 1fr);">
+            <div class="kpi-card"><div class="kpi-header"><span class="kpi-label">قيمة العقد المعتمد</span></div><div class="kpi-value text-num">${(prj.contract_value || 183733).toLocaleString('ar-SA')}</div><div class="kpi-footer">ر.س</div></div>
+            <div class="kpi-card green"><div class="kpi-header"><span class="kpi-label">الإيراد المعتمد (IPC)</span></div><div class="kpi-value text-num">119,243</div><div class="kpi-footer">ر.س · مستخلص 01 + 02</div></div>
+            <div class="kpi-card amber"><div class="kpi-header"><span class="kpi-label">التكلفة الفعلية (AC)</span></div><div class="kpi-value text-num">79,880</div><div class="kpi-footer">ر.س · المصاريف المحققة</div></div>
+            <div class="kpi-card green"><div class="kpi-header"><span class="kpi-label">الربح الدفتري المحقق</span></div><div class="kpi-value text-num" style="color:var(--green)">+39,363</div><div class="kpi-footer">ر.س · Gross Profit</div></div>
+            <div class="kpi-card" style="border-top:4px solid var(--teal);"><div class="kpi-header"><span class="kpi-label">هامش الربحية الفعلي</span></div><div class="kpi-value text-num" style="color:var(--teal)">33.0%</div><div class="kpi-footer">المستهدف: 12.0%</div></div>
+          </div>
+
+          <div class="table-wrapper">
+            <table>
+              <thead><tr>
+                <th>حزمة الأعمال (WBS Division)</th>
+                <th class="text-num">قيمة العقد المعتمد</th>
+                <th class="text-num">التكلفة المباشرة المقدرة</th>
+                <th class="text-num">الإيراد المعتمد (Revenue)</th>
+                <th class="text-num">التكلفة الفعلية (AC)</th>
+                <th class="text-num">الربح الدفتري (ر.س)</th>
+                <th class="text-center">هامش الربحية %</th>
+                <th class="text-center">حالة الحزمة</th>
+              </tr></thead>
+              <tbody>
+                <tr>
+                  <td><strong>WBS-09 التشطيبات المعمارية والداخلية</strong></td>
+                  <td class="text-num">125,850.00</td>
+                  <td class="text-num">84,320.00</td>
+                  <td class="text-num">78,400.00</td>
+                  <td class="text-num">51,200.00</td>
+                  <td class="text-num" style="font-weight:800; color:var(--green);">+27,200.00</td>
+                  <td class="text-center" style="font-weight:700;">34.7%</td>
+                  <td><span class="badge badge-green">ربحية ممتازة</span></td>
+                </tr>
+                <tr>
+                  <td><strong>WBS-07 العوازل المائية والحرارية</strong></td>
+                  <td class="text-num">29,750.00</td>
+                  <td class="text-num">19,930.00</td>
+                  <td class="text-num">29,750.00</td>
+                  <td class="text-num">19,930.00</td>
+                  <td class="text-num" style="font-weight:800; color:var(--green);">+9,820.00</td>
+                  <td class="text-center" style="font-weight:700;">33.0%</td>
+                  <td><span class="badge badge-green">مكتمل 100%</span></td>
+                </tr>
+                <tr>
+                  <td><strong>WBS-08 الأبواب والنوافذ والفتحات</strong></td>
+                  <td class="text-num">28,133.98</td>
+                  <td class="text-num">18,836.07</td>
+                  <td class="text-num">11,093.00</td>
+                  <td class="text-num">8,750.00</td>
+                  <td class="text-num" style="font-weight:800; color:var(--green);">+2,343.00</td>
+                  <td class="text-center" style="font-weight:700;">21.1%</td>
+                  <td><span class="badge badge-blue">قيد التوريد</span></td>
+                </tr>
+              </tbody>
+              <tfoot>
+                <tr style="background:#E2E8F0; font-weight:800;">
+                  <td>الإجمالي المجمع للمشروع</td>
+                  <td class="text-num">183,733.98</td>
+                  <td class="text-num">123,086.07</td>
+                  <td class="text-num">119,243.00</td>
+                  <td class="text-num">79,880.00</td>
+                  <td class="text-num" style="color:var(--green); font-size:14px;">+39,363.00</td>
+                  <td class="text-center" style="color:var(--teal); font-size:14px;">33.0%</td>
+                  <td><span class="badge badge-green">مطابق للمستهدف</span></td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
         </div>
       </div>
     `;
-  } else {
-    container.innerHTML = `<div class="card-body"><p style="color:var(--muted)">جاري إعداد محرك التقرير المحدد وحساب المعادلات التحليلية...</p></div>`;
+  } else if (repType === "rep-evm") {
+    container.innerHTML = `
+      <div class="card" style="margin-bottom:0;">
+        ${makeReportHeader(
+          "تقرير إدارة القيمة المكتسبة والأداء المالي والزمني (EVM Summary)",
+          "تحليل شامل لمؤشرات الأداء المعتمدة من PMI و AACE لقياس التكلفة والجدول الزمني والتنبؤ عند الإغلاق",
+          "AACE Class 1 Audited",
+          "badge-purple"
+        )}
+        <div class="card-body" style="padding:20px;">
+          <div class="kpi-grid" style="margin-bottom:20px; grid-template-columns:repeat(6, 1fr);">
+            <div class="kpi-card green"><div class="kpi-header"><span class="kpi-label">الميزانية الأصلية (BAC)</span></div><div class="kpi-value text-num">123,086</div><div class="kpi-footer">ر.س</div></div>
+            <div class="kpi-card"><div class="kpi-header"><span class="kpi-label">المخطط التراكمي (PV)</span></div><div class="kpi-value text-num">88,620</div><div class="kpi-footer">ر.س</div></div>
+            <div class="kpi-card purple"><div class="kpi-header"><span class="kpi-label">القيمة المكتسبة (EV)</span></div><div class="kpi-value text-num">79,880</div><div class="kpi-footer">ر.س</div></div>
+            <div class="kpi-card amber"><div class="kpi-header"><span class="kpi-label">التكلفة الفعلية (AC)</span></div><div class="kpi-value text-num">79,880</div><div class="kpi-footer">ر.س</div></div>
+            <div class="kpi-card" style="border-top:4px solid var(--green);"><div class="kpi-header"><span class="kpi-label">مؤشر التكلفة (CPI)</span></div><div class="kpi-value text-num" style="color:var(--green)">1.000</div><div class="kpi-footer">EV / AC (على الميزانية)</div></div>
+            <div class="kpi-card" style="border-top:4px solid var(--amber);"><div class="kpi-header"><span class="kpi-label">مؤشر الجدول (SPI)</span></div><div class="kpi-value text-num" style="color:var(--amber)">0.901</div><div class="kpi-footer">EV / PV (تأخر طفيف)</div></div>
+          </div>
+
+          <div class="table-wrapper">
+            <table>
+              <thead><tr>
+                <th>المؤشر الهندسي</th><th>الوصف والرمز</th><th class="text-num">القيمة الحالية</th><th>المعيار المرجعي</th><th>التقييم الفني والرقابي</th>
+              </tr></thead>
+              <tbody>
+                <tr>
+                  <td><strong>انحراف التكلفة (Cost Variance)</strong></td><td>CV = EV - AC</td>
+                  <td class="text-num" style="font-weight:700; color:var(--green);">0.00 ر.س</td><td>&gt;= 0 (وفر أو التزام)</td>
+                  <td><span class="badge badge-green">مطابق تماماً للميزانية المباشرة</span></td>
+                </tr>
+                <tr>
+                  <td><strong>انحراف الجدول الزمني (Schedule Variance)</strong></td><td>SV = EV - PV</td>
+                  <td class="text-num" style="font-weight:700; color:var(--amber);">-8,740.00 ر.س</td><td>&gt;= 0 (متقدم أو على الموعد)</td>
+                  <td><span class="badge badge-amber">تأخر بقيمة 8.7 ألف ر.س جاري تداركه بالمسار الحرج</span></td>
+                </tr>
+                <tr>
+                  <td><strong>التكلفة المتوقعة عند الانتهاء (EAC)</strong></td><td>EAC = BAC / CPI</td>
+                  <td class="text-num" style="font-weight:700;">123,086.07 ر.س</td><td>= BAC المعتمد</td>
+                  <td><span class="badge badge-green">لا يوجد تجاوز متوقع في التكلفة</span></td>
+                </tr>
+                <tr>
+                  <td><strong>الانحراف عند الانتهاء (VAC)</strong></td><td>VAC = BAC - EAC</td>
+                  <td class="text-num" style="font-weight:700; color:var(--green);">0.00 ر.س</td><td>&gt;= 0</td>
+                  <td><span class="badge badge-green">التكلفة النهائية تطابق الميزانية بدقة 100%</span></td>
+                </tr>
+                <tr>
+                  <td><strong>مؤشر الأداء لإكمال العمل (TCPI)</strong></td><td>(BAC - EV) / (BAC - AC)</td>
+                  <td class="text-num" style="font-weight:700;">1.000</td><td>&lt;= 1.10 قابل للتحقيق</td>
+                  <td><span class="badge badge-green">كفاءة تشغيلية واقعية وقابلة للإنجاز بسلاسة</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    `;
+  } else if (repType === "rep-procurement") {
+    container.innerHTML = `
+      <div class="card" style="margin-bottom:0;">
+        ${makeReportHeader(
+          "تقرير مراقبة المشتريات ومطابقة التوريدات (Procurement & GRN Matching)",
+          "متابعة أوامر الشراء ومطابقة الاستلام المخزني مع الفواتير المالية (3-Way Matching)",
+          "Procurement 3-Way Verified",
+          "badge-blue"
+        )}
+        <div class="card-body" style="padding:20px;">
+          <div class="kpi-grid" style="margin-bottom:20px;">
+            <div class="kpi-card"><div class="kpi-header"><span class="kpi-label">أوامر الشراء المعتمدة</span></div><div class="kpi-value text-num">12 PO</div><div class="kpi-footer">بقيمة 412,500 ر.س</div></div>
+            <div class="kpi-card green"><div class="kpi-header"><span class="kpi-label">المستلم بالموقع (GRN)</span></div><div class="kpi-value text-num">98.5%</div><div class="kpi-footer">مطابقة الاستلام</div></div>
+            <div class="kpi-card amber"><div class="kpi-header"><span class="kpi-label">توريدات قيد الشحن</span></div><div class="kpi-value text-num">2 شحنة</div><div class="kpi-footer">تصل خلال 48 ساعة</div></div>
+            <div class="kpi-card green"><div class="kpi-header"><span class="kpi-label">نسبة التطابق المالي</span></div><div class="kpi-value text-num">100%</div><div class="kpi-footer">بدون فروق تسعيرية</div></div>
+          </div>
+
+          <div class="table-wrapper">
+            <table>
+              <thead><tr>
+                <th>رقم أمر الشراء</th><th>المورد التجاري</th><th>المادة / الخامة</th>
+                <th class="text-num">الكمية المطلوبة</th><th class="text-num">الكمية المستلمة</th>
+                <th class="text-num">القيمة (ر.س)</th><th>رقم إشعار الاستلام</th><th>حالة المطابقة الثلاثية</th>
+              </tr></thead>
+              <tbody>
+                <tr>
+                  <td><strong style="color:var(--teal)">PO-2026-001</strong></td>
+                  <td>شركة أسمنت ينبع والمدينة المتحدة</td>
+                  <td>أسمنت بورتلاندي عادي 50 كجم</td>
+                  <td class="text-num">1,000 كيس</td><td class="text-num">1,000 كيس</td>
+                  <td class="text-num">16,500.00</td><td>GRN-01</td>
+                  <td><span class="badge badge-green">مطابق بالكامل 100%</span></td>
+                </tr>
+                <tr>
+                  <td><strong style="color:var(--teal)">PO-2026-002</strong></td>
+                  <td>شركة هضاب الخليج للسيراميك</td>
+                  <td>سيراميك أرضيات حمامات ومطابخ 40×40</td>
+                  <td class="text-num">650 م²</td><td class="text-num">650 م²</td>
+                  <td class="text-num">20,800.00</td><td>GRN-02</td>
+                  <td><span class="badge badge-green">مطابق بالكامل 100%</span></td>
+                </tr>
+                <tr>
+                  <td><strong style="color:var(--teal)">PO-2026-003</strong></td>
+                  <td>شركة دهانات الجزيرة الصناعية</td>
+                  <td>دهان مائي داخلي الجزيرة جرين</td>
+                  <td class="text-num">80 برميل</td><td class="text-num">80 برميل</td>
+                  <td class="text-num">16,800.00</td><td>GRN-03</td>
+                  <td><span class="badge badge-green">مطابق بالكامل 100%</span></td>
+                </tr>
+                <tr>
+                  <td><strong style="color:var(--teal)">PO-2026-004</strong></td>
+                  <td>شركة سابك لحديد التسليح</td>
+                  <td>حديد تسليح عالي المقاومة گريد 60</td>
+                  <td class="text-num">45 طن</td><td class="text-num">45 طن</td>
+                  <td class="text-num">128,250.00</td><td>GRN-04</td>
+                  <td><span class="badge badge-green">مطابق بالكامل 100%</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    `;
+  } else if (repType === "rep-subcontracts") {
+    container.innerHTML = `
+      <div class="card" style="margin-bottom:0;">
+        ${makeReportHeader(
+          "تقرير التزامات ومستخلصات مقاولي الباطن (Subcontractor Commitments & Retention)",
+          "متابعة العقود المبرمة مع مقاولي الباطن، الأعمال المقاسة، وحسم محتجز الضمان (10%)",
+          "Subcontracts Register",
+          "badge-purple"
+        )}
+        <div class="card-body" style="padding:20px;">
+          <div class="kpi-grid" style="margin-bottom:20px;">
+            <div class="kpi-card"><div class="kpi-header"><span class="kpi-label">إجمالي التزامات العقود</span></div><div class="kpi-value text-num">152,400</div><div class="kpi-footer">ر.س · 5 مقاولي باطن</div></div>
+            <div class="kpi-card green"><div class="kpi-header"><span class="kpi-label">الأعمال المنفذة المعتمدة</span></div><div class="kpi-value text-num">98,250</div><div class="kpi-footer">ر.س · نسبة 64.5%</div></div>
+            <div class="kpi-card amber"><div class="kpi-header"><span class="kpi-label">محتجز الضمان المحتجز (10%)</span></div><div class="kpi-value text-num">9,825</div><div class="kpi-footer">ر.س · يُفرج عنه بعد سنة الضمان</div></div>
+            <div class="kpi-card" style="border-top:4px solid var(--blue);"><div class="kpi-header"><span class="kpi-label">صافي المدفوع للمقاولين</span></div><div class="kpi-value text-num">88,425</div><div class="kpi-footer">ر.س · بعد حسم المحتجز</div></div>
+          </div>
+
+          <div class="table-wrapper">
+            <table>
+              <thead><tr>
+                <th>رقم العقد</th><th>مقاول الباطن</th><th>حزمة الأعمال</th>
+                <th class="text-num">قيمة العقد</th><th class="text-num">المنفذ المعتمد</th>
+                <th class="text-num">محتجز 10%</th><th class="text-num">الصافي المصروف</th><th class="text-center">حالة العقد</th>
+              </tr></thead>
+              <tbody>
+                <tr>
+                  <td><strong style="color:var(--purple)">SUB-01</strong></td>
+                  <td>شركة رواد العزل المتطورة (Waterseal)</td>
+                  <td>عزل الأسطح والمناطق الرطبة</td>
+                  <td class="text-num">41,850.00</td><td class="text-num">41,850.00</td>
+                  <td class="text-num">4,185.00</td><td class="text-num">37,665.00</td>
+                  <td class="text-center"><span class="badge badge-green">مكتمل ومسلّم</span></td>
+                </tr>
+                <tr>
+                  <td><strong style="color:var(--purple)">SUB-02</strong></td>
+                  <td>مصنع البراك للألمنيوم والواجهات</td>
+                  <td>شبابيك سرايا وواجهات زجاجية</td>
+                  <td class="text-num">112,600.00</td><td class="text-num">45,000.00</td>
+                  <td class="text-num">4,500.00</td><td class="text-num">40,500.00</td>
+                  <td class="text-center"><span class="badge badge-blue">قيد التركيب بالموقع</span></td>
+                </tr>
+                <tr>
+                  <td><strong style="color:var(--purple)">SUB-03</strong></td>
+                  <td>مؤسسة إتقان الجبس والديكور</td>
+                  <td>أسقف معلقة جبس بورد مقاوم رطوبة</td>
+                  <td class="text-num">50,200.00</td><td class="text-num">11,400.00</td>
+                  <td class="text-num">1,140.00</td><td class="text-num">10,260.00</td>
+                  <td class="text-center"><span class="badge badge-amber">جاري التثبيت</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    `;
+  } else if (repType === "rep-cashflow") {
+    container.innerHTML = `
+      <div class="card" style="margin-bottom:0;">
+        ${makeReportHeader(
+          "تقرير التدفقات النقدية التقديرية والفعلية (Project Cash Flow Forecast vs Actual)",
+          "بيان التدفقات الداخلة من مستخلصات المالك والتدفقات الخارجة للمواد والأجور والمقاولين والمتبقي",
+          "Cash Flow Position: Positive",
+          "badge-green"
+        )}
+        <div class="card-body" style="padding:20px;">
+          <div class="kpi-grid" style="margin-bottom:20px; grid-template-columns:repeat(4, 1fr);">
+            <div class="kpi-card green"><div class="kpi-header"><span class="kpi-label">إجمالي المقبوضات (Inflow)</span></div><div class="kpi-value text-num">137,000</div><div class="kpi-footer">ر.س · شامل الدفعة المقدمة</div></div>
+            <div class="kpi-card amber"><div class="kpi-header"><span class="kpi-label">إجمالي المدفوعات (Outflow)</span></div><div class="kpi-value text-num">79,880</div><div class="kpi-footer">ر.س · مشتريات وأجور ومقاولين</div></div>
+            <div class="kpi-card green" style="border-top:4px solid var(--green);"><div class="kpi-header"><span class="kpi-label">صافي الفائض النقدي</span></div><div class="kpi-value text-num" style="color:var(--green)">+57,120</div><div class="kpi-footer">ر.س · رصيد تشغيلي إيجابي</div></div>
+            <div class="kpi-card" style="border-top:4px solid var(--blue);"><div class="kpi-header"><span class="kpi-label">مؤشر السيولة للمشروع</span></div><div class="kpi-value text-num" style="color:var(--blue)">1.71</div><div class="kpi-footer">معدل تغطية التدفقات النقدية</div></div>
+          </div>
+
+          <div class="table-wrapper">
+            <table>
+              <thead><tr>
+                <th>الشهر</th>
+                <th class="text-num">التدفق الداخل المقدر</th><th class="text-num">التدفق الداخل الفعلي</th>
+                <th class="text-num">التدفق الخارج المقدر</th><th class="text-num">التدفق الخارج الفعلي</th>
+                <th class="text-num">صافي التدفق الشهري</th><th class="text-num">الرصيد التراكمي (Cash Balance)</th>
+              </tr></thead>
+              <tbody>
+                <tr>
+                  <td><strong>يناير 2026 (الدفعة المقدمة)</strong></td>
+                  <td class="text-num">18,373.40</td><td class="text-num">18,373.40</td>
+                  <td class="text-num">12,000.00</td><td class="text-num">9,500.00</td>
+                  <td class="text-num" style="color:var(--green);">+8,873.40</td>
+                  <td class="text-num" style="font-weight:700;">8,873.40</td>
+                </tr>
+                <tr>
+                  <td><strong>فبراير 2026</strong></td>
+                  <td class="text-num">25,000.00</td><td class="text-num">25,000.00</td>
+                  <td class="text-num">22,000.00</td><td class="text-num">18,400.00</td>
+                  <td class="text-num" style="color:var(--green);">+6,600.00</td>
+                  <td class="text-num" style="font-weight:700;">15,473.40</td>
+                </tr>
+                <tr>
+                  <td><strong>مارس 2026 (مستخلص 01)</strong></td>
+                  <td class="text-num">45,000.00</td><td class="text-num">47,620.00</td>
+                  <td class="text-num">32,000.00</td><td class="text-num">29,800.00</td>
+                  <td class="text-num" style="color:var(--green);">+17,820.00</td>
+                  <td class="text-num" style="font-weight:700;">33,293.40</td>
+                </tr>
+                <tr>
+                  <td><strong>أبريل 2026</strong></td>
+                  <td class="text-num">45,000.00</td><td class="text-num">46,006.60</td>
+                  <td class="text-num">28,000.00</td><td class="text-num">22,180.00</td>
+                  <td class="text-num" style="color:var(--green);">+23,826.60</td>
+                  <td class="text-num" style="font-weight:700; color:var(--green);">57,120.00</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    `;
+  } else if (repType === "rep-suppliers") {
+    container.innerHTML = `
+      <div class="card" style="margin-bottom:0;">
+        ${makeReportHeader(
+          "تقرير مقارنة أسعار الموردين والوفر المالي المحقق (Supplier Price Benchmark & Savings)",
+          "تحليل أفضل عروض الأسعار المسجلة في قاعدة Master Data وتحديد المورد الأرخص والوفر الإجمالي",
+          "SSOT Price Benchmarking",
+          "badge-green"
+        )}
+        <div class="card-body" style="padding:20px;">
+          <div class="kpi-grid" style="margin-bottom:20px; grid-template-columns:repeat(4, 1fr);">
+            <div class="kpi-card green"><div class="kpi-header"><span class="kpi-label">إجمالي الوفر المالي المحقق</span></div><div class="kpi-value text-num" style="color:var(--green)">18,450</div><div class="kpi-footer">ر.س · باختيار أقل سعر توريد</div></div>
+            <div class="kpi-card"><div class="kpi-header"><span class="kpi-label">عدد المواد المقارنة</span></div><div class="kpi-value text-num">30 صنف</div><div class="kpi-footer">خامات ومواد إنشائية</div></div>
+            <div class="kpi-card" style="border-top:4px solid var(--teal);"><div class="kpi-header"><span class="kpi-label">متوسط نسبة التوفير</span></div><div class="kpi-value text-num" style="color:var(--teal)">9.8%</div><div class="kpi-footer">مقارنة بمتوسط السوق</div></div>
+            <div class="kpi-card" style="border-top:4px solid var(--navy);"><div class="kpi-header"><span class="kpi-label">المورد الأكثر تنافسية</span></div><div class="kpi-value" style="font-size:16px; font-weight:800; color:var(--navy);">أسمنت ينبع</div><div class="kpi-footer">حائز على 65% من البنود</div></div>
+          </div>
+
+          <div class="table-wrapper">
+            <table>
+              <thead><tr>
+                <th>المادة الخام</th><th>الوحدة</th>
+                <th class="text-num">أقل سعر (🟩)</th>
+                <th class="text-num">ثاني أقل سعر (🟨)</th>
+                <th class="text-num">أعلى سعر (🟥)</th>
+                <th class="text-num">فرق السعر (الوفر)</th>
+                <th>المورد الفائز الموصى به</th>
+                <th class="text-center">تقييم المورد</th>
+              </tr></thead>
+              <tbody>
+                <tr>
+                  <td><strong>أسمنت بورتلاندي عادي 50 كجم</strong></td><td>كيس</td>
+                  <td class="text-num" style="background:#D1FAE5; font-weight:800; color:#065F46;">16.50</td>
+                  <td class="text-num" style="background:#FEF3C7; color:#92400E;">17.50</td>
+                  <td class="text-num" style="background:#FEE2E2; color:#991B1B;">19.00</td>
+                  <td class="text-num" style="font-weight:700; color:var(--green);">2.50 ر.س (13.1%)</td>
+                  <td><strong>شركة أسمنت ينبع والمدينة</strong></td>
+                  <td class="text-center"><span class="badge badge-green">A+ معتمد</span></td>
+                </tr>
+                <tr>
+                  <td><strong>رمل أحمر مغسول ناعم</strong></td><td>م³</td>
+                  <td class="text-num" style="background:#D1FAE5; font-weight:800; color:#065F46;">42.00</td>
+                  <td class="text-num" style="background:#FEF3C7; color:#92400E;">45.00</td>
+                  <td class="text-num" style="background:#FEE2E2; color:#991B1B;">48.00</td>
+                  <td class="text-num" style="font-weight:700; color:var(--green);">6.00 ر.س (12.5%)</td>
+                  <td><strong>مؤسسة الرمال الحديثة</strong></td>
+                  <td class="text-center"><span class="badge badge-green">A معتمد</span></td>
+                </tr>
+                <tr>
+                  <td><strong>حديد تسليح سابك گريد 60</strong></td><td>طن</td>
+                  <td class="text-num" style="background:#D1FAE5; font-weight:800; color:#065F46;">2,850.00</td>
+                  <td class="text-num" style="background:#FEF3C7; color:#92400E;">2,920.00</td>
+                  <td class="text-num" style="background:#FEE2E2; color:#991B1B;">3,050.00</td>
+                  <td class="text-num" style="font-weight:700; color:var(--green);">200.00 ر.س (6.5%)</td>
+                  <td><strong>شركة سابك للحديد والصلب</strong></td>
+                  <td class="text-center"><span class="badge badge-green">AAA معتمد</span></td>
+                </tr>
+                <tr>
+                  <td><strong>دهان مائي داخلي نصف لمعة</strong></td><td>برميل</td>
+                  <td class="text-num" style="background:#D1FAE5; font-weight:800; color:#065F46;">210.00</td>
+                  <td class="text-num" style="background:#FEF3C7; color:#92400E;">225.00</td>
+                  <td class="text-num" style="background:#FEE2E2; color:#991B1B;">240.00</td>
+                  <td class="text-num" style="font-weight:700; color:var(--green);">30.00 ر.س (12.5%)</td>
+                  <td><strong>شركة دهانات الجزيرة</strong></td>
+                  <td class="text-center"><span class="badge badge-green">A معتمد</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    `;
   }
 }
 
@@ -1089,4 +1596,463 @@ function filterContractorsMatrix() {
     `;
     tbodyCon.appendChild(tr);
   });
+}
+
+// =============================================================================
+// SECTION: COST CONTROL — EVM REGISTER
+// =============================================================================
+function renderCostControlTable() {
+  const tbody = document.getElementById("tbl-cost-control-body");
+  if (!tbody) return;
+  tbody.innerHTML = "";
+  const data = MimarERP.costControlRegister || [];
+  if (!data.length) return;
+
+  let totBAC=0,totPV=0,totEV=0,totAC=0,totEAC=0,totCV=0;
+
+  data.forEach(r => {
+    const cpi = r.ac > 0 ? r.ev / r.ac : 1;
+    const spi = r.pv > 0 ? r.ev / r.pv : 1;
+    const eac = cpi > 0 ? r.bac / cpi : r.bac;
+    const cv  = r.ev - r.ac;
+    totBAC+=r.bac; totPV+=r.pv; totEV+=r.ev; totAC+=r.ac; totEAC+=eac; totCV+=cv;
+
+    const cpiColor = cpi >= 1 ? "var(--green)" : (cpi >= 0.9 ? "var(--amber)" : "var(--red)");
+    const spiColor = spi >= 1 ? "var(--green)" : (spi >= 0.9 ? "var(--amber)" : "var(--red)");
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td><strong style="color:var(--teal)">${r.wbs_code}</strong></td>
+      <td>${r.description}</td>
+      <td class="text-num">${r.bac.toLocaleString("ar-SA")}</td>
+      <td class="text-num">${r.pv.toLocaleString("ar-SA")}</td>
+      <td class="text-num">${r.ev.toLocaleString("ar-SA")}</td>
+      <td class="text-num">${r.ac.toLocaleString("ar-SA")}</td>
+      <td class="text-num" style="font-weight:800;color:${cpiColor}">${cpi.toFixed(2)}</td>
+      <td class="text-num" style="font-weight:800;color:${spiColor}">${spi.toFixed(2)}</td>
+      <td class="text-num">${eac.toLocaleString("ar-SA",{maximumFractionDigits:0})}</td>
+      <td class="text-num" style="color:${cv>=0?"var(--green)":"var(--red)"}">${cv.toLocaleString("ar-SA",{maximumFractionDigits:0})}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+
+  // Update KPI cards
+  const fmt = (n) => (n/1000000).toFixed(2) + " م";
+  const setEl = (id, val) => { const el = document.getElementById(id); if(el) el.textContent = val; };
+  setEl("cc-kpi-bac", fmt(totBAC));
+  setEl("cc-kpi-ac",  fmt(totAC));
+  const projCPI = totAC>0 ? totEV/totAC : 1;
+  const projSPI = totPV>0 ? totEV/totPV : 1;
+  const projEAC = projCPI>0 ? totBAC/projCPI : totBAC;
+  const projVAC = totBAC - projEAC;
+  setEl("cc-kpi-cpi", projCPI.toFixed(3));
+  setEl("cc-kpi-spi", projSPI.toFixed(3));
+  setEl("cc-kpi-eac", fmt(projEAC));
+  setEl("cc-kpi-vac", fmt(projVAC));
+
+  // Footer totals
+  setEl("cc-foot-bac", totBAC.toLocaleString("ar-SA",{maximumFractionDigits:0}));
+  setEl("cc-foot-pv",  totPV.toLocaleString("ar-SA",{maximumFractionDigits:0}));
+  setEl("cc-foot-ev",  totEV.toLocaleString("ar-SA",{maximumFractionDigits:0}));
+  setEl("cc-foot-ac",  totAC.toLocaleString("ar-SA",{maximumFractionDigits:0}));
+  setEl("cc-foot-cpi", projCPI.toFixed(3));
+  setEl("cc-foot-spi", projSPI.toFixed(3));
+  setEl("cc-foot-eac", projEAC.toLocaleString("ar-SA",{maximumFractionDigits:0}));
+  setEl("cc-foot-cv",  totCV.toLocaleString("ar-SA",{maximumFractionDigits:0}));
+}
+
+// =============================================================================
+// SECTION: CRM — OPPORTUNITY PIPELINE
+// =============================================================================
+function renderCRMTable() {
+  const tbody = document.getElementById("tbl-crm-body");
+  if (!tbody) return;
+  tbody.innerHTML = "";
+  const data = MimarERP.crmOpportunities || [];
+
+  const stageCount = {lead:0, qualification:0, proposal:0, negotiation:0, closing:0};
+  const stageBadge = {
+    "عميل محتمل":   "badge-blue",
+    "تأهيل":         "badge-blue",
+    "عرض":           "badge-amber",
+    "تفاوض":         "badge-purple",
+    "إغلاق":         "badge-green",
+    "خسارة":         "badge-red"
+  };
+
+  data.forEach(r => {
+    // Count pipeline stages
+    if(r.stage==="عميل محتمل") stageCount.lead++;
+    else if(r.stage==="تأهيل") stageCount.qualification++;
+    else if(r.stage==="عرض") stageCount.proposal++;
+    else if(r.stage==="تفاوض") stageCount.negotiation++;
+    else if(r.stage==="إغلاق") stageCount.closing++;
+
+    const badge = stageBadge[r.stage] || "badge-blue";
+    const probColor = r.win_probability >= 70 ? "var(--green)" : (r.win_probability >= 40 ? "var(--amber)" : "var(--red)");
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td><strong style="color:var(--teal)">${r.opp_id}</strong></td>
+      <td><strong>${r.client_name}</strong></td>
+      <td>${r.project_name}</td>
+      <td class="text-num">${Number(r.estimated_value).toLocaleString("ar-SA")}</td>
+      <td><span class="badge ${badge}">${r.stage}</span></td>
+      <td class="text-num" style="font-weight:800;color:${probColor}">${r.win_probability}%</td>
+      <td>${r.owner}</td>
+      <td>${r.expected_close}</td>
+      <td><span class="badge ${r.status==="نشط"?"badge-green":"badge-red"}">${r.status}</span></td>
+    `;
+    tbody.appendChild(tr);
+  });
+
+  // Update pipeline stage counters
+  const setEl = (id, val) => { const el = document.getElementById(id); if(el) el.textContent = val; };
+  setEl("crm-stage-lead",      stageCount.lead);
+  setEl("crm-stage-qualify",   stageCount.qualification);
+  setEl("crm-stage-proposal",  stageCount.proposal);
+  setEl("crm-stage-negotiate", stageCount.negotiation);
+  setEl("crm-stage-close",     stageCount.closing);
+}
+
+// =============================================================================
+// SECTION: TENDERS — TENDER REGISTER
+// =============================================================================
+function renderTendersTable() {
+  const tbody = document.getElementById("tbl-tenders-body");
+  if (!tbody) return;
+  tbody.innerHTML = "";
+  const data = MimarERP.tendersMaster || [];
+
+  let active=0, submitted=0, won=0;
+
+  data.forEach(r => {
+    if(r.status==="قيد الدراسة") active++;
+    if(r.status==="مقدمة") submitted++;
+    if(r.award_result==="رابح") won++;
+
+    const statusBadge = r.status==="مقدمة"?"badge-amber":r.status==="قيد الدراسة"?"badge-blue":"badge-green";
+    const awardBadge  = r.award_result==="رابح"?"badge-green":r.award_result==="خاسر"?"badge-red":"badge-blue";
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td><strong style="color:var(--teal)">${r.tender_id}</strong></td>
+      <td><strong>${r.project_name}</strong></td>
+      <td>${r.owner}</td>
+      <td><span class="badge badge-blue">${r.contract_type}</span></td>
+      <td class="text-num">${Number(r.bid_value).toLocaleString("ar-SA")}</td>
+      <td>${r.deadline}</td>
+      <td><span class="badge ${statusBadge}">${r.status}</span></td>
+      <td><span class="badge ${awardBadge}">${r.award_result}</span></td>
+    `;
+    tbody.appendChild(tr);
+  });
+
+  const total = submitted + won;
+  const winRate = total > 0 ? Math.round((won / total) * 100) : 0;
+  const setEl = (id, val) => { const el = document.getElementById(id); if(el) el.textContent = val; };
+  setEl("tndr-kpi-active",    active);
+  setEl("tndr-kpi-submitted", submitted);
+  setEl("tndr-kpi-won",       won);
+  setEl("tndr-kpi-win-rate",  winRate + "%");
+}
+
+// =============================================================================
+// SECTION: HR — EMPLOYEE REGISTER
+// =============================================================================
+function renderHRTable() {
+  const tbody = document.getElementById("tbl-hr-body");
+  if (!tbody) return;
+  tbody.innerHTML = "";
+  const data = MimarERP.hrEmployees || [];
+
+  let totalEmp = data.length;
+  let activeEmp = data.filter(e => e.status === "نشط").length;
+  let onLeave   = data.filter(e => e.status === "إجازة").length;
+  let expiring  = data.filter(e => {
+    if (!e.contract_end) return false;
+    const end = new Date(e.contract_end);
+    const now = new Date();
+    const diff = (end - now) / (1000*60*60*24);
+    return diff > 0 && diff <= 30;
+  }).length;
+
+  data.forEach(r => {
+    const statusBadge = r.status==="نشط"?"badge-green":r.status==="إجازة"?"badge-amber":"badge-red";
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td><strong style="color:var(--teal)">${r.emp_id}</strong></td>
+      <td><strong>${r.name}</strong></td>
+      <td>${r.title}</td>
+      <td>${r.department}</td>
+      <td>${r.project}</td>
+      <td><span class="badge badge-blue">${r.contract_type}</span></td>
+      <td>${r.hire_date}</td>
+      <td class="text-num">${Number(r.basic_salary).toLocaleString("ar-SA")} ر.س</td>
+      <td><span class="badge ${statusBadge}">${r.status}</span></td>
+    `;
+    tbody.appendChild(tr);
+  });
+
+  const setEl = (id, val) => { const el = document.getElementById(id); if(el) el.textContent = val; };
+  setEl("hr-kpi-total",    totalEmp);
+  setEl("hr-kpi-active",   activeEmp);
+  setEl("hr-kpi-leave",    onLeave);
+  setEl("hr-kpi-expiring", expiring);
+}
+
+// =============================================================================
+// SECTION: PAYROLL — SALARY REGISTER
+// =============================================================================
+function renderPayrollTable() {
+  const tbody = document.getElementById("tbl-payroll-body");
+  if (!tbody) return;
+  tbody.innerHTML = "";
+  const data = MimarERP.payrollRecords || [];
+
+  let totBasic=0, totAllowances=0, totDeductions=0, totNet=0;
+
+  data.forEach(r => {
+    const allowances = (r.housing||0) + (r.transport||0) + (r.performance||0);
+    const net = r.basic_salary + allowances - (r.deductions||0);
+    totBasic      += r.basic_salary;
+    totAllowances += allowances;
+    totDeductions += (r.deductions||0);
+    totNet        += net;
+
+    const statusBadge = r.payroll_status==="مدفوع"?"badge-green":"badge-amber";
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td><strong>${r.name}</strong></td>
+      <td>${r.department}</td>
+      <td class="text-num">${Number(r.basic_salary).toLocaleString("ar-SA")}</td>
+      <td class="text-num">${Number(r.housing||0).toLocaleString("ar-SA")}</td>
+      <td class="text-num">${Number(r.transport||0).toLocaleString("ar-SA")}</td>
+      <td class="text-num">${Number(r.performance||0).toLocaleString("ar-SA")}</td>
+      <td class="text-num" style="color:var(--red)">${Number(r.deductions||0).toLocaleString("ar-SA")}</td>
+      <td class="text-num" style="font-weight:800;color:var(--green)">${net.toLocaleString("ar-SA")}</td>
+      <td><span class="badge ${statusBadge}">${r.payroll_status}</span></td>
+    `;
+    tbody.appendChild(tr);
+  });
+
+  // Totals row
+  const tfoot = document.getElementById("tbl-payroll-foot");
+  if (tfoot) {
+    tfoot.innerHTML = `
+      <tr style="background:#E2E8F0;font-weight:800;">
+        <td colspan="2" style="text-align:center;">الإجمالي الكلي</td>
+        <td class="text-num">${totBasic.toLocaleString("ar-SA")}</td>
+        <td class="text-num" colspan="3">${totAllowances.toLocaleString("ar-SA")}</td>
+        <td class="text-num" style="color:var(--red)">${totDeductions.toLocaleString("ar-SA")}</td>
+        <td class="text-num" style="color:var(--green)">${totNet.toLocaleString("ar-SA")}</td>
+        <td></td>
+      </tr>
+    `;
+  }
+
+  const fmt = (n) => (n/1000).toFixed(1) + "K";
+  const setEl = (id, val) => { const el = document.getElementById(id); if(el) el.textContent = val; };
+  setEl("pay-kpi-basic",      fmt(totBasic));
+  setEl("pay-kpi-allowances", fmt(totAllowances));
+  setEl("pay-kpi-deductions", fmt(totDeductions));
+  setEl("pay-kpi-net",        fmt(totNet));
+}
+
+// =============================================================================
+// SECTION: FINANCE TABS
+// =============================================================================
+function switchFinanceTab(btn, tabId) {
+  btn.parentElement.querySelectorAll(".tab-link").forEach(l => l.classList.remove("active"));
+  document.querySelectorAll("#view-finance .tab-content").forEach(c => c.classList.remove("active"));
+  btn.classList.add("active");
+  const tab = document.getElementById(tabId);
+  if (tab) tab.classList.add("active");
+}
+
+function renderFinanceTabs() {
+  renderFinanceBillings();
+  renderFinanceAP();
+  renderFinanceBudget();
+}
+
+function renderFinanceBillings() {
+  const tbody = document.getElementById("tbl-finance-billings-body");
+  if (!tbody) return;
+  tbody.innerHTML = "";
+  const data = MimarERP.financeBillings || [];
+  let totSubmitted=0, totCollected=0;
+  data.forEach(r => {
+    totSubmitted += r.amount;
+    totCollected += r.collected || 0;
+    const statusBadge = r.status==="محصل"?"badge-green":r.status==="موافق عليه"?"badge-blue":"badge-amber";
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td><strong style="color:var(--teal)">${r.billing_id}</strong></td>
+      <td>${r.project}</td>
+      <td>${r.owner}</td>
+      <td class="text-num">${Number(r.amount).toLocaleString("ar-SA")}</td>
+      <td>${r.submission_date}</td>
+      <td>${r.approval_date || "—"}</td>
+      <td><span class="badge ${statusBadge}">${r.status}</span></td>
+      <td class="text-num" style="color:var(--green)">${Number(r.collected||0).toLocaleString("ar-SA")}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+  const setEl = (id, val) => { const el = document.getElementById(id); if(el) el.textContent = val; };
+  setEl("fin-kpi-submitted", (totSubmitted/1000000).toFixed(2) + " م");
+  setEl("fin-kpi-collected", (totCollected/1000000).toFixed(2) + " م");
+  const outstanding = totSubmitted - totCollected;
+  setEl("fin-kpi-outstanding", (outstanding/1000000).toFixed(2) + " م");
+}
+
+function renderFinanceAP() {
+  const tbody = document.getElementById("tbl-finance-ap-body");
+  if (!tbody) return;
+  tbody.innerHTML = "";
+  const data = MimarERP.financeAP || [];
+  data.forEach(r => {
+    const isOverdue = r.status === "متأخر";
+    const statusBadge = r.status==="مدفوع"?"badge-green":isOverdue?"badge-red":"badge-amber";
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td><strong style="color:var(--teal)">${r.invoice_id}</strong></td>
+      <td>${r.supplier}</td>
+      <td class="text-num">${Number(r.amount).toLocaleString("ar-SA")}</td>
+      <td>${r.due_date}</td>
+      <td><span class="badge ${statusBadge}">${r.status}</span></td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+function renderFinanceBudget() {
+  const tbody = document.getElementById("tbl-finance-budget-body");
+  if (!tbody) return;
+  tbody.innerHTML = "";
+  const data = MimarERP.financeBudget || [];
+  data.forEach(r => {
+    const pct = r.budget > 0 ? ((r.spent / r.budget)*100).toFixed(1) : 0;
+    const remaining = r.budget - r.spent;
+    const barColor = pct >= 90 ? "var(--red)" : pct >= 70 ? "var(--amber)" : "var(--green)";
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td><strong>${r.item}</strong></td>
+      <td class="text-num">${Number(r.budget).toLocaleString("ar-SA")}</td>
+      <td class="text-num">${Number(r.spent).toLocaleString("ar-SA")}</td>
+      <td class="text-num" style="color:${remaining>=0?"var(--green)":"var(--red)"}">${Number(remaining).toLocaleString("ar-SA")}</td>
+      <td>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <div style="flex:1;height:8px;background:#E2E8F0;border-radius:4px;">
+            <div style="width:${Math.min(pct,100)}%;height:100%;background:${barColor};border-radius:4px;"></div>
+          </div>
+          <span style="font-weight:700;color:${barColor};min-width:40px;">${pct}%</span>
+        </div>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+// =============================================================================
+// SECTION: EQUIPMENT — FLEET MANAGEMENT
+// =============================================================================
+function renderEquipmentTable() {
+  const tbody = document.getElementById("tbl-equipment-body");
+  if (!tbody) return;
+  tbody.innerHTML = "";
+  const data = MimarERP.equipmentMaster || [];
+
+  let activeCount=0, maintenanceCount=0, idleCount=0;
+  data.forEach(r => {
+    if(r.status==="تشغيل") activeCount++;
+    else if(r.status==="صيانة") maintenanceCount++;
+    else idleCount++;
+  });
+
+  data.forEach(r => {
+    const statusBadge = r.status==="تشغيل"?"badge-green":r.status==="صيانة"?"badge-amber":"badge-red";
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td><strong style="color:var(--teal)">${r.equip_id}</strong></td>
+      <td><strong>${r.name}</strong></td>
+      <td>${r.type}</td>
+      <td>${r.model}</td>
+      <td>${r.project}</td>
+      <td class="text-num">${Number(r.operating_hours).toLocaleString("ar-SA")}</td>
+      <td class="text-num">${Number(r.maintenance_hours).toLocaleString("ar-SA")}</td>
+      <td class="text-num">${Number(r.daily_cost).toLocaleString("ar-SA")} ر.س</td>
+      <td><span class="badge ${statusBadge}">${r.status}</span></td>
+      <td>${r.next_maintenance}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+
+  const setEl = (id, val) => { const el = document.getElementById(id); if(el) el.textContent = val; };
+  setEl("equip-kpi-total",       data.length);
+  setEl("equip-kpi-active",      activeCount);
+  setEl("equip-kpi-maintenance", maintenanceCount);
+  setEl("equip-kpi-idle",        idleCount);
+}
+
+// =============================================================================
+// UPDATE renderAllViews to include new modules
+// =============================================================================
+const _origRenderAll = window.renderAllViews;
+window.renderAllViews = function() {
+  if (typeof _origRenderAll === "function") _origRenderAll();
+  renderCostControlTable();
+  renderCRMTable();
+  renderTendersTable();
+  renderHRTable();
+  renderPayrollTable();
+  renderFinanceTabs();
+  renderEquipmentTable();
+};
+
+
+// =============================================================================
+// UNIVERSAL EXPORT UTILITY (Arabic UTF-8 BOM CSV / Excel Compatible)
+// =============================================================================
+function exportTableToExcel(tableId, defaultFilename = "ERP-Export.csv") {
+  const table = typeof tableId === 'string' ? document.getElementById(tableId) : tableId;
+  if (!table) {
+    showToast("لم يتم العثور على جدول بيانات للتصدير.");
+    return;
+  }
+
+  let csv = [];
+  const rows = table.querySelectorAll("tr");
+
+  for (let i = 0; i < rows.length; i++) {
+    const row = [];
+    const cols = rows[i].querySelectorAll("th, td");
+    for (let j = 0; j < cols.length; j++) {
+      let text = (cols[j].innerText || "").replace(/\r?\n|\r/g, " ").replace(/"/g, '""').trim();
+      row.push('"' + text + '"');
+    }
+    if (row.length > 0) csv.push(row.join(","));
+  }
+
+  const csvString = "\uFEFF" + csv.join("\r\n");
+  const blob = new Blob([csvString], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = defaultFilename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+
+  showToast("تم تصدير الجدول بنجاح بصيغة متوافقة مع Excel: " + defaultFilename);
+}
+
+function exportCurrentViewTable() {
+  const activeView = document.querySelector(".page-view.active");
+  if (!activeView) return;
+  const table = activeView.querySelector("table");
+  if (!table) {
+    showToast("لا يوجد جدول بيانات قابل للتصدير في الشاشة الحالية.");
+    return;
+  }
+  const viewId = activeView.id.replace("view-", "");
+  exportTableToExcel(table, `Mimar-ERP-${viewId}.csv`);
 }

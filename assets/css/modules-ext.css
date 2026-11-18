@@ -1,0 +1,111 @@
+
+/* ==========================================================================
+   MODULES.CSS v2 — Extended Styles (Responsive, New Modules, Print)
+   ========================================================================== */
+
+/* --- EVM / Cost Control Color Coding --- */
+.cpi-good  { color: var(--green) !important; font-weight: 800; }
+.cpi-warn  { color: var(--amber) !important; font-weight: 800; }
+.cpi-bad   { color: var(--red)   !important; font-weight: 800; }
+
+/* --- Pipeline Stage Cards (CRM) --- */
+.pipeline-stages {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+.stage-card {
+  text-align: center;
+  border-radius: var(--radius);
+  padding: 16px;
+  background: var(--card-bg);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--line);
+  transition: transform var(--transition);
+}
+.stage-card:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
+.stage-count { font-size: 28px; font-weight: 900; }
+.stage-label { font-size: 13px; font-weight: 700; margin-top: 4px; }
+
+/* --- Equipment Status Indicators --- */
+.equip-active      { color: var(--green); font-weight: 700; }
+.equip-maintenance { color: var(--amber); font-weight: 700; }
+.equip-idle        { color: var(--red);   font-weight: 700; }
+
+/* --- Progress Bar (Budget) --- */
+.progress-bar-wrap {
+  display: flex; align-items: center; gap: 8px;
+}
+.progress-bar-bg {
+  flex: 1; height: 8px; background: #E2E8F0; border-radius: 4px; overflow: hidden;
+}
+.progress-bar-fill {
+  height: 100%; border-radius: 4px; transition: width 0.4s ease;
+}
+
+/* --- KPI Card Hover Animation --- */
+.kpi-card {
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+.kpi-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-lg);
+}
+
+/* --- Table Row Hover Improved --- */
+tr:hover td { background: rgba(0,141,218,0.03); }
+
+/* --- Responsive: Tablet (≤1200px) --- */
+@media (max-width: 1200px) {
+  .kpi-grid { grid-template-columns: repeat(3, 1fr) !important; }
+  .pipeline-stages { grid-template-columns: repeat(3, 1fr); }
+}
+
+/* --- Responsive: Mobile/Tablet (≤768px) --- */
+@media (max-width: 768px) {
+  .kpi-grid { grid-template-columns: repeat(2, 1fr) !important; }
+  .pipeline-stages { grid-template-columns: repeat(2, 1fr); }
+  .table-wrapper { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  table { min-width: 700px; }
+  .card-header { flex-direction: column; align-items: flex-start; }
+  .btn-sm { padding: 6px 10px; font-size: 11px; }
+  th, td { padding: 8px 10px; font-size: 12px; }
+}
+
+/* --- Responsive: Mobile (≤480px) --- */
+@media (max-width: 480px) {
+  .kpi-grid { grid-template-columns: 1fr !important; }
+  .pipeline-stages { grid-template-columns: 1fr; }
+  .kpi-value { font-size: 22px !important; }
+}
+
+/* ==========================================================================
+   PRINT STYLES — Professional Report Printing
+   ========================================================================== */
+@media print {
+  .sidebar, .topbar, .btn, button, .badge-pill, .nav-item,
+  #btn-excel-sync, .context-switcher, .role-badge { display: none !important; }
+
+  .main-wrapper { margin: 0 !important; }
+  .page-container { padding: 0 !important; }
+  .page-view { display: block !important; }
+  .page-view:not(.active) { display: none !important; }
+
+  body { font-family: 'Cairo', Arial, sans-serif; font-size: 12pt; color: #000; }
+  .card { box-shadow: none; border: 1px solid #ccc; page-break-inside: avoid; }
+  .card-header { background: #F0F0F0 !important; }
+
+  table { border-collapse: collapse; width: 100%; }
+  th, td { border: 1px solid #999 !important; padding: 6px 8px; }
+  th { background: #E0E0E0 !important; color: #000 !important; }
+  thead { display: table-header-group; }
+
+  .kpi-grid { grid-template-columns: repeat(4, 1fr) !important; }
+  .kpi-card { box-shadow: none !important; border: 1px solid #ccc !important; }
+
+  h2 { font-size: 16pt; }
+  h3 { font-size: 13pt; }
+
+  @page { margin: 1.5cm; size: A4 landscape; }
+}
