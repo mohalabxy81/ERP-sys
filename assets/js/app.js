@@ -2597,7 +2597,404 @@ function generateRateAnalysisFromAI() {
   switchView('rate-analysis');
 }
 
-// Hook into existing switchView for 3D BIM rendering
+// =============================================================================
+// SUBMITTALS & SHOP DRAWINGS APPROVALS CONTROLLER (OpenConstructionERP oe_submittals)
+// =============================================================================
+function renderSubmittals() {
+  const tbody = document.getElementById("tbl-submittals-body");
+  if (!tbody) return;
+
+  const filterDisc = document.getElementById("filter-sub-discipline")?.value || "All";
+  const filterStat = document.getElementById("filter-sub-status")?.value || "All";
+
+  const submittals = MimarERP.submittalsList || [];
+  let filtered = submittals;
+  if (filterDisc !== "All") filtered = filtered.filter(s => s.discipline.includes(filterDisc));
+  if (filterStat !== "All") filtered = filtered.filter(s => s.action_code.includes(filterStat) || s.status.includes(filterStat));
+
+  tbody.innerHTML = filtered.map(s => {
+    let codeBadge = `<span class="badge badge-green">${s.action_code} - معتمد</span>`;
+    if (s.action_code.includes("B")) codeBadge = `<span class="badge badge-amber">${s.action_code} - معتمد بملاحظات</span>`;
+    if (s.action_code.includes("C") || s.action_code.includes("D")) codeBadge = `<span class="badge badge-red">${s.action_code} - مرفوض</span>`;
+
+    return `
+      <tr>
+        <td><strong>${s.id}</strong></td>
+        <td><strong>${s.title}</strong></td>
+        <td><span class="badge badge-blue">${s.type}</span></td>
+        <td>${s.discipline}</td>
+        <td>${s.subcontractor}</td>
+        <td><span class="badge badge-purple">${s.revision}</span></td>
+        <td>${codeBadge}</td>
+        <td>${s.consultant}</td>
+        <td style="max-width:260px; font-size:11px; color:#475569;">${s.notes}</td>
+        <td>
+          <button class="btn btn-outline btn-sm" onclick="cycleSubmittalCode('${s.id}')" title="تغيير كود الاعتماد"><i class="fas fa-stamp"></i> اعتماد</button>
+        </td>
+      </tr>
+    `;
+  }).join("");
+
+  // Update KPIs
+  const total = submittals.length;
+  const codeA = submittals.filter(s => s.action_code.includes("A")).length;
+  const codeB = submittals.filter(s => s.action_code.includes("B")).length;
+  const rejected = submittals.filter(s => s.action_code.includes("C") || s.action_code.includes("D")).length;
+
+  const setEl = (id, val) => { const e = document.getElementById(id); if (e) e.textContent = val; };
+  setEl("sub-kpi-total", total);
+  setEl("sub-kpi-code-a", codeA);
+  setEl("sub-kpi-code-b", codeB);
+  setEl("sub-kpi-rejected", rejected);
+}
+
+function filterSubmittals() {
+  renderSubmittals();
+}
+
+function cycleSubmittalCode(subId) {
+  const submittals = MimarERP.submittalsList || [];
+  const s = submittals.find(x => x.id === subId);
+  if (!s) return;
+
+  if (s.action_code === "Code A") {
+    s.action_code = "Code B";
+    s.action_label = "معتمد مع ملاحظات (Approved as Noted)";
+    s.status = "معتمد بملاحظات";
+  } else if (s.action_code === "Code B") {
+    s.action_code = "Code C";
+    s.action_label = "مرفوض للإعادة (Revise & Resubmit)";
+    s.status = "مرفوض للإعادة";
+  } else {
+    s.action_code = "Code A";
+    s.action_label = "معتمد دون ملاحظات (Approved)";
+    s.status = "معتمد";
+  }
+  showToast(`تم تحديث حالة الاعتماد الهندسي لـ ${subId} إلى: ${s.action_code}`);
+  renderSubmittals();
+}
+
+function openAddSubmittalModal() {
+  const m = document.getElementById("modal-add-submittal");
+  if (m) m.style.display = "flex";
+}
+
+function closeAddSubmittalModal() {
+  const m = document.getElementById("modal-add-submittal");
+  if (m) m.style.display = "none";
+}
+
+function saveNewSubmittal(e) {
+  e.preventDefault();
+  const title = document.getElementById("new-sub-title")?.value || "";
+  const type = document.getElementById("new-sub-type")?.value || "Shop Drawings";
+  const disc = document.getElementById("new-sub-disc")?.value || "إنشائي";
+  const subcon = document.getElementById("new-sub-subcon")?.value || "";
+  const consultant = document.getElementById("new-sub-consultant")?.value || "المكتب الاستشاري";
+  const notes = document.getElementById("new-sub-notes")?.value || "قيد التدقيق الفني";
+
+  const submittals = MimarERP.submittalsList || [];
+  const newId = `SUB-2026-00${submittals.length + 1}`;
+  submittals.unshift({
+    id: newId,
+    title: title,
+    type: type,
+    discipline: disc,
+    subcontractor: subcon,
+    revision: "Rev 0",
+    action_code: "Code A",
+    action_label: "معتمد دون ملاحظات (Approved)",
+    submitted_date: new Date().toISOString().split("T")[0],
+    review_date: new Date().toISOString().split("T")[0],
+    consultant: consultant,
+    status: "معتمد",
+    notes: notes
+  });
+
+  closeAddSubmittalModal();
+  showToast(`تم بنجاح تسجيل وإرسال الاعتماد الهندسي: ${newId}`);
+  renderSubmittals();
+}
+
+// =============================================================================
+// BAR BENDING SCHEDULE (BBS) CONTROLLER (OpenConstructionERP oe_rebar_schedule)
+// =============================================================================
+function renderRebarBBS() {
+  const tbody = document.getElementById("tbl-rebar-bbs-body");
+  if (!tbody) return;
+
+  const items = MimarERP.rebarBBSItems || [];
+  let totalNetKg = 0;
+  let totalScrapKg = 0;
+  let totalBarsCount = 0;
+
+  tbody.innerHTML = items.map(b => {
+    // Formula check: unit weight = D^2 / 162
+    const calcUnitWeight = Number(((b.diameter * b.diameter) / 162).toFixed(3));
+    const totalMeters = Number((b.cut_length * b.total_bars).toFixed(2));
+    const totalNetWeight = Number((totalMeters * calcUnitWeight).toFixed(2));
+    const scrapKg = Number((totalNetWeight * (b.scrap_allowance_pct / 100)).toFixed(2));
+
+    totalNetKg += totalNetWeight;
+    totalScrapKg += scrapKg;
+    totalBarsCount += b.total_bars;
+
+    return `
+      <tr>
+        <td><strong>${b.member}</strong></td>
+        <td><span class="badge badge-purple">${b.bar_mark}</span></td>
+        <td><strong>${b.shape_code}</strong></td>
+        <td><span class="badge badge-blue">Ø${b.diameter} مم</span></td>
+        <td class="text-num">${b.num_elements}</td>
+        <td class="text-num">${b.bars_per_element}</td>
+        <td class="text-num"><strong>${b.cut_length.toFixed(2)} م</strong></td>
+        <td class="text-num">${totalMeters.toFixed(1)} م</td>
+        <td class="text-num" style="color:var(--muted);">${calcUnitWeight.toFixed(3)}</td>
+        <td class="text-num" style="font-weight:800; color:var(--green);">${totalNetWeight.toLocaleString('en-US', {minimumFractionDigits:2})} كجم</td>
+        <td class="text-num"><span class="badge badge-amber">${b.scrap_allowance_pct.toFixed(1)}%</span></td>
+        <td>
+          <button class="btn btn-outline btn-sm" onclick="showToast('تم فحص تفصيلة السيخ ${b.bar_mark}')"><i class="fas fa-eye"></i></button>
+        </td>
+      </tr>
+    `;
+  }).join("");
+
+  // Update BBS KPIs
+  const netTon = (totalNetKg / 1000).toFixed(2);
+  const scrapTon = (totalScrapKg / 1000).toFixed(2);
+  const grossTon = ((totalNetKg + totalScrapKg) / 1000).toFixed(2);
+
+  const setEl = (id, val) => { const e = document.getElementById(id); if (e) e.textContent = val; };
+  setEl("bbs-kpi-net-ton", netTon);
+  setEl("bbs-kpi-scrap-ton", scrapTon);
+  setEl("bbs-kpi-gross-ton", grossTon);
+  setEl("bbs-kpi-total-bars", totalBarsCount);
+
+  calculateQuickRebar();
+}
+
+function calculateQuickRebar() {
+  const dia = parseFloat(document.getElementById("calc-rebar-dia")?.value || 16);
+  const len = parseFloat(document.getElementById("calc-rebar-len")?.value || 4.5);
+  const count = parseFloat(document.getElementById("calc-rebar-count")?.value || 50);
+  const scrap = parseFloat(document.getElementById("calc-rebar-scrap")?.value || 4.0);
+  const tonPrice = parseFloat(document.getElementById("calc-rebar-ton-price")?.value || 2850);
+
+  const unitWeight = (dia * dia) / 162;
+  const totalLen = len * count;
+  const netWeight = totalLen * unitWeight;
+  const grossWeight = netWeight * (1 + scrap / 100);
+  const cost = (grossWeight / 1000) * tonPrice;
+
+  const resEl = document.getElementById("calc-rebar-result");
+  if (resEl) {
+    resEl.textContent = `${grossWeight.toFixed(2)} كجم (${(grossWeight/1000).toFixed(3)} طن) · ${cost.toLocaleString('en-US', {maximumFractionDigits:0})} ر.س`;
+  }
+}
+
+function exportBBSReport() {
+  const items = MimarERP.rebarBBSItems || [];
+  let csv = "\uFEFFالعنصر الإنشائي,كود السيخ,شكل التفريد,القطر مم,عدد العناصر,الأسياخ لكل عنصر,إجمالي الأسياخ,طول التقطيع م,إجمالي الطول م,وزن المتر كجم,الوزن الإجمالي كجم,نسبة الهالك %\n";
+  items.forEach(b => {
+    const uw = ((b.diameter * b.diameter) / 162).toFixed(3);
+    const totLen = (b.cut_length * b.total_bars).toFixed(2);
+    const totKg = (totLen * uw).toFixed(2);
+    csv += `"${b.member}","${b.bar_mark}","${b.shape_code}",${b.diameter},${b.num_elements},${b.bars_per_element},${b.total_bars},${b.cut_length},${totLen},${uw},${totKg},${b.scrap_allowance_pct}\n`;
+  });
+
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `Mimar_Rebar_BBS_Schedule_${new Date().toISOString().split("T")[0]}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  showToast("تم تصدير جدول تفريد حديد التسليح BBS إلى ملف Excel / CSV بترميز UTF-8 بنجاح.");
+}
+
+// =============================================================================
+// RFI (REQUEST FOR INFORMATION) CONTROLLER (OpenConstructionERP oe_rfi)
+// =============================================================================
+function renderRFIList(filterStatus) {
+  const tbody = document.getElementById("tbl-rfi-list-body");
+  if (!tbody) return;
+
+  const stat = filterStatus || document.getElementById("filter-rfi-status")?.value || "All";
+  const rfiList = MimarERP.rfiList || [];
+
+  let filtered = rfiList;
+  if (stat !== "All") {
+    filtered = filtered.filter(r => r.status.includes(stat));
+  }
+
+  tbody.innerHTML = filtered.map(r => {
+    let statBadge = `<span class="badge badge-green">${r.status}</span>`;
+    if (r.status.includes("مراجعة") || r.status.includes("Review")) statBadge = `<span class="badge badge-amber">${r.status}</span>`;
+    if (r.status.includes("مفتوح") || r.status.includes("Open")) statBadge = `<span class="badge badge-purple">${r.status}</span>`;
+
+    let prioBadge = `<span class="badge badge-blue">${r.priority}</span>`;
+    if (r.priority.includes("عاجل") || r.priority.includes("Urgent")) prioBadge = `<span class="badge badge-red">${r.priority}</span>`;
+
+    return `
+      <tr>
+        <td><strong>${r.id}</strong></td>
+        <td><strong>${r.subject}</strong></td>
+        <td><span class="badge badge-teal">${r.discipline}</span></td>
+        <td style="font-size:11px; color:#475569;">${r.drawing_ref}</td>
+        <td style="max-width:240px; font-size:11px; line-height:1.4;">${r.question}</td>
+        <td style="max-width:240px; font-size:11px; color:#065F46; background:#F0FDF4; padding:6px; border-radius:4px; line-height:1.4;">${r.response}</td>
+        <td style="font-weight:700; color:var(--red);">${r.cost_impact}</td>
+        <td><span class="badge badge-amber">${r.schedule_impact}</span></td>
+        <td>${prioBadge}</td>
+        <td>${statBadge}</td>
+        <td>
+          <button class="btn btn-outline btn-sm" onclick="answerRFI('${r.id}')" title="تحديث رد الاستشاري"><i class="fas fa-reply"></i> الرد</button>
+        </td>
+      </tr>
+    `;
+  }).join("");
+
+  // Update RFI KPIs
+  const total = rfiList.length;
+  const closed = rfiList.filter(r => r.status.includes("مغلق") || r.status.includes("Closed")).length;
+  const pending = rfiList.filter(r => r.status.includes("مراجعة") || r.status.includes("Review")).length;
+  const impact = rfiList.filter(r => !r.cost_impact.includes("لا يوجد") || !r.schedule_impact.includes("0")).length;
+
+  const setEl = (id, val) => { const e = document.getElementById(id); if (e) e.textContent = val; };
+  setEl("rfi-kpi-total", total);
+  setEl("rfi-kpi-closed", closed);
+  setEl("rfi-kpi-pending", pending);
+  setEl("rfi-kpi-impact", impact);
+}
+
+function filterRFIList(status) {
+  renderRFIList(status);
+}
+
+function answerRFI(rfiId) {
+  const rfiList = MimarERP.rfiList || [];
+  const r = rfiList.find(x => x.id === rfiId);
+  if (!r) return;
+
+  const currentAns = r.response || "";
+  const newAns = prompt(`إدخال أو تعديل رد الاستشاري المعتمد للاستفسار [${rfiId}]:`, currentAns);
+  if (newAns !== null && newAns.trim() !== "") {
+    r.response = newAns.trim();
+    r.status = "مغلق ومعتمد (Closed)";
+    r.answered_date = new Date().toISOString().split("T")[0];
+    showToast(`تم اعتماد وتحديث رد الاستشاري لـ ${rfiId} وإغلاق الاستفسار.`);
+    renderRFIList();
+  }
+}
+
+function openAddRFIModal() {
+  const m = document.getElementById("modal-add-rfi");
+  if (m) m.style.display = "flex";
+}
+
+function closeAddRFIModal() {
+  const m = document.getElementById("modal-add-rfi");
+  if (m) m.style.display = "none";
+}
+
+function saveNewRFI(e) {
+  e.preventDefault();
+  const subject = document.getElementById("new-rfi-subject")?.value || "";
+  const disc = document.getElementById("new-rfi-disc")?.value || "إنشائي";
+  const prio = document.getElementById("new-rfi-prio")?.value || "متوسط";
+  const dwg = document.getElementById("new-rfi-dwg")?.value || "-";
+  const spec = document.getElementById("new-rfi-spec")?.value || "-";
+  const q = document.getElementById("new-rfi-q")?.value || "";
+  const cost = document.getElementById("new-rfi-cost")?.value || "لا يوجد";
+  const sched = document.getElementById("new-rfi-sched")?.value || "0 يوم";
+
+  const rfiList = MimarERP.rfiList || [];
+  const newId = `RFI-2026-00${rfiList.length + 1}`;
+  rfiList.unshift({
+    id: newId,
+    subject: subject,
+    discipline: disc,
+    drawing_ref: dwg,
+    spec_ref: spec,
+    question: q,
+    response: "قيد المراجعة والدراسة من قبل مهندس الإشراف والاستشاري.",
+    status: "قيد المراجعة (Under Review)",
+    priority: prio,
+    cost_impact: cost,
+    schedule_impact: sched,
+    submitted_date: new Date().toISOString().split("T")[0],
+    answered_date: "قيد الانتظار",
+    assigned_to: "المكتب الاستشاري"
+  });
+
+  closeAddRFIModal();
+  showToast(`تم تسجيل الاستفسار الهندسي الجديد: ${newId} وإخطار الاستشاري.`);
+  renderRFIList();
+}
+
+// =============================================================================
+// MIDDLE EAST & GCC REGIONAL SETTINGS CONTROLLER (OpenConstructionERP oe_middle_east_pack)
+// =============================================================================
+function openMEPackModal() {
+  const m = document.getElementById("modal-me-pack");
+  if (m) m.style.display = "flex";
+
+  const cfg = MimarERP.middleEastRegionalConfig || {};
+  const countrySel = document.getElementById("me-select-country");
+  if (countrySel && cfg.current_country) countrySel.value = cfg.current_country;
+
+  const ramadanChk = document.getElementById("me-ramadan-toggle");
+  if (ramadanChk) {
+    ramadanChk.checked = !!cfg.ramadan_mode;
+    toggleRamadanHours(cfg.ramadan_mode);
+  }
+}
+
+function closeMEPackModal() {
+  const m = document.getElementById("modal-me-pack");
+  if (m) m.style.display = "none";
+}
+
+function onRegionalCountryChange(countryCode) {
+  const cfg = MimarERP.middleEastRegionalConfig || {};
+  const c = (cfg.supported_countries || []).find(x => x.code === countryCode);
+  if (!c) return;
+
+  cfg.current_country = c.code;
+  cfg.currency = c.currency;
+  cfg.vat_rate = c.vat / 100;
+  cfg.country_name = c.name;
+}
+
+function toggleRamadanHours(enabled) {
+  const lbl = document.getElementById("me-ramadan-lbl");
+  if (lbl) {
+    lbl.textContent = enabled ? "مفعل (6 ساعات يومياً بموجب القانون)" : "معطل (8 ساعات عمل اعتيادية)";
+    lbl.style.color = enabled ? "var(--teal)" : "var(--muted)";
+  }
+  const cfg = MimarERP.middleEastRegionalConfig || {};
+  cfg.ramadan_mode = enabled;
+}
+
+function saveRegionalSettings() {
+  const cfg = MimarERP.middleEastRegionalConfig || {};
+  const countryCode = document.getElementById("me-select-country")?.value || "SA";
+  onRegionalCountryChange(countryCode);
+
+  const c = (cfg.supported_countries || []).find(x => x.code === countryCode);
+  if (c) {
+    const topFlag = document.getElementById("topbar-me-flag");
+    const topTitle = document.getElementById("topbar-me-title");
+    if (topFlag) topFlag.textContent = c.flag;
+    if (topTitle) topTitle.textContent = `${c.name.split(" ")[0]} (${c.vat_label})`;
+  }
+
+  closeMEPackModal();
+  showToast(`تم تفعيل وتطبيق حزمة: ${cfg.country_name} بنظام ضريبة ${cfg.vat_rate * 100}% وساعات العمل المعتمدة بنجاح.`);
+}
+
+// Hook into existing switchView for 3D BIM, Site Diary, Punch List, Submittals, BBS, and RFI rendering
 const _origSwitchView = window.switchView;
 window.switchView = function(viewId) {
   if (typeof _origSwitchView === 'function') _origSwitchView(viewId);
@@ -2607,5 +3004,11 @@ window.switchView = function(viewId) {
     renderSiteDiary();
   } else if (viewId === 'punch-list') {
     renderPunchList();
+  } else if (viewId === 'submittals') {
+    renderSubmittals();
+  } else if (viewId === 'rebar') {
+    renderRebarBBS();
+  } else if (viewId === 'rfi') {
+    renderRFIList();
   }
 };

@@ -67,6 +67,14 @@
       <i class="fas fa-cubes" style="color:var(--purple)"></i><span class="nav-text">نمذجة البناء 3D / 4D BIM</span>
       <span class="badge-pill" style="background:rgba(124,58,237,0.3)">IFC/QTO</span>
     </a>
+    <a class="nav-item" onclick="switchView('submittals')">
+      <i class="fas fa-file-circle-check" style="color:var(--teal)"></i><span class="nav-text">اعتمادات المخططات والمواد</span>
+      <span class="badge-pill" style="background:rgba(13,148,136,0.3)">Codes A-D</span>
+    </a>
+    <a class="nav-item" onclick="switchView('rebar')">
+      <i class="fas fa-bars-staggered" style="color:var(--blue)"></i><span class="nav-text">تفريد حديد التسليح (BBS)</span>
+      <span class="badge-pill" style="background:rgba(0,141,218,0.3)">D²/162</span>
+    </a>
 
     <div class="nav-group-title">سلسلة الإمداد والمستودعات</div>
     <a class="nav-item" onclick="switchView('procurement')">
@@ -92,6 +100,10 @@
     </a>
     <a class="nav-item" onclick="switchView('punch-list')">
       <i class="fas fa-clipboard-list" style="color:var(--amber)"></i><span class="nav-text">قائمة الملاحظات (Punch List)</span>
+    </a>
+    <a class="nav-item" onclick="switchView('rfi')">
+      <i class="fas fa-circle-question" style="color:var(--purple)"></i><span class="nav-text">استفسارات الموقع (RFI Hub)</span>
+      <span class="badge-pill" style="background:rgba(124,58,237,0.3)">Impact</span>
     </a>
     <a class="nav-item" onclick="switchView('scheduling')">
       <i class="fas fa-calendar-days"></i><span class="nav-text">الجدول الزمني والمسار الحرج</span>
@@ -193,6 +205,11 @@
       <!-- AI Cost Matcher Button -->
       <button class="btn btn-outline btn-sm" onclick="openAICostModal()" id="btn-ai-cost" title="المساعد الذكي لتسعير البنود والمطابقة التلقائية مع معايير CSI/DIN">
         <i class="fas fa-brain" style="color:var(--purple)"></i> <span>مساعد التسعير AI</span>
+      </button>
+
+      <!-- Middle East & GCC Regional Settings Button -->
+      <button class="btn btn-outline btn-sm" onclick="openMEPackModal()" id="btn-me-pack" title="إعدادات الحزمة الإقليمية للشرق الأوسط والخليج العربي (OpenConstructionERP GCC Pack)">
+        <span id="topbar-me-flag">🇸🇦</span> <span id="topbar-me-title">الخليج (15% ZATCA)</span>
       </button>
 
       <!-- Excel Connect Button -->
@@ -783,6 +800,151 @@
       </div>
     </section>
 
+    <!-- VIEW: SUBMITTALS & SHOP DRAWINGS APPROVALS REGISTER -->
+    <section class="page-view" id="view-submittals">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; flex-wrap:wrap; gap:12px;">
+        <div>
+          <h2 style="font-size:20px; font-weight:800; color:var(--navy);">سجل اعتمادات المخططات والمواد (Submittals Register)</h2>
+          <p style="color:var(--muted); font-size:12px;">متابعة دورة الاعتماد الهندسي مع الاستشاري وفق أكواد الاعتماد (Code A / B / C / D) طبقاً لمعايير FIDIC</p>
+        </div>
+        <div style="display:flex; gap:8px;">
+          <span class="badge badge-teal"><i class="fas fa-stamp"></i> Review Codes A-D</span>
+          <button class="btn btn-primary btn-sm" onclick="openAddSubmittalModal()"><i class="fas fa-plus"></i> تقديم اعتماد جديد</button>
+        </div>
+      </div>
+
+      <!-- KPI Cards -->
+      <div class="kpi-grid" style="margin-bottom:24px;">
+        <div class="kpi-card"><div class="kpi-header"><span class="kpi-label">إجمالي التقديمات</span><div class="kpi-icon-wrap" style="background:var(--blue-bg); color:var(--blue);"><i class="fas fa-folder-open"></i></div></div><div class="kpi-value text-num" id="sub-kpi-total">4</div><div class="kpi-footer">اعتمادات مسجلة</div></div>
+        <div class="kpi-card green"><div class="kpi-header"><span class="kpi-label">معتمد (Code A)</span><div class="kpi-icon-wrap" style="background:var(--green-bg); color:var(--green);"><i class="fas fa-check-double"></i></div></div><div class="kpi-value text-num" style="color:var(--green);" id="sub-kpi-code-a">2</div><div class="kpi-footer">جاهز للتنفيذ فوراً</div></div>
+        <div class="kpi-card amber"><div class="kpi-header"><span class="kpi-label">معتمد بملاحظات (Code B)</span><div class="kpi-icon-wrap" style="background:var(--amber-bg); color:var(--amber);"><i class="fas fa-clipboard-check"></i></div></div><div class="kpi-value text-num" style="color:var(--amber);" id="sub-kpi-code-b">1</div><div class="kpi-footer">مسموح بالتنفيذ مع تدارك الملاحظات</div></div>
+        <div class="kpi-card" style="border-top:4px solid var(--red);"><div class="kpi-header"><span class="kpi-label">مرفوض للإعادة (Code C/D)</span><div class="kpi-icon-wrap" style="background:var(--red-bg); color:var(--red);"><i class="fas fa-circle-xmark"></i></div></div><div class="kpi-value text-num" style="color:var(--red);" id="sub-kpi-rejected">1</div><div class="kpi-footer">يتطلب تعديل وإعادة تقديم</div></div>
+      </div>
+
+      <!-- Submittals Table Card -->
+      <div class="card">
+        <div class="card-header">
+          <h3><i class="fas fa-file-circle-check" style="color:var(--teal)"></i> جدول اعتمادات المخططات التنفيذية وعينات المواد</h3>
+          <div style="display:flex; gap:8px;">
+            <select class="context-select" id="filter-sub-discipline" onchange="filterSubmittals()" style="padding:4px 8px; font-size:12px;">
+              <option value="All">جميع التخصصات</option>
+              <option value="إنشائي">إنشائي</option>
+              <option value="معماري">معماري</option>
+              <option value="ميكانيك">ميكانيك</option>
+              <option value="عوازل">عوازل</option>
+            </select>
+            <select class="context-select" id="filter-sub-status" onchange="filterSubmittals()" style="padding:4px 8px; font-size:12px;">
+              <option value="All">جميع الحالات</option>
+              <option value="Code A">Code A - معتمد</option>
+              <option value="Code B">Code B - معتمد بملاحظات</option>
+              <option value="Code C">Code C - مرفوض للإعادة</option>
+            </select>
+          </div>
+        </div>
+        <div class="card-body" style="padding:0;">
+          <div class="table-wrapper">
+            <table id="tbl-submittals">
+              <thead><tr>
+                <th>كود التقديم</th><th>موضوع الاعتماد والمواصفة</th><th>نوع التقديم</th>
+                <th>التخصص</th><th>المقاول / المورد</th><th>المراجعة</th>
+                <th>كود الاعتماد</th><th>الاستشاري</th><th>الملاحظات الفنية للاعتماد</th><th>الحالة</th>
+              </tr></thead>
+              <tbody id="tbl-submittals-body"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW: BAR BENDING SCHEDULE (BBS) & REBAR CUTTING CALCULATOR -->
+    <section class="page-view" id="view-rebar">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; flex-wrap:wrap; gap:12px;">
+        <div>
+          <h2 style="font-size:20px; font-weight:800; color:var(--navy);">تفريد وتقطيع حديد التسليح (Bar Bending Schedule - BBS)</h2>
+          <p style="color:var(--muted); font-size:12px;">حساب أطوال التقطيع، أشكال التفريد، أوزان الحديد بالمعادلة الهندسية (D²/162)، ونسب الهالك التجاري</p>
+        </div>
+        <div style="display:flex; gap:8px;">
+          <span class="badge badge-blue"><i class="fas fa-calculator"></i> D²/162 kg/m</span>
+          <button class="btn btn-outline btn-sm" onclick="exportBBSReport()"><i class="fas fa-file-excel"></i> تصدير جدول التفريد</button>
+        </div>
+      </div>
+
+      <!-- Rebar Summary KPI Cards -->
+      <div class="kpi-grid" style="margin-bottom:24px;">
+        <div class="kpi-card green"><div class="kpi-header"><span class="kpi-label">إجمالي وزن الحديد الصافي</span><div class="kpi-icon-wrap" style="background:var(--green-bg); color:var(--green);"><i class="fas fa-weight-hanging"></i></div></div><div class="kpi-value text-num" id="bbs-kpi-net-ton">3.25</div><div class="kpi-footer">طن حديد مسلح</div></div>
+        <div class="kpi-card amber"><div class="kpi-header"><span class="kpi-label">الهالك التقديري (Scrap / Waste)</span><div class="kpi-icon-wrap" style="background:var(--amber-bg); color:var(--amber);"><i class="fas fa-recycle"></i></div></div><div class="kpi-value text-num" id="bbs-kpi-scrap-ton">0.12</div><div class="kpi-footer">طن (متوسط 3.6% هالك)</div></div>
+        <div class="kpi-card blue"><div class="kpi-header"><span class="kpi-label">إجمالي الوزن المطلوب للطلب</span><div class="kpi-icon-wrap" style="background:var(--blue-bg); color:var(--blue);"><i class="fas fa-cart-flatbed"></i></div></div><div class="kpi-value text-num" id="bbs-kpi-gross-ton">3.37</div><div class="kpi-footer">طن للطلب من المصنع (12م)</div></div>
+        <div class="kpi-card purple"><div class="kpi-header"><span class="kpi-label">عدد الأسياخ الكلي</span><div class="kpi-icon-wrap" style="background:rgba(124,58,237,0.15); color:var(--purple);"><i class="fas fa-bars-staggered"></i></div></div><div class="kpi-value text-num" id="bbs-kpi-total-bars">736</div><div class="kpi-footer">سيخ مقطع ومشكل</div></div>
+      </div>
+
+      <!-- Quick Interactive Rebar Calculator -->
+      <div class="card" style="margin-bottom:20px; background:#F8FAFC; border:1px solid #CBD5E1;">
+        <div class="card-header" style="background:white;">
+          <h3><i class="fas fa-calculator" style="color:var(--teal)"></i> حاسبة التفريد والوزن الفورية (Quick Rebar Weight Calculator)</h3>
+          <span style="font-size:11px; color:var(--muted);">معادلة الكود: الوزن (كجم/م) = القطر² ÷ 162</span>
+        </div>
+        <div class="card-body">
+          <div style="display:grid; grid-template-columns: repeat(5, 1fr) 1.5fr; gap:12px; align-items:end;">
+            <div>
+              <label style="font-size:11px; font-weight:700; color:var(--navy); display:block; margin-bottom:4px;">القطر (Ø مم):</label>
+              <select id="calc-rebar-dia" class="context-select" style="width:100%;" onchange="calculateQuickRebar()">
+                <option value="8">Ø8 مم (0.395 كجم/م)</option>
+                <option value="10">Ø10 مم (0.617 كجم/م)</option>
+                <option value="12">Ø12 مم (0.888 كجم/م)</option>
+                <option value="14">Ø14 مم (1.210 كجم/م)</option>
+                <option value="16" selected>Ø16 مم (1.580 كجم/م)</option>
+                <option value="18">Ø18 مم (2.000 كجم/م)</option>
+                <option value="20">Ø20 مم (2.470 كجم/م)</option>
+                <option value="25">Ø25 مم (3.850 كجم/م)</option>
+                <option value="32">Ø32 مم (6.310 كجم/م)</option>
+              </select>
+            </div>
+            <div>
+              <label style="font-size:11px; font-weight:700; color:var(--navy); display:block; margin-bottom:4px;">طول السيخ (م):</label>
+              <input type="number" id="calc-rebar-len" class="search-input" style="width:100%;" value="4.5" step="0.05" oninput="calculateQuickRebar()">
+            </div>
+            <div>
+              <label style="font-size:11px; font-weight:700; color:var(--navy); display:block; margin-bottom:4px;">عدد الأسياخ:</label>
+              <input type="number" id="calc-rebar-count" class="search-input" style="width:100%;" value="50" step="1" oninput="calculateQuickRebar()">
+            </div>
+            <div>
+              <label style="font-size:11px; font-weight:700; color:var(--navy); display:block; margin-bottom:4px;">نسبة الهالك (%):</label>
+              <input type="number" id="calc-rebar-scrap" class="search-input" style="width:100%;" value="4.0" step="0.5" oninput="calculateQuickRebar()">
+            </div>
+            <div>
+              <label style="font-size:11px; font-weight:700; color:var(--navy); display:block; margin-bottom:4px;">سعر الطن (ر.س):</label>
+              <input type="number" id="calc-rebar-ton-price" class="search-input" style="width:100%;" value="2850" step="50" oninput="calculateQuickRebar()">
+            </div>
+            <div style="background:white; padding:8px 14px; border-radius:8px; border:1px solid #E2E8F0; text-align:left;">
+              <div style="font-size:11px; color:var(--muted);">الوزن الإجمالي + التكلفة:</div>
+              <div style="font-size:15px; font-weight:900; color:var(--green);" id="calc-rebar-result">355.50 كجم · 1,013 ر.س</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- BBS Table Card -->
+      <div class="card">
+        <div class="card-header">
+          <h3><i class="fas fa-bars-staggered" style="color:var(--blue)"></i> جدول تفريد وتقطيع حديد التسليح التفصيلي (BBS Schedule)</h3>
+          <span class="badge badge-purple">طبقاً لمواصفات BS 8666 / SBC 304</span>
+        </div>
+        <div class="card-body" style="padding:0;">
+          <div class="table-wrapper">
+            <table id="tbl-rebar-bbs">
+              <thead><tr>
+                <th>العنصر الإنشائي</th><th>كود السيخ (Mark)</th><th>شكل التفريد (Shape)</th>
+                <th>القطر (Ø مم)</th><th>عدد العناصر</th><th>الأسياخ / عنصر</th>
+                <th>طول التقطيع (م)</th><th>إجمالي الأمتار</th><th>وزن المتر (كجم)</th>
+                <th>الوزن الكلي (كجم)</th><th>نسبة الهالك (%)</th><th>الإجراء</th>
+              </tr></thead>
+              <tbody id="tbl-rebar-bbs-body"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- VIEW 20B: COST CONTROL (EVM) -->
     <section class="page-view" id="view-cost-control">
       <!-- Header -->
@@ -1339,6 +1501,55 @@
                 <th>تاريخ الفتح</th><th>الموعد النهائي</th><th>الحالة</th><th>الإجراء</th>
               </tr></thead>
               <tbody id="tbl-punch-list-body"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW: RFI MANAGEMENT HUB (Inspired by OpenConstructionERP oe_rfi) -->
+    <section class="page-view" id="view-rfi">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; flex-wrap:wrap; gap:12px;">
+        <div>
+          <h2 style="font-size:20px; font-weight:800; color:var(--navy);">إدارة استفسارات وطلبات المعلومات الهندسية (RFI Hub)</h2>
+          <p style="color:var(--muted); font-size:12px;">تسجيل وتتبع استفسارات الموقع الفنية وتقييم أثر التكلفة والجدول الزمني والردود الرسمية المعتمدة</p>
+        </div>
+        <div style="display:flex; gap:8px;">
+          <span class="badge badge-purple"><i class="fas fa-circle-question"></i> Site & Design RFIs</span>
+          <button class="btn btn-primary btn-sm" onclick="openAddRFIModal()"><i class="fas fa-plus"></i> تقديم استفسار جديد (RFI)</button>
+        </div>
+      </div>
+
+      <!-- KPI Grid -->
+      <div class="kpi-grid" style="margin-bottom:24px;">
+        <div class="kpi-card"><div class="kpi-header"><span class="kpi-label">إجمالي الاستفسارات</span><div class="kpi-icon-wrap" style="background:var(--blue-bg); color:var(--blue);"><i class="fas fa-clipboard-question"></i></div></div><div class="kpi-value text-num" id="rfi-kpi-total">4</div><div class="kpi-footer">طلب معلومات هندسي</div></div>
+        <div class="kpi-card green"><div class="kpi-header"><span class="kpi-label">تمت الإجابة والاعتماد</span><div class="kpi-icon-wrap" style="background:var(--green-bg); color:var(--green);"><i class="fas fa-check-circle"></i></div></div><div class="kpi-value text-num" style="color:var(--green);" id="rfi-kpi-closed">2</div><div class="kpi-footer">تم حلها هندسياً</div></div>
+        <div class="kpi-card amber"><div class="kpi-header"><span class="kpi-label">قيد المراجعة مع الاستشاري</span><div class="kpi-icon-wrap" style="background:var(--amber-bg); color:var(--amber);"><i class="fas fa-hourglass-half"></i></div></div><div class="kpi-value text-num" style="color:var(--amber);" id="rfi-kpi-pending">2</div><div class="kpi-footer">بانتظار التوجيه الفني</div></div>
+        <div class="kpi-card" style="border-top:4px solid var(--purple);"><div class="kpi-header"><span class="kpi-label">ذات أثر مالي وزمني</span><div class="kpi-icon-wrap" style="background:rgba(124,58,237,0.15); color:var(--purple);"><i class="fas fa-clock-rotate-left"></i></div></div><div class="kpi-value text-num" style="color:var(--purple);" id="rfi-kpi-impact">3</div><div class="kpi-footer">تتطلب أمر تغيير أو تمديد EOT</div></div>
+      </div>
+
+      <!-- RFI Table Card -->
+      <div class="card">
+        <div class="card-header">
+          <h3><i class="fas fa-circle-question" style="color:var(--purple)"></i> سجل استفسارات الموقع الهندسية وإجابات الاستشاري</h3>
+          <div style="display:flex; gap:8px;">
+            <select class="context-select" id="filter-rfi-status" onchange="filterRFIList(this.value)" style="padding:4px 8px; font-size:12px;">
+              <option value="All">جميع الحالات</option>
+              <option value="مغلق">مغلق ومعتمد</option>
+              <option value="قيد المراجعة">قيد المراجعة</option>
+              <option value="مفتوح">مفتوح</option>
+            </select>
+          </div>
+        </div>
+        <div class="card-body" style="padding:0;">
+          <div class="table-wrapper">
+            <table id="tbl-rfi-list">
+              <thead><tr>
+                <th>رقم RFI</th><th>موضوع الاستفسار</th><th>التخصص</th>
+                <th>المخطط / المواصفة المرجعية</th><th>السؤال الفني</th><th>رد الاستشاري المعتمد</th>
+                <th>الأثر المالي</th><th>الأثر الزمني</th><th>الأولوية</th><th>الحالة</th><th>الإجراء</th>
+              </tr></thead>
+              <tbody id="tbl-rfi-list-body"></tbody>
             </table>
           </div>
         </div>
@@ -2021,6 +2232,206 @@
         </div>
       </div>
     </div>
+  </div>
+</div>
+
+<!-- MODAL: MIDDLE EAST & GCC REGIONAL SETTINGS (Directly from OpenConstructionERP oe_middle_east_pack) -->
+<div class="modal-overlay" id="modal-me-pack" style="display:none; position:fixed; inset:0; background:rgba(11,25,44,0.7); backdrop-filter:blur(4px); z-index:9999; align-items:center; justify-content:center;">
+  <div style="background:white; border-radius:var(--radius-lg); width:90%; max-width:680px; box-shadow:var(--shadow-lg); overflow:hidden; border:1px solid var(--line);">
+    <div style="background:linear-gradient(135deg, #0B192C 0%, #0D9488 100%); color:white; padding:18px 24px; display:flex; justify-content:space-between; align-items:center;">
+      <div style="display:flex; align-items:center; gap:12px;">
+        <div style="background:rgba(255,255,255,0.2); width:40px; height:40px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:20px;">
+          🌍
+        </div>
+        <div>
+          <h3 style="margin:0; font-size:16px; font-weight:800;">إعدادات حزمة الشرق الأوسط والخليج العربي (GCC Regional Pack)</h3>
+          <p style="margin:2px 0 0 0; font-size:11px; color:#CCFBF1;">مستوحاة مباشرة من معمارية OpenConstructionERP oe_middle_east_pack</p>
+        </div>
+      </div>
+      <button onclick="closeMEPackModal()" style="background:none; border:none; color:white; font-size:18px; cursor:pointer;"><i class="fas fa-xmark"></i></button>
+    </div>
+
+    <div style="padding:22px;">
+      <div style="display:grid; grid-template-columns: 1fr 1fr; gap:16px; margin-bottom:18px;">
+        <div>
+          <label style="font-size:12px; font-weight:700; color:var(--navy); display:block; margin-bottom:6px;">الدولة والنظام الضريبي والفوترة الإلكترونية:</label>
+          <select id="me-select-country" class="context-select" style="width:100%; font-size:13px; font-weight:700;" onchange="onRegionalCountryChange(this.value)">
+            <option value="SA">🇸🇦 المملكة العربية السعودية (15% ZATCA Phase 2)</option>
+            <option value="AE">🇦🇪 الإمارات العربية المتحدة (5% FTA EmaraTax)</option>
+            <option value="QA">🇶🇦 دولة قطر (0% GTA Dhareeba)</option>
+            <option value="KW">🇰🇼 دولة الكويت (0% Tax)</option>
+            <option value="BH">🇧🇭 مملكة البحرين (10% NBR)</option>
+            <option value="OM">🇴🇲 سلطنة عمان (5% OTA)</option>
+            <option value="EG">🇪🇬 جمهورية مصر العربية (14% ETA e-Invoice)</option>
+          </select>
+        </div>
+
+        <div>
+          <label style="font-size:12px; font-weight:700; color:var(--navy); display:block; margin-bottom:6px;">نظام التقويم وعرض التواريخ:</label>
+          <select id="me-select-calendar" class="context-select" style="width:100%; font-size:13px;">
+            <option value="dual" selected>تقويم مزدوج (هجري Hijri + ميلادي Gregorian)</option>
+            <option value="gregorian">ميلادي فقط (Gregorian Standard)</option>
+            <option value="hijri">هجري فقط (أم القرى)</option>
+          </select>
+        </div>
+      </div>
+
+      <div style="background:#F0FDFA; border:1px solid #99F6E4; border-radius:10px; padding:14px; margin-bottom:18px;">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <div>
+            <strong style="color:#0F766E; font-size:13px; display:block;">تفعيل تنظيم ساعات العمل في شهر رمضان المبارك 🌙</strong>
+            <span style="font-size:11px; color:#115E59;">تخفيض ساعات العمل اليومية قانونياً إلى 6 ساعات بدلاً من 8 ساعات (نظام العمل السعودي م98 / مرسوم الإمارات 33/2021)</span>
+          </div>
+          <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
+            <input type="checkbox" id="me-ramadan-toggle" onchange="toggleRamadanHours(this.checked)" style="width:18px; height:18px; accent-color:var(--teal); cursor:pointer;">
+            <span style="font-size:12px; font-weight:700; color:var(--navy);" id="me-ramadan-lbl">مفعل (6 ساعات)</span>
+          </label>
+        </div>
+      </div>
+
+      <div style="display:grid; grid-template-columns: 1fr 1fr; gap:16px; margin-bottom:18px;">
+        <div>
+          <label style="font-size:12px; font-weight:700; color:var(--navy); display:block; margin-bottom:6px;">معايير القياس والحصر الهندسية المعتمدة:</label>
+          <select id="me-select-standards" class="context-select" style="width:100%; font-size:12px;">
+            <option value="SBC_CESMM4" selected>SBC 304 + CESMM4 (الأشغال المدنية والبنية التحتية)</option>
+            <option value="POMI">POMI (Principles of Measurement International - RICS)</option>
+            <option value="ICMS">ICMS (International Construction Measurement Standards)</option>
+          </select>
+        </div>
+
+        <div>
+          <label style="font-size:12px; font-weight:700; color:var(--navy); display:block; margin-bottom:6px;">صيغة العقود النموذجية (FIDIC Suite):</label>
+          <select id="me-select-fidic" class="context-select" style="width:100%; font-size:12px;">
+            <option value="FIDIC_RED_2017" selected>FIDIC Red Book 2017 (عقود التشييد وتصميم صاحب العمل)</option>
+            <option value="FIDIC_YELLOW_2017">FIDIC Yellow Book 2017 (التصميم والتنفيذ Plant & DB)</option>
+            <option value="FIDIC_SILVER_2017">FIDIC Silver Book 2017 (تسليم مفتاح EPC Turnkey)</option>
+          </select>
+        </div>
+      </div>
+
+      <div style="display:flex; justify-content:flex-end; gap:10px;">
+        <button class="btn btn-outline" onclick="closeMEPackModal()">إغلاق</button>
+        <button class="btn btn-primary" onclick="saveRegionalSettings()"><i class="fas fa-check"></i> تطبيق الإعدادات وتحديث المنظومة</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: ADD RFI -->
+<div class="modal-overlay" id="modal-add-rfi" style="display:none; position:fixed; inset:0; background:rgba(11,25,44,0.7); backdrop-filter:blur(4px); z-index:9999; align-items:center; justify-content:center;">
+  <div style="background:white; border-radius:var(--radius-lg); width:90%; max-width:600px; box-shadow:var(--shadow-lg); overflow:hidden; border:1px solid var(--line);">
+    <div style="background:linear-gradient(135deg, #0B192C 0%, #1E293B 100%); color:white; padding:16px 20px; display:flex; justify-content:space-between; align-items:center;">
+      <h3 style="margin:0; font-size:15px; font-weight:800;"><i class="fas fa-plus-circle" style="color:var(--teal)"></i> تقديم طلب استفسار هندسي جديد (New RFI)</h3>
+      <button onclick="closeAddRFIModal()" style="background:none; border:none; color:white; font-size:16px; cursor:pointer;"><i class="fas fa-xmark"></i></button>
+    </div>
+    <form onsubmit="saveNewRFI(event)" style="padding:20px;">
+      <div style="margin-bottom:12px;">
+        <label style="font-size:12px; font-weight:700; color:var(--navy); display:block; margin-bottom:4px;">موضوع الاستفسار الهندسي:</label>
+        <input type="text" id="new-rfi-subject" class="search-input" style="width:100%;" required placeholder="مثال: تعارض تمديدات الإطفاء مع جسور السقف الإنشائية">
+      </div>
+      <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-bottom:12px;">
+        <div>
+          <label style="font-size:12px; font-weight:700; color:var(--navy); display:block; margin-bottom:4px;">التخصص الهندسي:</label>
+          <select id="new-rfi-disc" class="context-select" style="width:100%;">
+            <option value="إنشائي">إنشائي</option>
+            <option value="معماري">معماري</option>
+            <option value="كهروميكانيك MEP">كهروميكانيك MEP</option>
+            <option value="بنية تحتية">بنية تحتية</option>
+          </select>
+        </div>
+        <div>
+          <label style="font-size:12px; font-weight:700; color:var(--navy); display:block; margin-bottom:4px;">الأولوية:</label>
+          <select id="new-rfi-prio" class="context-select" style="width:100%;">
+            <option value="عاجل (Urgent)">عاجل (Urgent)</option>
+            <option value="عالي (High)">عالي (High)</option>
+            <option value="متوسط (Medium)" selected>متوسط (Medium)</option>
+          </select>
+        </div>
+      </div>
+      <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-bottom:12px;">
+        <div>
+          <label style="font-size:12px; font-weight:700; color:var(--navy); display:block; margin-bottom:4px;">المخطط المرجعي:</label>
+          <input type="text" id="new-rfi-dwg" class="search-input" style="width:100%;" placeholder="مثال: STR-S-104">
+        </div>
+        <div>
+          <label style="font-size:12px; font-weight:700; color:var(--navy); display:block; margin-bottom:4px;">المواصفة المرجعية:</label>
+          <input type="text" id="new-rfi-spec" class="search-input" style="width:100%;" placeholder="مثال: Section 15800">
+        </div>
+      </div>
+      <div style="margin-bottom:12px;">
+        <label style="font-size:12px; font-weight:700; color:var(--navy); display:block; margin-bottom:4px;">نص السؤال الفني والتوجيه المطلوب:</label>
+        <textarea id="new-rfi-q" rows="3" class="search-input" style="width:100%; height:auto;" required placeholder="اكتب الاستفسار الفني بالتفصيل والتأثير على الموقع..."></textarea>
+      </div>
+      <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-bottom:16px;">
+        <div>
+          <label style="font-size:12px; font-weight:700; color:var(--navy); display:block; margin-bottom:4px;">الأثر المالي المتوقع:</label>
+          <input type="text" id="new-rfi-cost" class="search-input" style="width:100%;" placeholder="مثال: +5,000 ر.س أو لا يوجد" value="لا يوجد">
+        </div>
+        <div>
+          <label style="font-size:12px; font-weight:700; color:var(--navy); display:block; margin-bottom:4px;">الأثر الزمني المتوقع:</label>
+          <input type="text" id="new-rfi-sched" class="search-input" style="width:100%;" placeholder="مثال: 2 يوم أو 0 يوم" value="0 يوم">
+        </div>
+      </div>
+      <div style="display:flex; justify-content:flex-end; gap:10px;">
+        <button type="button" class="btn btn-outline" onclick="closeAddRFIModal()">إلغاء</button>
+        <button type="submit" class="btn btn-primary"><i class="fas fa-paper-plane"></i> إرسال الاستفسار للاستشاري</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- MODAL: ADD SUBMITTAL -->
+<div class="modal-overlay" id="modal-add-submittal" style="display:none; position:fixed; inset:0; background:rgba(11,25,44,0.7); backdrop-filter:blur(4px); z-index:9999; align-items:center; justify-content:center;">
+  <div style="background:white; border-radius:var(--radius-lg); width:90%; max-width:600px; box-shadow:var(--shadow-lg); overflow:hidden; border:1px solid var(--line);">
+    <div style="background:linear-gradient(135deg, #0B192C 0%, #1E293B 100%); color:white; padding:16px 20px; display:flex; justify-content:space-between; align-items:center;">
+      <h3 style="margin:0; font-size:15px; font-weight:800;"><i class="fas fa-plus-circle" style="color:var(--teal)"></i> تقديم اعتماد هندسي جديد (New Submittal)</h3>
+      <button onclick="closeAddSubmittalModal()" style="background:none; border:none; color:white; font-size:16px; cursor:pointer;"><i class="fas fa-xmark"></i></button>
+    </div>
+    <form onsubmit="saveNewSubmittal(event)" style="padding:20px;">
+      <div style="margin-bottom:12px;">
+        <label style="font-size:12px; font-weight:700; color:var(--navy); display:block; margin-bottom:4px;">عنوان وموضوع الاعتماد:</label>
+        <input type="text" id="new-sub-title" class="search-input" style="width:100%;" required placeholder="مثال: مخططات ورشة حديد أعمدة ملحق السطح">
+      </div>
+      <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-bottom:12px;">
+        <div>
+          <label style="font-size:12px; font-weight:700; color:var(--navy); display:block; margin-bottom:4px;">نوع التقديم:</label>
+          <select id="new-sub-type" class="context-select" style="width:100%;">
+            <option value="Shop Drawings (مخططات تنفيذية)">Shop Drawings (مخططات تنفيذية)</option>
+            <option value="Material Sample (عينة مواد)">Material Sample (عينة مواد)</option>
+            <option value="Product Data (بيانات فنية)">Product Data (بيانات فنية)</option>
+            <option value="Method Statement (طريقة تنفيذ)">Method Statement (طريقة تنفيذ)</option>
+          </select>
+        </div>
+        <div>
+          <label style="font-size:12px; font-weight:700; color:var(--navy); display:block; margin-bottom:4px;">التخصص:</label>
+          <select id="new-sub-disc" class="context-select" style="width:100%;">
+            <option value="إنشائي">إنشائي</option>
+            <option value="معماري">معماري</option>
+            <option value="ميكانيك">ميكانيك</option>
+            <option value="كهرباء">كهرباء</option>
+            <option value="عوازل">عوازل</option>
+          </select>
+        </div>
+      </div>
+      <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-bottom:12px;">
+        <div>
+          <label style="font-size:12px; font-weight:700; color:var(--navy); display:block; margin-bottom:4px;">المقاول أو المورد:</label>
+          <input type="text" id="new-sub-subcon" class="search-input" style="width:100%;" required placeholder="شركة المقاولات">
+        </div>
+        <div>
+          <label style="font-size:12px; font-weight:700; color:var(--navy); display:block; margin-bottom:4px;">المكتب الاستشاري:</label>
+          <input type="text" id="new-sub-consultant" class="search-input" style="width:100%;" value="دار الهندسة للاستشارات">
+        </div>
+      </div>
+      <div style="margin-bottom:16px;">
+        <label style="font-size:12px; font-weight:700; color:var(--navy); display:block; margin-bottom:4px;">ملاحظات ومواصفات تفصيلية:</label>
+        <textarea id="new-sub-notes" rows="2" class="search-input" style="width:100%; height:auto;" placeholder="أي تفاصيل مطابقة للكود والمواصفات..."></textarea>
+      </div>
+      <div style="display:flex; justify-content:flex-end; gap:10px;">
+        <button type="button" class="btn btn-outline" onclick="closeAddSubmittalModal()">إلغاء</button>
+        <button type="submit" class="btn btn-primary"><i class="fas fa-check"></i> تسجيل الاعتماد وإرساله للاستشاري</button>
+      </div>
+    </form>
   </div>
 </div>
 

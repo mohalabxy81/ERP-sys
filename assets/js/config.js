@@ -272,5 +272,243 @@ window.MimarERP = {
     {"keyword":"جبس","csi":"09 51 00","din":"350 - Deckenbeläge","uniclass":"Pr_25_71_23","sbc":"SBC 1101","item":"أسقف معلقة جبس بورد مقاوم للرطوبة MR سماكة 12.5 مم","unit":"م²","bench_rate":55.5,"labor":24.0,"eqp":3.0},
     {"keyword":"ألمنيوم","csi":"08 51 23","din":"330 - Außenwände","uniclass":"Pr_30_59_87","sbc":"SBC 201","item":"شبابيك وواجهات ألمنيوم سرايا دبل جلاس عازل للصوت","unit":"م²","bench_rate":650.0,"labor":80.0,"eqp":20.0},
     {"keyword":"دهان","csi":"09 91 00","din":"340 - Innenwände","uniclass":"Pr_25_71_57","sbc":"SBC 1101","item":"دهانات مائية داخلية وبروفايل خارجي ديكوري مع معجون","unit":"م²","bench_rate":28.0,"labor":14.0,"eqp":2.0}
-  ]
+  ],
+
+  // =========================================================================
+  // REQUEST FOR INFORMATION (RFI) REGISTER (Directly inspired by OpenConstructionERP oe_rfi)
+  // =========================================================================
+  rfiList: [
+    {
+      "id": "RFI-2026-001",
+      "subject": "تعارض مجاري تكييف HVAC مع الكمرة الخرسانية B4 بالدور الأول",
+      "discipline": "كهروميكانيك / إنشائي",
+      "drawing_ref": "STR-S-104 / MEP-HVAC-202",
+      "spec_ref": "Section 15800 - Air Distribution",
+      "question": "يوجد تعارض بين مجرى الهواء الرئيسي مقاس 800x400 مم مع الكمرة الساقطة B4 عمق 70 سم. نرجو توجيه الحل المعتمد لعمل فتحة Sleeve بالكود ACI 318 أو خفض المنسوب.",
+      "response": "تم اعتماد عمل فتحة مستطيلة بأبعاد 850x300 مم في الثلث الأوسط من بحر الكمرة مع إضافة تسليح تعويضي 2Ø16 علوي وسفلي طبقاً للتفصيلة المعتمدة SK-014.",
+      "status": "مغلق ومعتمد (Closed)",
+      "priority": "عاجل (Urgent)",
+      "cost_impact": "لا يوجد (0.00 ر.س)",
+      "schedule_impact": "0 يوم",
+      "submitted_date": "2026-03-12",
+      "answered_date": "2026-03-15",
+      "assigned_to": "المكتب الاستشاري - دار الهندسة"
+    },
+    {
+      "id": "RFI-2026-002",
+      "subject": "تحديد مواصفات دهان الإيبوكسي المقاوم للكيماويات لأرضيات المستودع",
+      "discipline": "معماري / تشطيبات",
+      "drawing_ref": "ARCH-F-301",
+      "spec_ref": "Section 09960 - High-Performance Coatings",
+      "question": "جداول المواصفات العامة لم تحدد سماكة طبقة الإيبوكسي (هل 2 مم ذاتي التسوية أم 500 ميكرون دهان متعدد الطبقات) وما هو معدل مقاومة الانزلاق R-rating المطلوب؟",
+      "response": "المعتمد هو نظام إيبوكسي ذاتي التسوية سماكة 2 مم (Self-leveling 2mm) بمقاومة انزلاق R10 متوافق مع اشتراطات الدفاع المدني.",
+      "status": "مغلق ومعتمد (Closed)",
+      "priority": "متوسط (Medium)",
+      "cost_impact": "+12,800 ر.س (تحت المراجعة)",
+      "schedule_impact": "2 يوم",
+      "submitted_date": "2026-03-16",
+      "answered_date": "2026-03-19",
+      "assigned_to": "استشاري العمارة والديكور"
+    },
+    {
+      "id": "RFI-2026-003",
+      "subject": "طلب تعديل تفصيلة ربط الفواصل الإنشائية (Waterstop) مع اللبشة المسلحة",
+      "discipline": "إنشائي / عوازل",
+      "drawing_ref": "STR-DT-05",
+      "spec_ref": "Section 03150 - Concrete Accessories",
+      "question": "بسبب منسوب المياه الجوفية المرتفع (-1.80 م)، نقترح استخدام شريط ووترستوب PVC بعرض 25 سم مع حقن تيوب re-injectable hose لضمان عزل فاصل الصب 100%.",
+      "response": "قيد الدراسة والمراجعة الهندسية من قبل استشاري التربة والأساسات.",
+      "status": "قيد المراجعة (Under Review)",
+      "priority": "عالي (High)",
+      "cost_impact": "+6,400 ر.س",
+      "schedule_impact": "1 يوم",
+      "submitted_date": "2026-03-22",
+      "answered_date": "قيد الانتظار",
+      "assigned_to": "استشاري التربة والخرسانات"
+    },
+    {
+      "id": "RFI-2026-004",
+      "subject": "إحداثيات ومناسيب الربط لغرف تفتيش الصرف الصحي مع الشبكة العمومية",
+      "discipline": "بنية تحتية / مدني",
+      "drawing_ref": "INFRA-SAN-101",
+      "spec_ref": "Section 02530 - Sanitary Sewerage",
+      "question": "يوجد فرق منسوب 18 سم بين نقطة الربط المنفذة من الأمانة وبين المخططات التعاقدية للمشروع. يرجى توجيه تعديل ميول خطوط الانحدار.",
+      "response": "جارٍ التنسيق الميداني مع مندوب شركة المياه الوطنية لتحديث شهادة المنسوب.",
+      "status": "مفتوح (Open)",
+      "priority": "عاجل (Urgent)",
+      "cost_impact": "يحدد لاحقاً",
+      "schedule_impact": "4 أيام",
+      "submitted_date": "2026-03-24",
+      "answered_date": "قيد الانتظار",
+      "assigned_to": "مدير مشروع الإشراف"
+    }
+  ],
+
+  // =========================================================================
+  // SUBMITTALS & APPROVALS WORKFLOW (Directly inspired by OpenConstructionERP oe_submittals)
+  // =========================================================================
+  submittalsList: [
+    {
+      "id": "SUB-2026-001",
+      "title": "مخططات الورشة التنفيذية لحديد تسليح كمرات وبلاطات السقف (Shop Drawings)",
+      "type": "Shop Drawings (مخططات تنفيذية)",
+      "discipline": "إنشائي",
+      "subcontractor": "شركة الإنشاءات المتقدمة",
+      "revision": "Rev 0",
+      "action_code": "Code A",
+      "action_label": "معتمد دون ملاحظات (Approved)",
+      "submitted_date": "2026-03-05",
+      "review_date": "2026-03-09",
+      "consultant": "دار الهندسة للاستشارات",
+      "status": "معتمد (Approved)",
+      "notes": "المخططات مطابقة تماماً للمخططات التصميمية ومحققة لأطوال التماسك والتراكب طبقاً لـ SBC 304."
+    },
+    {
+      "id": "SUB-2026-002",
+      "title": "اعتماد عينات خامات البورسلان الإسباني للأرضيات ومطابقة اختبارات PEI",
+      "type": "Material Sample (عينة مواد)",
+      "discipline": "معماري",
+      "subcontractor": "مؤسسة الأفق للرخام والسيراميك",
+      "revision": "Rev 1",
+      "action_code": "Code B",
+      "action_label": "معتمد مع ملاحظات (Approved as Noted)",
+      "submitted_date": "2026-03-12",
+      "review_date": "2026-03-15",
+      "consultant": "المكتب الاستشاري المعماري",
+      "status": "معتمد بملاحظات (Approved as Noted)",
+      "notes": "معتمد شريطة استخدام غراء عالي المرونة فئة C2TE واستخدام صلبان فواصل بسماكة 2 مم كحد أدنى."
+    },
+    {
+      "id": "SUB-2026-003",
+      "title": "الكتالوجات الفنية وحسابات سعات وحدات التكييف المخفي VRF Carrier",
+      "type": "Product Data (بيانات فنية للمعدات)",
+      "discipline": "ميكانيك",
+      "subcontractor": "شركة التكييف والتبريد المتطورة",
+      "revision": "Rev 0",
+      "action_code": "Code C",
+      "action_label": "مرفوض ومطلوب إعادة التقديم (Revise & Resubmit)",
+      "submitted_date": "2026-03-18",
+      "review_date": "2026-03-22",
+      "consultant": "مهندس الكهروميكانيك الاستشاري",
+      "status": "مرفوض للإعادة (Revise & Resubmit)",
+      "notes": "مرفوض لعدم تقديم حسابات الأحمال الحرارية HAP بالاعتماد على درجة حرارة تصميمية خارجية 50°C."
+    },
+    {
+      "id": "SUB-2026-004",
+      "title": "منهجية وطريقة تنفيذ أعمال العزل المائي للأسطح (Method Statement)",
+      "type": "Method Statement (طريقة تنفيذ)",
+      "discipline": "عوازل / مدني",
+      "subcontractor": "شركة رواد العزل",
+      "revision": "Rev 0",
+      "action_code": "Code A",
+      "action_label": "معتمد دون ملاحظات (Approved)",
+      "submitted_date": "2026-03-20",
+      "review_date": "2026-03-24",
+      "consultant": "استشاري السلامة وضبط الجودة",
+      "status": "معتمد (Approved)",
+      "notes": "منهجية متكاملة تشمل اختبار الغمر بالماء 48 ساعة وإصدار شهادة ضمان معتمدة لمدة 10 سنوات."
+    }
+  ],
+
+  // =========================================================================
+  // BAR BENDING SCHEDULE (BBS) & REBAR CUTTING CALCULATOR (OpenConstructionERP oe_rebar_schedule)
+  // =========================================================================
+  rebarBBSItems: [
+    {
+      "member": "قواعد منفصلة F1 (Footings)",
+      "bar_mark": "B-01",
+      "shape_code": "U-Shape (حرف U)",
+      "diameter": 16,
+      "num_elements": 8,
+      "bars_per_element": 12,
+      "total_bars": 96,
+      "cut_length": 3.80,
+      "total_length": 364.8,
+      "unit_weight": 1.58,
+      "total_weight_kg": 576.38,
+      "scrap_allowance_pct": 3.0
+    },
+    {
+      "member": "أعمدة الدور الأرضي C1 (Columns Main)",
+      "bar_mark": "B-02",
+      "shape_code": "Straight + Crank (رأسي بتكريب)",
+      "diameter": 18,
+      "num_elements": 12,
+      "bars_per_element": 8,
+      "total_bars": 96,
+      "cut_length": 4.50,
+      "total_length": 432.0,
+      "unit_weight": 2.00,
+      "total_weight_kg": 864.00,
+      "scrap_allowance_pct": 4.0
+    },
+    {
+      "member": "كانات أعمدة الدور الأرضي (Stirrups / Ties)",
+      "bar_mark": "B-03",
+      "shape_code": "Box Tie with 135° Hook (كانة مربعة بقفل)",
+      "diameter": 8,
+      "num_elements": 12,
+      "bars_per_element": 24,
+      "total_bars": 288,
+      "cut_length": 1.65,
+      "total_length": 475.2,
+      "unit_weight": 0.395,
+      "total_weight_kg": 187.70,
+      "scrap_allowance_pct": 3.5
+    },
+    {
+      "member": "كمرات ساقطة B1 (Drop Beams Bottom)",
+      "bar_mark": "B-04",
+      "shape_code": "L-Bend (زاوية رجل)",
+      "diameter": 20,
+      "num_elements": 6,
+      "bars_per_element": 6,
+      "total_bars": 36,
+      "cut_length": 6.80,
+      "total_length": 244.8,
+      "unit_weight": 2.47,
+      "total_weight_kg": 604.66,
+      "scrap_allowance_pct": 5.0
+    },
+    {
+      "member": "شبكة حديد السقف المسلح (Slab Mesh Top & Bottom)",
+      "bar_mark": "B-05",
+      "shape_code": "Straight (مستقيم)",
+      "diameter": 12,
+      "num_elements": 1,
+      "bars_per_element": 220,
+      "total_bars": 220,
+      "cut_length": 5.20,
+      "total_length": 1144.0,
+      "unit_weight": 0.888,
+      "total_weight_kg": 1015.87,
+      "scrap_allowance_pct": 3.0
+    }
+  ],
+
+  // =========================================================================
+  // MIDDLE EAST & GCC REGIONAL ENGINE CONFIG (OpenConstructionERP oe_middle_east_pack)
+  // =========================================================================
+  middleEastRegionalConfig: {
+    "current_country": "SA",
+    "country_name": "المملكة العربية السعودية",
+    "currency": "SAR",
+    "vat_rate": 0.15,
+    "vat_regime": "هيئة الزكاة والضريبة والجمارك (ZATCA Phase 2)",
+    "calendar_mode": "dual",
+    "ramadan_mode": false,
+    "standard_daily_hours": 8,
+    "ramadan_daily_hours": 6,
+    "measurement_standards": "SBC 304 / CESMM4 / POMI / ICMS",
+    "fidic_edition": "FIDIC Red Book 2017 (عقود التشييد الهندسية)",
+    "supported_countries": [
+      {"code": "SA", "name": "المملكة العربية السعودية", "currency": "SAR", "vat": 15, "vat_label": "15% ZATCA", "workweek": "الأحد - الخميس", "flag": "🇸🇦"},
+      {"code": "AE", "name": "الإمارات العربية المتحدة", "currency": "AED", "vat": 5, "vat_label": "5% FTA EmaraTax", "workweek": "الاثنين - الجمعة", "flag": "🇦🇪"},
+      {"code": "QA", "name": "دولة قطر", "currency": "QAR", "vat": 0, "vat_label": "0% GTA Dhareeba", "workweek": "الأحد - الخميس", "flag": "🇶🇦"},
+      {"code": "KW", "name": "دولة الكويت", "currency": "KWD", "vat": 0, "vat_label": "0% Tax Regime", "workweek": "الأحد - الخميس", "flag": "🇰🇼"},
+      {"code": "BH", "name": "مملكة البحرين", "currency": "BHD", "vat": 10, "vat_label": "10% NBR Bahrain", "workweek": "الأحد - الخميس", "flag": "🇧🇭"},
+      {"code": "OM", "name": "سلطنة عمان", "currency": "OMR", "vat": 5, "vat_label": "5% OTA Oman", "workweek": "الأحد - الخميس", "flag": "🇴🇲"},
+      {"code": "EG", "name": "جمهورية مصر العربية", "currency": "EGP", "vat": 14, "vat_label": "14% الفاتورة الإلكترونية ETA", "workweek": "الأحد - الخميس", "flag": "🇪🇬"}
+    ]
+  }
 };
