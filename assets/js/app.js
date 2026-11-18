@@ -507,6 +507,8 @@ function saveNewCatalogItem(e) {
 
   renderPartnersTable();
   renderPartnerCatalogTable();
+  renderSupplierComparisonTable();
+  renderContractorsMatrixTable();
   closeAddCatalogModal();
   showToast(`تم إضافة الخامة (${itemCode} - ${desc}) بنجاح إلى كتالوج ${partner.partner_name}`);
 }
@@ -907,4 +909,184 @@ async function connectExcel() {
   } catch (e) {
     if (e.name !== 'AbortError') showToast("تعذر ربط الملف: " + e.message);
   }
+}
+
+
+// -------------------------------------------------------------
+// SUPPLIER PRICE COMPARISON RENDERING (3-Color Benchmarking)
+// -------------------------------------------------------------
+function renderSupplierComparisonTable() {
+  const tbody = document.querySelector("#tbl-supplier-comparison tbody");
+  if (!tbody) return;
+  tbody.innerHTML = "";
+
+  const compData = MimarERP.priceComparisonMaster || [];
+  compData.forEach(item => {
+    const tr = document.createElement("tr");
+
+    // Determine colors
+    const p1 = item.price_sup1;
+    const p2 = item.price_sup2;
+    const p3 = item.price_sup3;
+    const p4 = item.price_sup4;
+    const minP = item.min_price;
+    const secP = item.second_min_price;
+    const maxP = item.max_price;
+
+    function getStyle(p) {
+      if (p === minP) return 'style="background:#DCFCE7; color:#166534; font-weight:bold;" title="أقل سعر"';
+      if (p === secP) return 'style="background:#FEF3C7; color:#92400E; font-weight:bold;" title="ثاني أقل سعر"';
+      if (p === maxP) return 'style="background:#FEE2E2; color:#991B1B;" title="أعلى سعر"';
+      return '';
+    }
+
+    tr.innerHTML = `
+      <td><strong>${item.item_name}</strong></td>
+      <td class="text-center"><span class="badge badge-blue">${item.unit}</span></td>
+      <td>${item.category}</td>
+      <td class="text-num" ${getStyle(p1)}>${p1.toLocaleString(undefined, {minimumFractionDigits:2})}</td>
+      <td class="text-num" ${getStyle(p2)}>${p2.toLocaleString(undefined, {minimumFractionDigits:2})}</td>
+      <td class="text-num" ${getStyle(p3)}>${p3.toLocaleString(undefined, {minimumFractionDigits:2})}</td>
+      <td class="text-num" ${getStyle(p4)}>${p4.toLocaleString(undefined, {minimumFractionDigits:2})}</td>
+      <td class="text-num" style="background:#DCFCE7; color:#166534; font-weight:bold;">${minP.toLocaleString(undefined, {minimumFractionDigits:2})}</td>
+      <td class="text-num" style="background:#FEF3C7; color:#92400E; font-weight:bold;">${secP.toLocaleString(undefined, {minimumFractionDigits:2})}</td>
+      <td class="text-num" style="font-weight:bold;">${item.price_diff.toLocaleString(undefined, {minimumFractionDigits:2})}</td>
+      <td class="text-center"><span class="badge badge-green">${item.savings_pct}%</span></td>
+      <td><span class="badge badge-teal" style="font-size:11px;"><i class="fas fa-award" style="margin-left:4px;"></i>${item.best_supplier}</span></td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+function filterSupplierComparison() {
+  const q = (document.getElementById("search-comp-items").value || "").trim().toLowerCase();
+  const catFilter = document.getElementById("filter-comp-category").value;
+  const tbody = document.querySelector("#tbl-supplier-comparison tbody");
+  if (!tbody) return;
+  tbody.innerHTML = "";
+
+  const compData = MimarERP.priceComparisonMaster || [];
+  const filtered = compData.filter(item => {
+    const matchCat = !catFilter || item.category === catFilter;
+    const matchQ = !q || item.item_name.toLowerCase().includes(q) || item.category.toLowerCase().includes(q) || item.best_supplier.toLowerCase().includes(q);
+    return matchCat && matchQ;
+  });
+
+  filtered.forEach(item => {
+    const tr = document.createElement("tr");
+    const p1 = item.price_sup1;
+    const p2 = item.price_sup2;
+    const p3 = item.price_sup3;
+    const p4 = item.price_sup4;
+    const minP = item.min_price;
+    const secP = item.second_min_price;
+    const maxP = item.max_price;
+
+    function getStyle(p) {
+      if (p === minP) return 'style="background:#DCFCE7; color:#166534; font-weight:bold;"';
+      if (p === secP) return 'style="background:#FEF3C7; color:#92400E; font-weight:bold;"';
+      if (p === maxP) return 'style="background:#FEE2E2; color:#991B1B;"';
+      return '';
+    }
+
+    tr.innerHTML = `
+      <td><strong>${item.item_name}</strong></td>
+      <td class="text-center"><span class="badge badge-blue">${item.unit}</span></td>
+      <td>${item.category}</td>
+      <td class="text-num" ${getStyle(p1)}>${p1.toLocaleString(undefined, {minimumFractionDigits:2})}</td>
+      <td class="text-num" ${getStyle(p2)}>${p2.toLocaleString(undefined, {minimumFractionDigits:2})}</td>
+      <td class="text-num" ${getStyle(p3)}>${p3.toLocaleString(undefined, {minimumFractionDigits:2})}</td>
+      <td class="text-num" ${getStyle(p4)}>${p4.toLocaleString(undefined, {minimumFractionDigits:2})}</td>
+      <td class="text-num" style="background:#DCFCE7; color:#166534; font-weight:bold;">${minP.toLocaleString(undefined, {minimumFractionDigits:2})}</td>
+      <td class="text-num" style="background:#FEF3C7; color:#92400E; font-weight:bold;">${secP.toLocaleString(undefined, {minimumFractionDigits:2})}</td>
+      <td class="text-num" style="font-weight:bold;">${item.price_diff.toLocaleString(undefined, {minimumFractionDigits:2})}</td>
+      <td class="text-center"><span class="badge badge-green">${item.savings_pct}%</span></td>
+      <td><span class="badge badge-teal" style="font-size:11px;"><i class="fas fa-award" style="margin-left:4px;"></i>${item.best_supplier}</span></td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+// -------------------------------------------------------------
+// CONTRACTORS MATRIX & RATES RENDERING
+// -------------------------------------------------------------
+function renderContractorsMatrixTable() {
+  const tbodyCon = document.querySelector("#tbl-contractors-matrix tbody");
+  if (tbodyCon) {
+    tbodyCon.innerHTML = "";
+    (MimarERP.contractorsMaster || []).forEach(c => {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td class="text-num"><strong>${c.contractor_id}</strong></td>
+        <td><strong>${c.contractor_name}</strong></td>
+        <td><span class="badge badge-teal">${c.specialty}</span></td>
+        <td class="text-center">${c.labor_count}</td>
+        <td class="text-center">${c.tech_count}</td>
+        <td class="text-center">${c.supervisor_count}</td>
+        <td class="text-center" style="font-weight:bold; color:var(--blue);">${c.total_crew} فرد</td>
+        <td>${c.city}</td>
+        <td><small>${c.contact_person} | ${c.phone}</small></td>
+        <td class="text-center"><span class="badge badge-green">${c.rating}</span></td>
+        <td class="text-center"><small>${c.speed_rating}</small></td>
+        <td class="text-center">${c.prev_projects} مشروع</td>
+        <td><span class="badge badge-green">${c.status}</span></td>
+      `;
+      tbodyCon.appendChild(tr);
+    });
+  }
+
+  const tbodyRates = document.querySelector("#tbl-contractor-rates tbody");
+  if (tbodyRates) {
+    tbodyRates.innerHTML = "";
+    (MimarERP.contractorRatesMaster || []).forEach(r => {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td class="text-num"><strong>${r.rate_id}</strong></td>
+        <td><strong>${r.contractor_name}</strong></td>
+        <td><span class="badge badge-blue">${r.specialty}</span></td>
+        <td>${r.activity_desc}</td>
+        <td class="text-center"><span class="badge badge-teal">${r.unit}</span></td>
+        <td class="text-num" style="font-weight:bold; color:var(--teal);">${r.unit_rate.toLocaleString(undefined, {minimumFractionDigits:2})}</td>
+        <td><small>${r.daily_production}</small></td>
+        <td><small>${r.waste_resp}</small></td>
+        <td class="text-center"><span class="badge badge-green">${r.safety_comp}</span></td>
+        <td><span class="badge badge-green">${r.status}</span></td>
+      `;
+      tbodyRates.appendChild(tr);
+    });
+  }
+}
+
+function filterContractorsMatrix() {
+  const q = (document.getElementById("search-contractors").value || "").trim().toLowerCase();
+  const specFilter = document.getElementById("filter-contractor-spec").value;
+  const tbodyCon = document.querySelector("#tbl-contractors-matrix tbody");
+  if (!tbodyCon) return;
+  tbodyCon.innerHTML = "";
+
+  const filtered = (MimarERP.contractorsMaster || []).filter(c => {
+    const matchSpec = !specFilter || c.specialty.includes(specFilter);
+    const matchQ = !q || c.contractor_name.toLowerCase().includes(q) || c.specialty.toLowerCase().includes(q) || c.city.toLowerCase().includes(q);
+    return matchSpec && matchQ;
+  });
+
+  filtered.forEach(c => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td class="text-num"><strong>${c.contractor_id}</strong></td>
+      <td><strong>${c.contractor_name}</strong></td>
+      <td><span class="badge badge-teal">${c.specialty}</span></td>
+      <td class="text-center">${c.labor_count}</td>
+      <td class="text-center">${c.tech_count}</td>
+      <td class="text-center">${c.supervisor_count}</td>
+      <td class="text-center" style="font-weight:bold; color:var(--blue);">${c.total_crew} فرد</td>
+      <td>${c.city}</td>
+      <td><small>${c.contact_person} | ${c.phone}</small></td>
+      <td class="text-center"><span class="badge badge-green">${c.rating}</span></td>
+      <td class="text-center"><small>${c.speed_rating}</small></td>
+      <td class="text-center">${c.prev_projects} مشروع</td>
+      <td><span class="badge badge-green">${c.status}</span></td>
+    `;
+    tbodyCon.appendChild(tr);
+  });
 }

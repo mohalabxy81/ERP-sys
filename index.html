@@ -64,8 +64,14 @@
 
     <div class="nav-group-title">سلسلة الإمداد والمستودعات</div>
     <a class="nav-item" onclick="switchView('procurement')">
-      <i class="fas fa-cart-flatbed"></i><span class="nav-text">دورة المشتريات (9 مراحل)</span>
-      <span class="badge-pill" style="background:rgba(255,101,0,0.3)">3-Way</span>
+      <i class="fas fa-cart-shopping"></i><span class="nav-text">أوامر الشراء والتوريد</span>
+    </a>
+    <a class="nav-item" onclick="switchView('supplier-comparison')">
+      <i class="fas fa-scale-balanced" style="color:var(--teal)"></i><span class="nav-text">مقارنة أسعار الموردين</span>
+      <span class="badge-pill" style="background:rgba(13,148,136,0.3)">SSOT</span>
+    </a>
+    <a class="nav-item" onclick="switchView('contractors-matrix')">
+      <i class="fas fa-users-gear" style="color:var(--blue)"></i><span class="nav-text">سجل ومصفوفة المقاولين</span>
     </a>
     <a class="nav-item" onclick="switchView('inventory')">
       <i class="fas fa-warehouse"></i><span class="nav-text">إدارة المخازن المتعددة</span>
@@ -817,6 +823,179 @@
                 <tr><td>Project Manager</td><td>قراءة ومتابعة</td><td>تعديل واعتماد</td><td>قراءة</td><td>اعتماد</td><td>قراءة</td><td>اعتماد فني</td><td>متابعة</td><td><span class="badge badge-green">مفعل (حتى 100 ألف)</span></td></tr>
                 <tr><td>Cost Controller</td><td>كاملة</td><td>قراءة ومراجعة</td><td>تعديل وتحليل</td><td>مراجعة الميزانية</td><td>تدقيق</td><td>تدقيق مالي</td><td>-</td><td><span class="badge badge-amber">صلاحية تدقيق فقط</span></td></tr>
               </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  
+    <!-- VIEW 19: SUPPLIER PRICE COMPARISON & BENCHMARK -->
+    <section class="page-view" id="view-supplier-comparison">
+      <div class="kpi-grid">
+        <div class="kpi-card" style="border-top:4px solid var(--teal);">
+          <div class="kpi-title">الموردون المعتمدون بالمقارنة</div>
+          <div class="kpi-value text-num" id="kpi-comp-suppliers">10</div>
+          <div class="kpi-sub">عروض أسعار معتمدة ومحدثة</div>
+        </div>
+        <div class="kpi-card" style="border-top:4px solid var(--blue);">
+          <div class="kpi-title">المواد الإنشائية المسعرة</div>
+          <div class="kpi-value text-num" id="kpi-comp-items">8</div>
+          <div class="kpi-sub">بنود رئيسية بكتالوج المواد</div>
+        </div>
+        <div class="kpi-card" style="border-top:4px solid var(--green);">
+          <div class="kpi-title">متوسط وفر الترسية المباشر</div>
+          <div class="kpi-value text-num" style="color:var(--green)">8.45%</div>
+          <div class="kpi-sub">وفر بين أقل سعر وأعلى سعر سوقي</div>
+        </div>
+        <div class="kpi-card" style="border-top:4px solid var(--amber);">
+          <div class="kpi-title">متوسط زمن التوريد للموقع</div>
+          <div class="kpi-value text-num">2.4 يوم</div>
+          <div class="kpi-sub">سرعة الاستجابة والتسليم</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+          <div>
+            <h3><i class="fas fa-scale-balanced" style="color:var(--teal)"></i> مصفوفة مقارنة أسعار الموردين وتحليل التوفير (Vendor Price Benchmark)</h3>
+            <small style="color:var(--text-muted)">تلوين تلقائي ذكي: <span style="color:var(--green); font-weight:bold;">الأخضر = أقل سعر</span> | <span style="color:var(--amber); font-weight:bold;">الأصفر = ثاني أقل سعر</span> | <span style="color:var(--red); font-weight:bold;">الأحمر = أعلى سعر</span></small>
+          </div>
+          <div>
+            <a href="Suppliers-Master.xlsx" download class="btn btn-outline btn-sm"><i class="fas fa-file-excel" style="color:var(--green)"></i> تحميل مصنف الموردين (Suppliers-Master.xlsx)</a>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="toolbar" style="margin-bottom:12px;">
+            <input class="search-input" id="search-comp-items" placeholder="بحث باسم المادة أو التصنيف أو المورد..." oninput="filterSupplierComparison()">
+            <select class="filter-dropdown" id="filter-comp-category" onchange="filterSupplierComparison()">
+              <option value="">جميع التصنيفات الرئيسية</option>
+              <option value="مواد إنشائية">مواد إنشائية (رمل / أسمنت / بلاط)</option>
+              <option value="حديد وتسليح">حديد وتسليح</option>
+              <option value="دهانات وكيماويات">دهانات وكيماويات</option>
+              <option value="عزل مائي وحراري">عزل مائي وحراري</option>
+            </select>
+          </div>
+
+          <div class="table-wrapper">
+            <table id="tbl-supplier-comparison">
+              <thead><tr>
+                <th>اسم المادة والخامة</th>
+                <th>الوحدة</th>
+                <th>التصنيف</th>
+                <th>الرمال الحديثة (SUP-0001)</th>
+                <th>البناء المتقدم (SUP-0002)</th>
+                <th>خرسانة الخليج (SUP-0003)</th>
+                <th>ينبع / سابك (SUP-0004/05)</th>
+                <th>أقل سعر (SAR)</th>
+                <th>ثاني أقل سعر (SAR)</th>
+                <th>فرق السعر (SAR)</th>
+                <th>نسبة الوفر %</th>
+                <th>أفضل مورد مرشح للترسية</th>
+              </tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW 20: CONTRACTORS & SUBCONTRACTORS MATRIX -->
+    <section class="page-view" id="view-contractors-matrix">
+      <div class="kpi-grid">
+        <div class="kpi-card" style="border-top:4px solid var(--blue);">
+          <div class="kpi-title">مقاولو الباطن المعتمدون</div>
+          <div class="kpi-value text-num" id="kpi-con-count">10</div>
+          <div class="kpi-sub">شركات ومؤسسات مصنفة</div>
+        </div>
+        <div class="kpi-card" style="border-top:4px solid var(--teal);">
+          <div class="kpi-title">إجمالي الطواقم والعمالة الفنية</div>
+          <div class="kpi-value text-num" id="kpi-con-crew">289 فرد</div>
+          <div class="kpi-sub">عمالة مباشرة وفنيين ومشرفين</div>
+        </div>
+        <div class="kpi-card" style="border-top:4px solid var(--amber);">
+          <div class="kpi-title">حزم المصنعيات المسعرة</div>
+          <div class="kpi-value text-num">15 حزمة</div>
+          <div class="kpi-sub">أسعار متر ومقطوعيات جاهزة</div>
+        </div>
+        <div class="kpi-card" style="border-top:4px solid var(--green);">
+          <div class="kpi-title">نسبة الالتزام بالسلامة والجودة</div>
+          <div class="kpi-value text-num" style="color:var(--green)">98.5%</div>
+          <div class="kpi-sub">مطابقة لاشتراطات المشاريع</div>
+        </div>
+      </div>
+
+      <!-- Contractors Matrix Card -->
+      <div class="card">
+        <div class="card-header" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+          <div>
+            <h3><i class="fas fa-users-gear" style="color:var(--blue)"></i> سجل ومصفوفة تقييم مقاولي الباطن (Subcontractor Matrix)</h3>
+            <small style="color:var(--text-muted)">تحليل تشكيلة الأطقم البشرية، التخصص، سرعة التنفيذ وسابقة المشاريع</small>
+          </div>
+          <div>
+            <a href="Contractors-Master.xlsx" download class="btn btn-outline btn-sm"><i class="fas fa-file-excel" style="color:var(--teal)"></i> تحميل مصنف المقاولين (Contractors-Master.xlsx)</a>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="toolbar" style="margin-bottom:12px;">
+            <input class="search-input" id="search-contractors" placeholder="بحث باسم المقاول أو التخصص أو المدينة..." oninput="filterContractorsMatrix()">
+            <select class="filter-dropdown" id="filter-contractor-spec" onchange="filterContractorsMatrix()">
+              <option value="">جميع التخصصات الإنشائية والمعمارية</option>
+              <option value="عزل مائي وحراري">عزل مائي وحراري</option>
+              <option value="ألومنيوم وزجاج">ألومنيوم وزجاج وواجهات</option>
+              <option value="جبس بورد">جبس بورد وأسقف مستعارة</option>
+              <option value="كهرباء وسباكة">كهروميكانيك (MEP)</option>
+              <option value="بلاط وسيراميك">بلاط وسيراميك ورخام</option>
+              <option value="دهانات">دهانات وبروفايل خارجي</option>
+              <option value="لياسة وبياض">لياسة وبياض ومحارة</option>
+            </select>
+          </div>
+
+          <div class="table-wrapper">
+            <table id="tbl-contractors-matrix">
+              <thead><tr>
+                <th>كود المقاول</th>
+                <th>اسم المقاول التجاري</th>
+                <th>التخصص الدقيق</th>
+                <th>العمال</th>
+                <th>الفنيون</th>
+                <th>المشرفون</th>
+                <th>إجمالي الطاقم</th>
+                <th>المدينة</th>
+                <th>مسؤول الاتصال</th>
+                <th>التقييم</th>
+                <th>معدل سرعة التنفيذ</th>
+                <th>سابقة المشاريع</th>
+                <th>الحالة</th>
+              </tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Subcontract Activity Unit Rates Card -->
+      <div class="card" style="margin-top:20px;">
+        <div class="card-header">
+          <h3><i class="fas fa-calculator" style="color:var(--teal)"></i> أسعار المصنعيات ومعدلات الإنتاج اليومية (Activity Subcontract Rates & Productivity)</h3>
+          <span class="badge badge-teal">تحديث فوري لدفاتر تحليل الأسعار</span>
+        </div>
+        <div class="card-body" style="padding:0;">
+          <div class="table-wrapper">
+            <table id="tbl-contractor-rates">
+              <thead><tr>
+                <th>كود التسعير</th>
+                <th>المقاول المنفذ</th>
+                <th>التخصص</th>
+                <th>توصيف النشاط والمصنعية</th>
+                <th>الوحدة</th>
+                <th>سعر المتر / البند (SAR)</th>
+                <th>معدل الإنتاج اليومي</th>
+                <th>مسؤولية الهالك</th>
+                <th>الالتزام بالسلامة</th>
+                <th>الحالة</th>
+              </tr></thead>
+              <tbody></tbody>
             </table>
           </div>
         </div>
