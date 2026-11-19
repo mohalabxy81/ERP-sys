@@ -154,6 +154,12 @@
     <a class="nav-item" onclick="switchView('reports')">
       <i class="fas fa-chart-pie"></i><span class="nav-text">التقارير المؤسسية والـ BI</span>
     </a>
+    <a class="nav-item" onclick="switchView('cvr')">
+      <i class="fas fa-scale-balanced"></i><span class="nav-text">سجل CVR — تسوية التكلفة والقيمة</span>
+    </a>
+    <a class="nav-item" onclick="switchView('cde')">
+      <i class="fas fa-folder-tree"></i><span class="nav-text">بيئة البيانات المشتركة (CDE) ISO 19650</span>
+    </a>
     <a class="nav-item" onclick="switchView('audit-trail')">
       <i class="fas fa-fingerprint"></i><span class="nav-text">سجل التدقيق الأمني (Audit Log)</span>
     </a>
@@ -1867,6 +1873,139 @@
 
       <div id="report-view-container"></div>
     </section>
+
+    <!-- VIEW: CVR — COST VALUE RECONCILIATION LEDGER -->
+    <section class="page-view" id="view-cvr">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:12px;">
+        <div>
+          <h2 style="font-size:20px;font-weight:800;color:var(--navy);">سجل تسوية التكلفة والقيمة | CVR Ledger</h2>
+          <p style="color:var(--muted);font-size:12px;">Cost Value Reconciliation — مراقبة الهامش الإجمالي والتنبؤ بالتكلفة عند الإنجاز (EAC) وفق معايير AACE RP 20R-98</p>
+        </div>
+        <div style="display:flex;gap:8px;">
+          <span class="badge badge-blue">AACE RP 20R</span>
+          <span class="badge badge-teal">FIDIC Clause 50</span>
+          <span class="badge badge-green">CVR محدث شهرياً</span>
+        </div>
+      </div>
+      <div class="kpi-grid" style="margin-bottom:24px;" id="cvr-kpi-row">
+        <div class="kpi-card green"><div class="kpi-header"><span class="kpi-label">هامش إجمالي حالي</span><div class="kpi-icon-wrap" style="background:var(--green-bg);color:var(--green)"><i class="fas fa-chart-line"></i></div></div><div class="kpi-value text-num" id="cvr-kpi-margin">—</div><div class="kpi-footer">Gross Margin %</div></div>
+        <div class="kpi-card amber"><div class="kpi-header"><span class="kpi-label">فارق الفوترة (Under-billing)</span><div class="kpi-icon-wrap" style="background:var(--amber-bg);color:var(--amber)"><i class="fas fa-triangle-exclamation"></i></div></div><div class="kpi-value text-num" id="cvr-kpi-underbill">—</div><div class="kpi-footer">IPC vs Internal EV (SAR)</div></div>
+        <div class="kpi-card"><div class="kpi-header"><span class="kpi-label">تكلفة الإنجاز المتوقعة</span><div class="kpi-icon-wrap" style="background:var(--blue-bg);color:var(--blue)"><i class="fas fa-calculator"></i></div></div><div class="kpi-value text-num" id="cvr-kpi-eac">—</div><div class="kpi-footer">EAC (ريال سعودي)</div></div>
+        <div class="kpi-card"><div class="kpi-header"><span class="kpi-label">هامش التنبؤ</span><div class="kpi-icon-wrap" style="background:var(--navy);color:#fff"><i class="fas fa-percent"></i></div></div><div class="kpi-value text-num" id="cvr-kpi-fcast-margin">—</div><div class="kpi-footer">Forecast Margin %</div></div>
+      </div>
+      <div class="card">
+        <div class="card-header" style="display:flex;justify-content:space-between;align-items:center;">
+          <h3><i class="fas fa-table-list" style="color:var(--teal)"></i> سجل CVR الشهري (CVR Monthly Ledger)</h3>
+          <select class="filter-dropdown" id="cvr-filter-proj" onchange="renderCVRLedger()" style="min-width:200px;">
+            <option value="">كل المشاريع</option>
+          </select>
+        </div>
+        <div class="card-body" style="padding:0;">
+          <div class="table-wrapper">
+            <table id="tbl-cvr"><thead><tr>
+              <th>المشروع</th><th>الفترة</th><th>مبلغ العقد الأصلي</th><th>تعديلات معتمدة</th>
+              <th>المبلغ المعدّل</th><th>القيمة المكتسبة (EV)</th><th>المستخلص الصادر (IPC)</th>
+              <th>التكلفة الفعلية (AC)</th><th>الربح الإجمالي</th><th>هامش%</th>
+              <th>EAC المتوقع</th><th>هامش التنبؤ%</th><th>حالة CVR</th>
+            </tr></thead><tbody id="tbl-cvr-body"></tbody></table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW: CDE — ISO 19650 DOCUMENT CONTROL -->
+    <section class="page-view" id="view-cde">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:12px;">
+        <div>
+          <h2 style="font-size:20px;font-weight:800;color:var(--navy);">بيئة البيانات المشتركة | CDE — ISO 19650</h2>
+          <p style="color:var(--muted);font-size:12px;">Common Data Environment — إدارة وثائق المشروع وفق معيار ISO 19650 بحالات WIP / Shared / Published / Archived</p>
+        </div>
+        <div style="display:flex;gap:8px;">
+          <span class="badge badge-blue">ISO 19650-2</span>
+          <span class="badge badge-teal">BS EN 1192</span>
+          <button class="btn btn-primary btn-sm" onclick="openAddCDEModal()"><i class="fas fa-plus"></i> رفع وثيقة جديدة</button>
+        </div>
+      </div>
+      <!-- CDE State Workflow Banner -->
+      <div style="display:flex;gap:0;margin-bottom:24px;border-radius:var(--radius);overflow:hidden;border:1px solid var(--line);">
+        <div style="flex:1;background:var(--amber-bg);padding:14px 18px;text-align:center;border-left:3px solid var(--amber);">
+          <div style="font-size:11px;color:var(--muted);margin-bottom:4px;">مرحلة 1</div>
+          <div style="font-weight:800;color:var(--amber);font-size:14px;"><i class="fas fa-pencil"></i> WIP</div>
+          <div style="font-size:11px;color:var(--muted);">قيد العمل</div>
+          <div class="kpi-value" id="cde-count-wip" style="font-size:22px;color:var(--amber);">0</div>
+        </div>
+        <div style="display:flex;align-items:center;padding:0 8px;background:#f5f7fa;color:var(--muted);"><i class="fas fa-arrow-left"></i></div>
+        <div style="flex:1;background:var(--blue-bg);padding:14px 18px;text-align:center;border-left:3px solid var(--blue);">
+          <div style="font-size:11px;color:var(--muted);margin-bottom:4px;">مرحلة 2</div>
+          <div style="font-weight:800;color:var(--blue);font-size:14px;"><i class="fas fa-share-nodes"></i> Shared</div>
+          <div style="font-size:11px;color:var(--muted);">مشاركة للمراجعة</div>
+          <div class="kpi-value" id="cde-count-shared" style="font-size:22px;color:var(--blue);">0</div>
+        </div>
+        <div style="display:flex;align-items:center;padding:0 8px;background:#f5f7fa;color:var(--muted);"><i class="fas fa-arrow-left"></i></div>
+        <div style="flex:1;background:var(--green-bg);padding:14px 18px;text-align:center;border-left:3px solid var(--green);">
+          <div style="font-size:11px;color:var(--muted);margin-bottom:4px;">مرحلة 3</div>
+          <div style="font-weight:800;color:var(--green);font-size:14px;"><i class="fas fa-circle-check"></i> Published</div>
+          <div style="font-size:11px;color:var(--muted);">منشور ومعتمد</div>
+          <div class="kpi-value" id="cde-count-published" style="font-size:22px;color:var(--green);">0</div>
+        </div>
+        <div style="display:flex;align-items:center;padding:0 8px;background:#f5f7fa;color:var(--muted);"><i class="fas fa-arrow-left"></i></div>
+        <div style="flex:1;background:#f5f7fa;padding:14px 18px;text-align:center;border-left:3px solid #9e9e9e;">
+          <div style="font-size:11px;color:var(--muted);margin-bottom:4px;">مرحلة 4</div>
+          <div style="font-weight:800;color:#9e9e9e;font-size:14px;"><i class="fas fa-box-archive"></i> Archived</div>
+          <div style="font-size:11px;color:var(--muted);">أرشيف</div>
+          <div class="kpi-value" id="cde-count-archived" style="font-size:22px;color:#9e9e9e;">0</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
+          <h3><i class="fas fa-folder-tree" style="color:var(--teal)"></i> سجل الوثائق (Document Register)</h3>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <select class="filter-dropdown" id="cde-filter-state" onchange="renderCDEContainers()">
+              <option value="">كل الحالات</option>
+              <option value="WIP">WIP</option>
+              <option value="Shared">Shared</option>
+              <option value="Published">Published</option>
+              <option value="Archived">Archived</option>
+            </select>
+            <select class="filter-dropdown" id="cde-filter-discipline" onchange="renderCDEContainers()">
+              <option value="">كل التخصصات</option>
+              <option value="Architecture">معمار</option>
+              <option value="Structure">إنشاء</option>
+              <option value="MEP">ميكانيكا وكهرباء وسباكة</option>
+              <option value="Civil">مدني</option>
+            </select>
+          </div>
+        </div>
+        <div class="card-body" style="padding:0;">
+          <div class="table-wrapper">
+            <table id="tbl-cde"><thead><tr>
+              <th>رقم الوثيقة</th><th>العنوان</th><th>التخصص</th><th>المراجعة</th>
+              <th>حالة ISO</th><th>كود الملاءمة</th><th>تصنيف Uniclass</th>
+              <th>المؤلف</th><th>التاريخ</th><th>الإجراء</th>
+            </tr></thead><tbody id="tbl-cde-body"></tbody></table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- MODAL: Add CDE Document -->
+    <div class="modal-overlay" id="modal-add-cde" style="display:none;" onclick="if(event.target===this)closeAddCDEModal()">
+      <div class="modal-box" style="max-width:520px;" onclick="event.stopPropagation()">
+        <div class="modal-header"><h3><i class="fas fa-file-circle-plus" style="color:var(--teal)"></i> رفع وثيقة جديدة — CDE</h3><button class="modal-close" onclick="closeAddCDEModal()">✕</button></div>
+        <div class="modal-body">
+          <div class="form-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+            <div class="form-group"><label>رقم الوثيقة</label><input type="text" id="cde-new-docno" placeholder="PRJ-ARC-DRW-001" class="form-control"></div>
+            <div class="form-group"><label>المراجعة</label><input type="text" id="cde-new-rev" placeholder="P01" class="form-control"></div>
+            <div class="form-group" style="grid-column:span 2"><label>عنوان الوثيقة</label><input type="text" id="cde-new-title" placeholder="Ground Floor Plan - Architecture" class="form-control"></div>
+            <div class="form-group"><label>التخصص</label><select id="cde-new-discipline" class="filter-dropdown"><option>Architecture</option><option>Structure</option><option>MEP</option><option>Civil</option></select></div>
+            <div class="form-group"><label>كود الملاءمة</label><select id="cde-new-suitability" class="filter-dropdown"><option>S1 - Suitable for Coordination</option><option>S2 - Suitable for Information</option><option>S3 - Suitable for Construction</option><option>A - As-Built</option></select></div>
+            <div class="form-group"><label>المؤلف / المحرر</label><input type="text" id="cde-new-author" class="form-control" placeholder="اسم المهندس"></div>
+            <div class="form-group"><label>المشروع</label><select id="cde-new-proj" class="filter-dropdown"></select></div>
+          </div>
+        </div>
+        <div class="modal-footer"><button class="btn btn-secondary" onclick="closeAddCDEModal()">إلغاء</button><button class="btn btn-primary" onclick="saveNewCDEDocument()"><i class="fas fa-cloud-arrow-up"></i> رفع الوثيقة</button></div>
+      </div>
+    </div>
 
     <!-- VIEW 18: SETTINGS & RBAC -->
     <section class="page-view" id="view-settings">

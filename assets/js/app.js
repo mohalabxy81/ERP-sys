@@ -2012,6 +2012,8 @@ window.renderAllViews = function() {
   renderPayrollTable();
   renderFinanceTabs();
   renderEquipmentTable();
+  renderCVRLedger();
+  renderCDEContainers();
 };
 
 
@@ -3261,5 +3263,193 @@ window.switchView = function(viewId) {
     renderRebarBBS();
   } else if (viewId === 'rfi') {
     renderRFIList();
+  } else if (viewId === 'cvr') {
+    renderCVRLedger();
+  } else if (viewId === 'cde') {
+    renderCDEContainers();
   }
 };
+
+// =============================================================================
+// CVR LEDGER CONTROLLER — Cost Value Reconciliation (AACE RP 20R-98 / FIDIC Cl.50)
+// =============================================================================
+function renderCVRLedger() {
+  const data = (MimarERP.cvrLedgerMaster || []);
+  const projFilter = (document.getElementById('cvr-filter-proj') || {}).value || '';
+  const tbody = document.getElementById('tbl-cvr-body');
+  if (!tbody) return;
+
+  // Populate project dropdown
+  const projSel = document.getElementById('cvr-filter-proj');
+  if (projSel && projSel.options.length <= 1) {
+    const projs = [...new Set(data.map(r => r.projectId))];
+    projs.forEach(p => {
+      const o = document.createElement('option');
+      o.value = p; o.textContent = p;
+      projSel.appendChild(o);
+    });
+  }
+
+  const filtered = projFilter ? data.filter(r => r.projectId === projFilter) : data;
+
+  // KPI aggregation
+  let totalEV = 0, totalIPC = 0, totalAC = 0, totalRevised = 0, totalEAC = 0;
+  filtered.forEach(r => {
+    totalEV  += (r.internalEV || 0);
+    totalIPC += (r.externalIPC || 0);
+    totalAC  += (r.actualCost || 0);
+    totalRevised += (r.revisedContractSum || 0);
+    totalEAC += (r.forecastEAC || 0);
+  });
+  const grossProfit = totalEV - totalAC;
+  const grossMargin = totalEV > 0 ? ((grossProfit / totalEV) * 100).toFixed(1) : '—';
+  const underbilling = totalEV - totalIPC;
+  const fcastMargin = totalEAC > 0 ? (((totalRevised - totalEAC) / totalRevised) * 100).toFixed(1) : '—';
+
+  const fmt = n => n.toLocaleString('ar-SA', { maximumFractionDigits: 0 });
+
+  const kpiMargin = document.getElementById('cvr-kpi-margin');
+  if (kpiMargin) kpiMargin.textContent = grossMargin !== '—' ? grossMargin + '%' : '—';
+  const kpiUnderbill = document.getElementById('cvr-kpi-underbill');
+  if (kpiUnderbill) kpiUnderbill.textContent = fmt(underbilling) + ' ر.س';
+  const kpiEAC = document.getElementById('cvr-kpi-eac');
+  if (kpiEAC) kpiEAC.textContent = fmt(totalEAC) + ' ر.س';
+  const kpiFcastMargin = document.getElementById('cvr-kpi-fcast-margin');
+  if (kpiFcastMargin) kpiFcastMargin.textContent = fcastMargin !== '—' ? fcastMargin + '%' : '—';
+
+  const statusBadge = s => {
+    if (s === 'Approved') return '<span class="badge badge-green">معتمد</span>';
+    if (s === 'Under Review') return '<span class="badge badge-amber">قيد المراجعة</span>';
+    if (s === 'Draft') return '<span class="badge badge-blue">مسودة</span>';
+    return '<span class="badge badge-blue">' + s + '</span>';
+  };
+
+  tbody.innerHTML = filtered.map(r => {
+    const gp = (r.internalEV || 0) - (r.actualCost || 0);
+    const gm = (r.internalEV || 0) > 0 ? ((gp / r.internalEV) * 100).toFixed(1) : '—';
+    const fm = (r.forecastEAC || 0) > 0 && (r.revisedContractSum || 0) > 0
+      ? (((r.revisedContractSum - r.forecastEAC) / r.revisedContractSum) * 100).toFixed(1) + '%' : '—';
+    return `<tr>
+      <td><strong>${r.projectId}</strong></td>
+      <td>${r.period}</td>
+      <td class="text-num">${fmt(r.originalContractSum || 0)}</td>
+      <td class="text-num">${fmt(r.approvedVariations || 0)}</td>
+      <td class="text-num">${fmt(r.revisedContractSum || 0)}</td>
+      <td class="text-num">${fmt(r.internalEV || 0)}</td>
+      <td class="text-num">${fmt(r.externalIPC || 0)}</td>
+      <td class="text-num">${fmt(r.actualCost || 0)}</td>
+      <td class="text-num" style="color:${gp >= 0 ? 'var(--green)' : 'var(--red)'}">${fmt(gp)}</td>
+      <td style="color:${parseFloat(gm) >= 0 ? 'var(--green)' : 'var(--red)'}"><strong>${gm !== '—' ? gm + '%' : '—'}</strong></td>
+      <td class="text-num">${fmt(r.forecastEAC || 0)}</td>
+      <td><strong>${fm}</strong></td>
+      <td>${statusBadge(r.status)}</td>
+    </tr>`;
+  }).join('');
+}
+
+// =============================================================================
+// CDE DOCUMENT CONTROL — ISO 19650 Common Data Environment
+// =============================================================================
+function renderCDEContainers() {
+  const data = (MimarERP.cdeContainersMaster || []);
+  const stateFilter = (document.getElementById('cde-filter-state') || {}).value || '';
+  const discFilter = (document.getElementById('cde-filter-discipline') || {}).value || '';
+  const tbody = document.getElementById('tbl-cde-body');
+  if (!tbody) return;
+
+  // Populate CDE new-doc project dropdown
+  const projSel = document.getElementById('cde-new-proj');
+  if (projSel && projSel.options.length === 0) {
+    (MimarERP.projects || []).forEach(p => {
+      const o = document.createElement('option');
+      o.value = p.id; o.textContent = p.id + ' — ' + p.name;
+      projSel.appendChild(o);
+    });
+  }
+
+  // Count per state
+  const counts = { WIP: 0, Shared: 0, Published: 0, Archived: 0 };
+  data.forEach(d => { if (counts[d.isoState] !== undefined) counts[d.isoState]++; });
+  ['WIP','Shared','Published','Archived'].forEach(s => {
+    const el = document.getElementById('cde-count-' + s.toLowerCase());
+    if (el) el.textContent = counts[s];
+  });
+
+  const filtered = data.filter(d => {
+    return (!stateFilter || d.isoState === stateFilter) &&
+           (!discFilter || d.discipline === discFilter);
+  });
+
+  const stateBadge = s => {
+    const map = {
+      'WIP': '<span class="badge badge-amber">WIP</span>',
+      'Shared': '<span class="badge badge-blue">Shared</span>',
+      'Published': '<span class="badge badge-green">Published</span>',
+      'Archived': '<span class="badge" style="background:#e0e0e0;color:#616161;">Archived</span>'
+    };
+    return map[s] || '<span class="badge">' + s + '</span>';
+  };
+
+  const nextState = s => {
+    const flow = { 'WIP': 'Shared', 'Shared': 'Published', 'Published': 'Archived' };
+    return flow[s] || null;
+  };
+
+  tbody.innerHTML = filtered.map(d => {
+    const next = nextState(d.isoState);
+    const advBtn = next ? `<button class="btn btn-sm" style="font-size:11px;padding:3px 8px;" onclick="advanceCDEState('${d.docNumber}')">→ ${next}</button>` : '<span style="color:var(--muted);font-size:11px;">نهائي</span>';
+    return `<tr>
+      <td><strong style="font-family:monospace;">${d.docNumber}</strong></td>
+      <td>${d.title}</td>
+      <td>${d.discipline}</td>
+      <td style="text-align:center;font-weight:700;">${d.revision}</td>
+      <td>${stateBadge(d.isoState)}</td>
+      <td><code>${d.suitabilityCode || '—'}</code></td>
+      <td style="font-size:11px;color:var(--muted);">${d.uniclassCode || '—'}</td>
+      <td>${d.author}</td>
+      <td style="font-size:12px;">${d.date || '—'}</td>
+      <td>${advBtn}</td>
+    </tr>`;
+  }).join('');
+}
+
+function advanceCDEState(docNumber) {
+  const data = MimarERP.cdeContainersMaster || [];
+  const flow = { 'WIP': 'Shared', 'Shared': 'Published', 'Published': 'Archived' };
+  const doc = data.find(d => d.docNumber === docNumber);
+  if (!doc || !flow[doc.isoState]) return;
+  const prev = doc.isoState;
+  doc.isoState = flow[doc.isoState];
+  saveToLocalStorage();
+  renderCDEContainers();
+  showToast(`الوثيقة ${docNumber} انتقلت من ${prev} إلى ${doc.isoState} ✓`);
+}
+
+function openAddCDEModal() {
+  document.getElementById('modal-add-cde').style.display = 'flex';
+}
+function closeAddCDEModal() {
+  document.getElementById('modal-add-cde').style.display = 'none';
+}
+function saveNewCDEDocument() {
+  const docno = document.getElementById('cde-new-docno').value.trim();
+  const title = document.getElementById('cde-new-title').value.trim();
+  const rev   = document.getElementById('cde-new-rev').value.trim() || 'P01';
+  const disc  = document.getElementById('cde-new-discipline').value;
+  const suit  = document.getElementById('cde-new-suitability').value;
+  const auth  = document.getElementById('cde-new-author').value.trim();
+  const proj  = document.getElementById('cde-new-proj').value;
+  if (!docno || !title) { showToast('يرجى تعبئة رقم الوثيقة والعنوان على الأقل'); return; }
+  const newDoc = {
+    docNumber: docno, title, revision: rev, discipline: disc,
+    suitabilityCode: suit.split(' ')[0], uniclassCode: '—',
+    author: auth || 'مستخدم', isoState: 'WIP',
+    projectId: proj, date: new Date().toISOString().slice(0,10)
+  };
+  if (!MimarERP.cdeContainersMaster) MimarERP.cdeContainersMaster = [];
+  MimarERP.cdeContainersMaster.unshift(newDoc);
+  saveToLocalStorage();
+  renderCDEContainers();
+  closeAddCDEModal();
+  showToast('تم رفع الوثيقة بنجاح — الحالة: WIP ✓');
+}
