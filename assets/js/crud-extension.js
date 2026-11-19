@@ -6,6 +6,7 @@
 
 // 1. Ensure master data structures exist
 (function initMasterData() {
+  if (!window.MimarERP) window.MimarERP = {};
   if (!MimarERP.scheduleTasks) {
     MimarERP.scheduleTasks = [
       { id: "ACT-101", wbs: "WBS-09.1", name: "أعمال لياسة الحوائط الداخلية", duration: 30, start_date: "2026-02-01", end_date: "2026-03-02", predecessor: "-", weight_pct: 20.5, progress_pct: 100, status: "مكتمل" },
@@ -35,24 +36,21 @@
 })();
 
 // 2. Logging function for audit trail
-function logAudit(action, entity, details) {
-  const logItem = {
-    id: "LOG-" + String(Date.now()).slice(-6),
-    timestamp: new Date().toISOString().replace('T', ' ').slice(0, 19),
-    user: MimarERP.currentRole || "System User",
-    action: action,
-    entity: entity,
-    details: details,
-    ip: "127.0.0.1"
+if (typeof window.logAudit !== 'function') {
+  window.logAudit = function(action, entity, details) {
+    const logItem = {
+      id: "LOG-" + String(Date.now()).slice(-6),
+      timestamp: new Date().toISOString().replace('T', ' ').slice(0, 19),
+      user: (window.MimarERP && MimarERP.currentRole) || "System User",
+      action: action,
+      entity: entity,
+      details: details,
+      ip: "127.0.0.1"
+    };
+    if (!MimarERP.auditLogs) MimarERP.auditLogs = [];
+    MimarERP.auditLogs.unshift(logItem);
+    renderAuditLogTable();
   };
-  if (!MimarERP.auditLogs) MimarERP.auditLogs = [];
-  MimarERP.auditLogs.unshift(logItem);
-  renderAuditLogTable();
-}
-
-if (typeof window !== 'undefined') {
-  window.logAudit = logAudit;
-  window.renderAuditLogTable = renderAuditLogTable;
 }
 
 // 3. Render Audit Log Dynamically
@@ -73,25 +71,25 @@ function renderAuditLogTable() {
     </tr>`;
   }).join('');
 }
+window.renderAuditLogTable = renderAuditLogTable;
 
-// 4. Overwrite hardcoded renderProcurementTable with fully dynamic data-bound table
+// 4. Overwrite renderProcurementTable with action buttons
 window.renderProcurementTable = function() {
   const tbody = document.querySelector("#tbl-po-list tbody");
   if (!tbody) return;
   const list = MimarERP.purchaseOrders || [];
   
-  // Ensure header has actions
   const thead = document.querySelector("#tbl-po-list thead tr");
   if (thead && !thead.querySelector(".col-actions")) {
     const th = document.createElement("th");
-    th.className = "col-actions"; th.textContent = "الإجراءات";
+    th.className = "col-actions text-center"; th.textContent = "الإجراءات";
     thead.appendChild(th);
   }
 
   const fmt = n => Number(n).toLocaleString('ar-SA', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
   tbody.innerHTML = list.map((po, idx) => {
-    const badgeCls = po.status.includes("مستلم") ? "badge-green" : (po.status.includes("قيد") ? "badge-blue" : "badge-amber");
+    const badgeCls = po.status?.includes("مستلم") ? "badge-green" : (po.status?.includes("قيد") ? "badge-blue" : "badge-amber");
     return `<tr>
       <td class="text-num"><strong>${po.id}</strong></td>
       <td>${po.supplier}</td>
@@ -102,15 +100,15 @@ window.renderProcurementTable = function() {
       <td class="text-num">${po.order_date || '—'}</td>
       <td class="text-num">${po.delivery_date || '—'}</td>
       <td><span class="badge ${badgeCls}">${po.status}</span></td>
-      <td class="action-btns">
-        <button class="btn btn-sm" title="تعديل" onclick="openEditPOModal(${idx})"><i class="fas fa-pen"></i></button>
-        <button class="btn btn-sm" style="color:var(--red)" title="حذف" onclick="deletePOItem(${idx})"><i class="fas fa-trash"></i></button>
+      <td class="action-btns text-center">
+        <button class="btn btn-outline btn-sm" style="padding:4px 8px; margin-left:4px;" title="تعديل" onclick="openEditPOModal(${idx})"><i class="fas fa-pen" style="color:var(--teal)"></i></button>
+        <button class="btn btn-outline btn-sm" style="padding:4px 8px; color:var(--red);" title="حذف" onclick="deletePOItem(${idx})"><i class="fas fa-trash"></i></button>
       </td>
     </tr>`;
   }).join('');
 };
 
-// 5. Overwrite hardcoded renderScheduleTable with dynamic tasks
+// 5. Overwrite renderScheduleTable with action buttons
 window.renderScheduleTable = function() {
   const tbody = document.querySelector("#tbl-schedule tbody");
   if (!tbody) return;
@@ -119,7 +117,7 @@ window.renderScheduleTable = function() {
   const thead = document.querySelector("#tbl-schedule thead tr");
   if (thead && !thead.querySelector(".col-actions")) {
     const th = document.createElement("th");
-    th.className = "col-actions"; th.textContent = "الإجراءات";
+    th.className = "col-actions text-center"; th.textContent = "الإجراءات";
     thead.appendChild(th);
   }
 
@@ -137,15 +135,15 @@ window.renderScheduleTable = function() {
       <td class="text-center">${t.weight_pct}%</td>
       <td class="text-center"><strong style="color:${progColor}">${t.progress_pct}%</strong></td>
       <td><span class="badge ${badgeCls}">${t.status}</span></td>
-      <td class="action-btns">
-        <button class="btn btn-sm" title="تعديل" onclick="openEditScheduleModal(${idx})"><i class="fas fa-pen"></i></button>
-        <button class="btn btn-sm" style="color:var(--red)" title="حذف" onclick="deleteScheduleTask(${idx})"><i class="fas fa-trash"></i></button>
+      <td class="action-btns text-center">
+        <button class="btn btn-outline btn-sm" style="padding:4px 8px; margin-left:4px;" title="تعديل" onclick="openEditScheduleModal(${idx})"><i class="fas fa-pen" style="color:var(--teal)"></i></button>
+        <button class="btn btn-outline btn-sm" style="padding:4px 8px; color:var(--red);" title="حذف" onclick="deleteScheduleTask(${idx})"><i class="fas fa-trash"></i></button>
       </td>
     </tr>`;
   }).join('');
 };
 
-// 6. Overwrite hardcoded renderBillingTable with dynamic MimarERP.billing
+// 6. Overwrite renderBillingTable with action buttons
 window.renderBillingTable = function() {
   const tbody = document.querySelector("#tbl-billing-ipcs tbody");
   if (!tbody) return;
@@ -154,14 +152,14 @@ window.renderBillingTable = function() {
   const thead = document.querySelector("#tbl-billing-ipcs thead tr");
   if (thead && !thead.querySelector(".col-actions")) {
     const th = document.createElement("th");
-    th.className = "col-actions"; th.textContent = "الإجراءات";
+    th.className = "col-actions text-center"; th.textContent = "الإجراءات";
     thead.appendChild(th);
   }
 
   const fmt = n => Number(n).toLocaleString('ar-SA', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
   tbody.innerHTML = billings.map((b, idx) => {
-    const badgeCls = b.status.includes("معتمد") ? "badge-green" : (b.status.includes("مراجعة") ? "badge-amber" : "badge-blue");
+    const badgeCls = b.status?.includes("معتمد") ? "badge-green" : (b.status?.includes("مراجعة") ? "badge-amber" : "badge-blue");
     return `<tr>
       <td class="text-num"><strong>${b.id}</strong></td>
       <td>${b.type}</td>
@@ -175,15 +173,16 @@ window.renderBillingTable = function() {
       <td class="text-num">${fmt(b.vat_15_pct)}</td>
       <td class="text-num" style="font-weight:800; color:var(--green);">${fmt(b.total_payable_incl_vat)}</td>
       <td><span class="badge ${badgeCls}">${b.status}</span></td>
-      <td class="action-btns">
-        <button class="btn btn-sm" title="تعديل" onclick="openEditBillingIPCModal(${idx})"><i class="fas fa-pen"></i></button>
-        <button class="btn btn-sm" style="color:var(--red)" title="حذف" onclick="deleteBillingIPC(${idx})"><i class="fas fa-trash"></i></button>
+      <td class="action-btns text-center">
+        <button class="btn btn-outline btn-sm" style="padding:4px 8px; margin-left:4px; color:#059669; border-color:#059669;" title="عرض رمز الفوترة الإلكترونية ZATCA Phase 2" onclick="showZatcaModal({ ipc_no: '${b.id}', amount: ${b.total_payable_incl_vat || 0}, vat_amount: ${b.vat_15_pct || 0} })"><i class="fas fa-qrcode"></i> ZATCA</button>
+        <button class="btn btn-outline btn-sm" style="padding:4px 8px; margin-left:4px;" title="تعديل" onclick="openEditBillingIPCModal(${idx})"><i class="fas fa-pen" style="color:var(--teal)"></i></button>
+        <button class="btn btn-outline btn-sm" style="padding:4px 8px; color:var(--red);" title="حذف" onclick="deleteBillingIPC(${idx})"><i class="fas fa-trash"></i></button>
       </td>
     </tr>`;
   }).join('');
 };
 
-// 7. Overwrite hardcoded renderInspectionsTable with dynamic quality inspections
+// 7. Overwrite renderInspectionsTable with action buttons
 window.renderInspectionsTable = function() {
   const tbody = document.querySelector("#tbl-inspections tbody");
   if (!tbody) return;
@@ -192,12 +191,12 @@ window.renderInspectionsTable = function() {
   const thead = document.querySelector("#tbl-inspections thead tr");
   if (thead && !thead.querySelector(".col-actions")) {
     const th = document.createElement("th");
-    th.className = "col-actions"; th.textContent = "الإجراءات";
+    th.className = "col-actions text-center"; th.textContent = "الإجراءات";
     thead.appendChild(th);
   }
 
   tbody.innerHTML = list.map((item, idx) => {
-    const typeBadge = item.type.includes("WIR") ? "badge-blue" : "badge-purple";
+    const typeBadge = item.type?.includes("WIR") ? "badge-blue" : "badge-purple";
     const statusBadge = item.status === "معتمد" ? "badge-green" : "badge-amber";
     return `<tr>
       <td class="text-num"><strong>${item.id}</strong></td>
@@ -208,15 +207,15 @@ window.renderInspectionsTable = function() {
       <td class="text-num">${item.insp_date || item.req_date || '—'}</td>
       <td><span class="badge badge-green">${item.result || 'مطابق'}</span></td>
       <td><span class="badge ${statusBadge}">${item.status}</span></td>
-      <td class="action-btns">
-        <button class="btn btn-sm" title="تعديل" onclick="openEditInspectionModal(${idx})"><i class="fas fa-pen"></i></button>
-        <button class="btn btn-sm" style="color:var(--red)" title="حذف" onclick="deleteInspectionItem(${idx})"><i class="fas fa-trash"></i></button>
+      <td class="action-btns text-center">
+        <button class="btn btn-outline btn-sm" style="padding:4px 8px; margin-left:4px;" title="تعديل" onclick="openEditInspectionModal(${idx})"><i class="fas fa-pen" style="color:var(--teal)"></i></button>
+        <button class="btn btn-outline btn-sm" style="padding:4px 8px; color:var(--red);" title="حذف" onclick="deleteInspectionItem(${idx})"><i class="fas fa-trash"></i></button>
       </td>
     </tr>`;
   }).join('');
 };
 
-// 8. Overwrite hardcoded renderDrawingsTable with dynamic techOffice.drawings
+// 8. Overwrite renderDrawingsTable with action buttons
 window.renderDrawingsTable = function() {
   const tbody = document.querySelector("#tbl-drawings tbody");
   if (!tbody) return;
@@ -225,12 +224,12 @@ window.renderDrawingsTable = function() {
   const thead = document.querySelector("#tbl-drawings thead tr");
   if (thead && !thead.querySelector(".col-actions")) {
     const th = document.createElement("th");
-    th.className = "col-actions"; th.textContent = "الإجراءات";
+    th.className = "col-actions text-center"; th.textContent = "الإجراءات";
     thead.appendChild(th);
   }
 
   tbody.innerHTML = list.map((dwg, idx) => {
-    const badgeColor = dwg.status.includes("IFC") ? "badge-green" : "badge-blue";
+    const badgeColor = dwg.status?.includes("IFC") ? "badge-green" : "badge-blue";
     return `<tr>
       <td class="text-num"><strong>${dwg.sheet_no || dwg.id}</strong></td>
       <td>${dwg.title}</td>
@@ -238,32 +237,33 @@ window.renderDrawingsTable = function() {
       <td class="text-center">${dwg.rev}</td>
       <td class="text-num">${dwg.date}</td>
       <td><span class="badge ${badgeColor}">${dwg.status}</span></td>
-      <td class="action-btns">
-        <button class="btn btn-sm" title="تعديل" onclick="openEditDrawingModal(${idx})"><i class="fas fa-pen"></i></button>
-        <button class="btn btn-sm" style="color:var(--red)" title="حذف" onclick="deleteDrawingItem(${idx})"><i class="fas fa-trash"></i></button>
+      <td class="action-btns text-center">
+        <button class="btn btn-outline btn-sm" style="padding:4px 8px; margin-left:4px;" title="تعديل" onclick="openEditDrawingModal(${idx})"><i class="fas fa-pen" style="color:var(--teal)"></i></button>
+        <button class="btn btn-outline btn-sm" style="padding:4px 8px; color:var(--red);" title="حذف" onclick="deleteDrawingItem(${idx})"><i class="fas fa-trash"></i></button>
       </td>
     </tr>`;
   }).join('');
 };
 
 // =============================================================================
-// MODAL FORMS & CRUD CONTROLLERS FOR ALL MODULES
+// MODAL CONTROLLERS WITH FULL RESILIENCE (BOTH INDEX AND OBJECT COMPATIBLE)
 // =============================================================================
 
-// PO Operations
-function openEditPOModal(idx) {
-  const po = MimarERP.purchaseOrders[idx];
+function openEditPOModal(idxOrRec) {
+  const po = typeof idxOrRec === 'object' && idxOrRec !== null ? idxOrRec : MimarERP.purchaseOrders?.[idxOrRec];
+  if (!po) return openAddPOModal();
   showCrudModal({
-    title: "تعديل أمر الشراء",
+    title: "تعديل أمر الشراء والتوريد",
     icon: "fa-cart-shopping",
     record: po,
     fields: [
       { key: "id", label: "رقم أمر الشراء", required: true },
       { key: "supplier", label: "المورد", required: true },
-      { key: "item", label: "المادة / البند", required: true },
+      { key: "item", label: "المادة / البند", required: true, span2: true },
       { key: "qty", label: "الكمية", type: "number", required: true },
-      { key: "unit", label: "الوحدة", type: "select", options: ["طن", "م³", "م²", "كيس", "قطعة", "لتر"] },
+      { key: "unit", label: "الوحدة", type: "select", options: ["طن", "م³", "م²", "كيس", "قطعة", "لتر", "برميل"] },
       { key: "rate", label: "سعر الوحدة (ر.س)", type: "number", required: true },
+      { key: "delivery_date", label: "تاريخ التوريد المتوقع", type: "date" },
       { key: "status", label: "الحالة", type: "select", options: ["مسودة", "قيد التوريد والتسليم", "مستلم بالكامل (GRN-01)", "مستلم جزئياً", "ملغى"] }
     ],
     onSave(data) {
@@ -277,10 +277,11 @@ function openEditPOModal(idx) {
   });
 }
 
-function deletePOItem(idx) {
-  const po = MimarERP.purchaseOrders[idx];
+function deletePOItem(idxOrId) {
+  const po = typeof idxOrId === 'number' ? MimarERP.purchaseOrders?.[idxOrId] : MimarERP.purchaseOrders?.find(x => x.id === idxOrId);
+  if (!po) return;
   confirmDelete(`هل تريد بالتأكيد حذف أمر الشراء <strong>${po.id}</strong>؟`, () => {
-    MimarERP.purchaseOrders.splice(idx, 1);
+    MimarERP.purchaseOrders = MimarERP.purchaseOrders.filter(x => x !== po);
     logAudit("DELETE", "Purchase Order", `حذف أمر الشراء ${po.id}`);
     saveToLocalStorage();
     renderProcurementTable();
@@ -288,7 +289,8 @@ function deletePOItem(idx) {
   });
 }
 
-function openAddPOModal() {
+function openAddPOModal(record = null) {
+  if (record) return openEditPOModal(record);
   const supplierOpts = (MimarERP.suppliersMaster || []).map(s => s.name || s.supplier_name);
   showCrudModal({
     title: "إصدار أمر شراء جديد (Purchase Order)",
@@ -296,11 +298,11 @@ function openAddPOModal() {
     fields: [
       { key: "id", label: "رقم أمر الشراء", required: true, default: "PO-2026-00" + ((MimarERP.purchaseOrders?.length || 0) + 1) },
       { key: "supplier", label: "المورد المعتمد", type: "select", options: supplierOpts.length ? supplierOpts : ["شركة أسمنت ينبع والمدينة", "شركة هضاب الخليج للسيراميك", "شركة دهانات الجزيرة"] },
-      { key: "item", label: "المادة / المواصفة", required: true, placeholder: "اسم المادة بدقة" },
-      { key: "qty", label: "الكمية", type: "number", required: true },
-      { key: "unit", label: "الوحدة", type: "select", options: ["طن", "م³", "م²", "كيس", "قطعة", "لتر"] },
-      { key: "rate", label: "سعر الوحدة (ر.س)", type: "number", required: true },
-      { key: "delivery_date", label: "تاريخ التوريد المتوقع", type: "date", required: true }
+      { key: "item", label: "المادة / المواصفة", required: true, span2: true, placeholder: "اسم المادة بدقة" },
+      { key: "qty", label: "الكمية", type: "number", required: true, default: 500 },
+      { key: "unit", label: "الوحدة", type: "select", options: ["طن", "م³", "م²", "كيس", "قطعة", "لتر", "برميل"], default: "كيس" },
+      { key: "rate", label: "سعر الوحدة (ر.س)", type: "number", required: true, default: 16.5 },
+      { key: "delivery_date", label: "تاريخ التوريد المتوقع", type: "date", required: true, default: new Date().toISOString().slice(0, 10) }
     ],
     onSave(data) {
       data.total = Number(data.qty) * Number(data.rate);
@@ -317,14 +319,15 @@ function openAddPOModal() {
 }
 
 // Schedule Task Operations
-function openEditScheduleModal(idx) {
-  const task = MimarERP.scheduleTasks[idx];
+function openEditScheduleModal(idxOrRec) {
+  const task = typeof idxOrRec === 'object' && idxOrRec !== null ? idxOrRec : MimarERP.scheduleTasks?.[idxOrRec];
+  if (!task) return openAddScheduleModal();
   showCrudModal({
     title: "تعديل نشاط الجدول الزمني",
     icon: "fa-calendar-check",
     record: task,
     fields: [
-      { key: "name", label: "اسم النشاط", required: true },
+      { key: "name", label: "اسم النشاط", required: true, span2: true },
       { key: "duration", label: "المدة (أيام)", type: "number", required: true },
       { key: "start_date", label: "تاريخ البدء", type: "date", required: true },
       { key: "end_date", label: "تاريخ الانتهاء", type: "date", required: true },
@@ -341,10 +344,11 @@ function openEditScheduleModal(idx) {
   });
 }
 
-function deleteScheduleTask(idx) {
-  const t = MimarERP.scheduleTasks[idx];
+function deleteScheduleTask(idxOrId) {
+  const t = typeof idxOrId === 'number' ? MimarERP.scheduleTasks?.[idxOrId] : MimarERP.scheduleTasks?.find(x => x.id === idxOrId);
+  if (!t) return;
   confirmDelete(`هل أنت متأكد من حذف النشاط <strong>${t.name}</strong>؟`, () => {
-    MimarERP.scheduleTasks.splice(idx, 1);
+    MimarERP.scheduleTasks = MimarERP.scheduleTasks.filter(x => x !== t);
     logAudit("DELETE", "Schedule", `حذف النشاط ${t.id}`);
     saveToLocalStorage();
     renderScheduleTable();
@@ -352,16 +356,17 @@ function deleteScheduleTask(idx) {
   });
 }
 
-function openAddScheduleModal() {
+function openAddScheduleModal(record = null) {
+  if (record) return openEditScheduleModal(record);
   showCrudModal({
     title: "إضافة نشاط للجدول الزمني",
     icon: "fa-calendar-plus",
     fields: [
       { key: "id", label: "كود النشاط", required: true, default: "ACT-" + (100 + (MimarERP.scheduleTasks?.length || 0) + 1) },
       { key: "wbs", label: "حزمة العمل (WBS)", required: true, default: "WBS-09" },
-      { key: "name", label: "اسم النشاط", required: true },
+      { key: "name", label: "اسم النشاط", required: true, span2: true, placeholder: "اسم النشاط بدقة" },
       { key: "duration", label: "المدة بالأيام", type: "number", required: true, default: 15 },
-      { key: "start_date", label: "تاريخ البدء", type: "date", required: true },
+      { key: "start_date", label: "تاريخ البدء", type: "date", required: true, default: new Date().toISOString().slice(0, 10) },
       { key: "end_date", label: "تاريخ الانتهاء", type: "date", required: true },
       { key: "weight_pct", label: "الوزن النسبي %", type: "number", default: 10 }
     ],
@@ -380,8 +385,9 @@ function openAddScheduleModal() {
 }
 
 // Billing IPC Operations
-function openEditBillingIPCModal(idx) {
-  const b = MimarERP.billing[idx];
+function openEditBillingIPCModal(idxOrRec) {
+  const b = typeof idxOrRec === 'object' && idxOrRec !== null ? idxOrRec : MimarERP.billing?.[idxOrRec];
+  if (!b) return openAddBillingIPCModal();
   showCrudModal({
     title: "تعديل بيانات المستخلص",
     icon: "fa-file-invoice-dollar",
@@ -410,10 +416,11 @@ function openEditBillingIPCModal(idx) {
   });
 }
 
-function deleteBillingIPC(idx) {
-  const b = MimarERP.billing[idx];
+function deleteBillingIPC(idxOrId) {
+  const b = typeof idxOrId === 'number' ? MimarERP.billing?.[idxOrId] : MimarERP.billing?.find(x => x.id === idxOrId);
+  if (!b) return;
   confirmDelete(`هل تريد حذف المستخلص <strong>${b.id}</strong>؟`, () => {
-    MimarERP.billing.splice(idx, 1);
+    MimarERP.billing = MimarERP.billing.filter(x => x !== b);
     logAudit("DELETE", "Billing", `حذف المستخلص ${b.id}`);
     saveToLocalStorage();
     renderBillingTable();
@@ -421,7 +428,8 @@ function deleteBillingIPC(idx) {
   });
 }
 
-function openAddBillingIPCModal() {
+function openAddBillingIPCModal(record = null) {
+  if (record) return openEditBillingIPCModal(record);
   const prevCount = MimarERP.billing?.length || 0;
   showCrudModal({
     title: "إصدار مستخلص شهري جديد (Payment Certificate)",
@@ -431,7 +439,7 @@ function openAddBillingIPCModal() {
       { key: "type", label: "نوع المستخلص", type: "select", options: ["مستخلص عميل (مالك)", "مستخلص مقاول باطن"] },
       { key: "party", label: "الجهة / المالك", required: true, default: "شركة إينوفست / قمم التشييد" },
       { key: "period", label: "فترة الأعمال", required: true, placeholder: "من 2026-06-01 إلى 2026-06-30" },
-      { key: "current_amount", label: "قيمة الأعمال المنجزة (ر.س)", type: "number", required: true },
+      { key: "current_amount", label: "قيمة الأعمال المنجزة (ر.س)", type: "number", required: true, default: 250000 },
       { key: "retention_pct", label: "نسبة الضمان %", type: "number", default: 5 }
     ],
     onSave(data) {
@@ -456,15 +464,16 @@ function openAddBillingIPCModal() {
 }
 
 // Drawings Operations
-function openEditDrawingModal(idx) {
-  const dwg = MimarERP.techOffice.drawings[idx];
+function openEditDrawingModal(idxOrRec) {
+  const dwg = typeof idxOrRec === 'object' && idxOrRec !== null ? idxOrRec : MimarERP.techOffice?.drawings?.[idxOrRec];
+  if (!dwg) return openAddDrawingModal();
   showCrudModal({
     title: "تعديل المخطط الهندسي",
     icon: "fa-compass-drafting",
     record: dwg,
     fields: [
       { key: "sheet_no", label: "رقم اللوحة", required: true },
-      { key: "title", label: "عنوان المخطط", required: true },
+      { key: "title", label: "عنوان المخطط", required: true, span2: true },
       { key: "discipline", label: "التخصص", type: "select", options: ["Architectural", "Structural", "MEP", "Civil"] },
       { key: "rev", label: "رقم المراجعة (Rev)", required: true },
       { key: "status", label: "حالة الاعتماد", type: "select", options: ["صالح للتنفيذ IFC", "مرجع تصميمي معتمد", "قيد الاعتماد", "ملغى ومستبدل"] }
@@ -479,10 +488,13 @@ function openEditDrawingModal(idx) {
   });
 }
 
-function deleteDrawingItem(idx) {
-  const dwg = MimarERP.techOffice.drawings[idx];
+function deleteDrawingItem(idxOrSheet) {
+  if (!MimarERP.techOffice?.drawings) return;
+  const list = MimarERP.techOffice.drawings;
+  const dwg = typeof idxOrSheet === 'number' ? list[idxOrSheet] : list.find(x => x.sheet_no === idxOrSheet || x.id === idxOrSheet);
+  if (!dwg) return;
   confirmDelete(`حذف المخطط <strong>${dwg.sheet_no}</strong>؟`, () => {
-    MimarERP.techOffice.drawings.splice(idx, 1);
+    MimarERP.techOffice.drawings = list.filter(x => x !== dwg);
     logAudit("DELETE", "Drawing", `حذف المخطط ${dwg.sheet_no}`);
     saveToLocalStorage();
     renderDrawingsTable();
@@ -490,16 +502,17 @@ function deleteDrawingItem(idx) {
   });
 }
 
-function openAddDrawingModal() {
+function openAddDrawingModal(record = null) {
+  if (record) return openEditDrawingModal(record);
   showCrudModal({
     title: "إدراج مخطط هندسي جديد",
     icon: "fa-file-circle-plus",
     fields: [
       { key: "sheet_no", label: "رقم المخطط", required: true, placeholder: "A501" },
-      { key: "title", label: "عنوان وتفاصيل اللوحة", required: true },
-      { key: "discipline", label: "التخصص", type: "select", options: ["Architectural", "Structural", "MEP", "Civil"] },
+      { key: "title", label: "عنوان وتفاصيل اللوحة", required: true, span2: true },
+      { key: "discipline", label: "التخصص", type: "select", options: ["Architectural", "Structural", "MEP", "Civil"], default: "Architectural" },
       { key: "rev", label: "المراجعة", required: true, default: "Rev 01" },
-      { key: "status", label: "الحالة", type: "select", options: ["صالح للتنفيذ IFC", "قيد الاعتماد", "مرجع تصميمي"] }
+      { key: "status", label: "الحالة", type: "select", options: ["صالح للتنفيذ IFC", "قيد الاعتماد", "مرجع تصميمي"], default: "صالح للتنفيذ IFC" }
     ],
     onSave(data) {
       data.id = "DWG-0" + ((MimarERP.techOffice?.drawings?.length || 0) + 1);
@@ -516,14 +529,15 @@ function openAddDrawingModal() {
 }
 
 // Quality Inspection Operations
-function openEditInspectionModal(idx) {
-  const item = MimarERP.techOffice.quality_inspections[idx];
+function openEditInspectionModal(idxOrRec) {
+  const item = typeof idxOrRec === 'object' && idxOrRec !== null ? idxOrRec : MimarERP.techOffice?.quality_inspections?.[idxOrRec];
+  if (!item) return openAddInspectionModal();
   showCrudModal({
     title: "تعديل طلب فحص الجودة (WIR / MIR)",
     icon: "fa-certificate",
     record: item,
     fields: [
-      { key: "activity", label: "النشاط / المادة المفحوصة", required: true },
+      { key: "activity", label: "النشاط / المادة المفحوصة", required: true, span2: true },
       { key: "location", label: "الموقع في المشروع", required: true },
       { key: "result", label: "نتيجة الفحص الفني", required: true },
       { key: "status", label: "الحالة", type: "select", options: ["معتمد", "مرفوض", "معتمد بملاحظات", "قيد الفحص"] }
@@ -538,10 +552,13 @@ function openEditInspectionModal(idx) {
   });
 }
 
-function deleteInspectionItem(idx) {
-  const item = MimarERP.techOffice.quality_inspections[idx];
+function deleteInspectionItem(idxOrId) {
+  if (!MimarERP.techOffice?.quality_inspections) return;
+  const list = MimarERP.techOffice.quality_inspections;
+  const item = typeof idxOrId === 'number' ? list[idxOrId] : list.find(x => x.id === idxOrId);
+  if (!item) return;
   confirmDelete(`حذف طلب الفحص <strong>${item.id}</strong>؟`, () => {
-    MimarERP.techOffice.quality_inspections.splice(idx, 1);
+    MimarERP.techOffice.quality_inspections = list.filter(x => x !== item);
     logAudit("DELETE", "QA/QC", `حذف طلب الفحص ${item.id}`);
     saveToLocalStorage();
     renderInspectionsTable();
@@ -549,7 +566,8 @@ function deleteInspectionItem(idx) {
   });
 }
 
-function openAddInspectionModal() {
+function openAddInspectionModal(record = null) {
+  if (record) return openEditInspectionModal(record);
   const count = MimarERP.techOffice?.quality_inspections?.length || 0;
   showCrudModal({
     title: "إصدار طلب فحص جودة جديد (Work Inspection Request)",
@@ -557,7 +575,7 @@ function openAddInspectionModal() {
     fields: [
       { key: "id", label: "رقم طلب الفحص", required: true, default: "WIR-0" + (count + 1) },
       { key: "type", label: "نوع الفحص", type: "select", options: ["WIR فحص أعمال", "MIR فحص مواد"] },
-      { key: "activity", label: "بيان الأعمال المطلوب فحصها", required: true },
+      { key: "activity", label: "بيان الأعمال المطلوب فحصها", required: true, span2: true },
       { key: "location", label: "الموقع الدقيق", required: true },
       { key: "boq_ref", label: "رمز بند BOQ", default: "BOQ-01" },
       { key: "result", label: "النتيجة الأولية", default: "مطابق للشروط والمواصفات" }
@@ -576,51 +594,22 @@ function openAddInspectionModal() {
   });
 }
 
-// 9. Attach Add buttons to QA/QC, Drawings, Schedule, Billing & Procurement headers
-function attachHeaderAddButtons() {
-  const mappings = [
-    { viewId: "view-scheduling", label: "نشاط جديد", fn: "openAddScheduleModal()", icon: "fa-plus" },
-    { viewId: "view-billing", label: "مستخلص جديد", fn: "openAddBillingIPCModal()", icon: "fa-plus" },
-    { viewId: "view-qa-qc", label: "طلب فحص جديد (WIR/MIR)", fn: "openAddInspectionModal()", icon: "fa-plus" },
-    { viewId: "view-doc-control", label: "إدراج مخطط (DWG)", fn: "openAddDrawingModal()", icon: "fa-plus" },
-    { viewId: "view-procurement", label: "أمر شراء جديد (PO)", fn: "openAddPOModal()", icon: "fa-cart-plus" }
-  ];
-
-  mappings.forEach(m => {
-    const sec = document.getElementById(m.viewId);
-    if (!sec) return;
-    if (sec.querySelector(`button[data-btn-added="${m.viewId}"]`)) return;
-
-    const hdr = sec.querySelector(".card-header") || sec.querySelector("div[style*='justify-content:space-between']");
-    if (hdr) {
-      const btn = document.createElement("button");
-      btn.className = "btn btn-primary btn-sm";
-      btn.setAttribute("data-btn-added", m.viewId);
-      btn.innerHTML = `<i class="fas ${m.icon}"></i> ${m.label}`;
-      btn.onclick = new Function(m.fn);
-      hdr.appendChild(btn);
-    }
-  });
-}
-
-// 10. Update renderAllViews to include all newly dynamic views
-const _prevRenderAll = window.renderAllViews;
+// 9. Update renderAllViews to include all dynamic views
+const _prevRenderAllExt = window.renderAllViews;
 window.renderAllViews = function() {
-  if (typeof _prevRenderAll === "function") _prevRenderAll();
-  renderProcurementTable();
-  renderScheduleTable();
-  renderBillingTable();
-  renderInspectionsTable();
-  renderDrawingsTable();
-  renderAuditLogTable();
-  attachHeaderAddButtons();
+  if (typeof _prevRenderAllExt === "function") _prevRenderAllExt();
+  if (typeof renderProcurementTable === 'function') renderProcurementTable();
+  if (typeof renderScheduleTable === 'function') renderScheduleTable();
+  if (typeof renderBillingTable === 'function') renderBillingTable();
+  if (typeof renderInspectionsTable === 'function') renderInspectionsTable();
+  if (typeof renderDrawingsTable === 'function') renderDrawingsTable();
+  if (typeof renderAuditLogTable === 'function') renderAuditLogTable();
 };
 
-if (typeof document !== 'undefined' && typeof document.addEventListener === 'function') {
+if (typeof document !== 'undefined') {
   document.addEventListener("DOMContentLoaded", () => {
     setTimeout(() => {
-      attachHeaderAddButtons();
-      renderAuditLogTable();
-    }, 400);
+      if (typeof renderAllViews === 'function') renderAllViews();
+    }, 150);
   });
 }

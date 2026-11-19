@@ -8,42 +8,66 @@ function calculateEVM(prj) {
   const PV = BAC * Math.min(progressPct + 0.15, 1.0);
   const AC = EV * 0.945;
   
-  const CV = EV - AC;
-  const SV = EV - PV;
-  const CPI = AC > 0 ? (EV / AC) : 1.0;
-  const SPI = PV > 0 ? (EV / PV) : 1.0;
-  const EAC = CPI > 0 ? (BAC / CPI) : BAC;
-  const VAC = BAC - EAC;
+  // OpenConstructionERP Full EVM Multi-Variant Kernel
+  const evm = (window.FullEvmEngine && window.FullEvmEngine.computeFullEVMKernel)
+    ? window.FullEvmEngine.computeFullEVMKernel(BAC, PV, EV, AC)
+    : {
+        CV: EV - AC,
+        SV: EV - PV,
+        CPI: AC > 0 ? (EV / AC) : 1.0,
+        SPI: PV > 0 ? (EV / PV) : 1.0,
+        EAC_CPI: AC > 0 && EV > 0 ? (BAC / (EV / AC)) : BAC,
+        EAC_Remaining: AC + (BAC - EV),
+        EAC_Combined: AC + (BAC - EV),
+        VAC: 0,
+        TCPI_BAC: 1.0,
+        TCPI_EAC: 1.0
+      };
 
-  const fmt = (n) => n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const CV = evm.CV;
+  const SV = evm.SV;
+  const CPI = evm.CPI;
+  const SPI = evm.SPI;
+  const EAC = evm.EAC_CPI;
+  const VAC = evm.VAC;
+
+  const fmt = (n) => Number(n).toLocaleString('ar-SA', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   
-  document.getElementById("kpi-contract-value").textContent = fmt(prj.contract_value);
-  document.getElementById("kpi-budget-cost").textContent = fmt(BAC);
-  document.getElementById("kpi-ev-value").textContent = fmt(EV);
-  document.getElementById("kpi-ac-value").textContent = fmt(AC);
-  document.getElementById("kpi-progress-pct").textContent = (progressPct * 100).toFixed(1) + "%";
+  const setEl = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+
+  setEl("kpi-contract-value", fmt(prj.contract_value));
+  setEl("kpi-budget-cost", fmt(BAC));
+  setEl("kpi-ev-value", fmt(EV));
+  setEl("kpi-ac-value", fmt(AC));
+  setEl("kpi-progress-pct", (progressPct * 100).toFixed(1) + "%");
   
-  document.getElementById("kpi-cpi-val").textContent = CPI.toFixed(3);
-  document.getElementById("kpi-spi-val").textContent = SPI.toFixed(3);
-  document.getElementById("kpi-eac-val").textContent = fmt(EAC);
-  document.getElementById("kpi-vac-val").textContent = fmt(VAC);
+  setEl("kpi-cpi-val", CPI.toFixed(3));
+  setEl("kpi-spi-val", SPI.toFixed(3));
+  setEl("kpi-eac-val", fmt(EAC));
+  setEl("kpi-vac-val", fmt(VAC));
+  setEl("kpi-tcpi-val", evm.TCPI_BAC.toFixed(3));
+  setEl("kpi-eac-combined-val", fmt(evm.EAC_Combined));
 
   const cardCpi = document.getElementById("card-cpi");
   const cardSpi = document.getElementById("card-spi");
-  if (CPI >= 1.0) {
-    cardCpi.className = "kpi-card green";
-    document.getElementById("kpi-cpi-desc").textContent = "أداء التكلفة ممتاز (وفر بالميزانية)";
-  } else {
-    cardCpi.className = "kpi-card red";
-    document.getElementById("kpi-cpi-desc").textContent = "تحذير: تجاوز في التكاليف الفعلية";
+  if (cardCpi) {
+    if (CPI >= 1.0) {
+      cardCpi.className = "kpi-card green";
+      setEl("kpi-cpi-desc", "أداء التكلفة ممتاز (وفر بالميزانية)");
+    } else {
+      cardCpi.className = "kpi-card red";
+      setEl("kpi-cpi-desc", "تحذير: تجاوز في التكاليف الفعلية");
+    }
   }
 
-  if (SPI >= 1.0) {
-    cardSpi.className = "kpi-card green";
-    document.getElementById("kpi-spi-desc").textContent = "المشروع متقدم عن الجدول الزمني";
-  } else {
-    cardSpi.className = "kpi-card amber";
-    document.getElementById("kpi-spi-desc").textContent = "المشروع يعاني من تأخير طفيف";
+  if (cardSpi) {
+    if (SPI >= 1.0) {
+      cardSpi.className = "kpi-card green";
+      setEl("kpi-spi-desc", "المشروع متقدم عن الجدول الزمني");
+    } else {
+      cardSpi.className = "kpi-card amber";
+      setEl("kpi-spi-desc", "المشروع يعاني من تأخير طفيف");
+    }
   }
 }
 

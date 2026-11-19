@@ -33,145 +33,253 @@
   </div>
 
   <nav class="sidebar-nav">
-    <div class="nav-group-title">لوحات القيادة والمتابعة</div>
-    <a class="nav-item active" onclick="switchView('dashboard')">
-      <i class="fas fa-gauge-high"></i><span class="nav-text">لوحة التحكم التنفيذية</span>
-    </a>
-    <a class="nav-item" onclick="switchView('cost-control')">
-      <i class="fas fa-chart-line"></i><span class="nav-text">ضبط التكاليف (EVM)</span>
-      <span class="badge-pill" style="background:rgba(0,141,218,0.3)">AACE</span>
-    </a>
+    <div class="sidebar-nav-actions">
+      <button type="button" class="nav-action-btn" onclick="collapseAllNavGroups(true)" title="طي جميع الأقسام">
+        <i class="fas fa-compress-alt"></i> <span>طي الكل</span>
+      </button>
+      <button type="button" class="nav-action-btn" onclick="collapseAllNavGroups(false)" title="فتح جميع الأقسام">
+        <i class="fas fa-expand-alt"></i> <span>توسيع الكل</span>
+      </button>
+    </div>
 
-    <div class="nav-group-title">البيانات الأساسية (Master Data)</div>
-    <a class="nav-item" onclick="switchView('companies')">
-      <i class="fas fa-building-user"></i><span class="nav-text">الشركات والفروع</span>
-    </a>
-    <a class="nav-item" onclick="switchView('partners')">
-      <i class="fas fa-handshake-simple"></i><span class="nav-text">الشركاء التجاريون (BP 360°)</span>
-    </a>
-    <a class="nav-item" onclick="switchView('projects')">
-      <i class="fas fa-diagram-project"></i><span class="nav-text">محفظة المشاريع والعقود</span>
-    </a>
+    <!-- GROUP 1: لوحات القيادة والمتابعة -->
+    <div class="nav-group" id="nav-grp-dashboard">
+      <div class="nav-group-header" onclick="toggleNavGroup(this)">
+        <div class="nav-group-title">
+          <i class="fas fa-gauge-high nav-group-icon"></i>
+          <span>لوحات القيادة والمتابعة</span>
+        </div>
+        <div class="nav-group-meta">
+          <span class="nav-group-count">2</span>
+          <i class="fas fa-chevron-down nav-group-chevron"></i>
+        </div>
+      </div>
+      <div class="nav-group-items">
+        <a class="nav-item active" onclick="switchView('dashboard')">
+          <i class="fas fa-gauge-high"></i><span class="nav-text">لوحة التحكم التنفيذية</span>
+        </a>
+        <a class="nav-item" onclick="switchView('cost-control')">
+          <i class="fas fa-chart-line"></i><span class="nav-text">ضبط التكاليف (EVM)</span>
+          <span class="badge-pill" style="background:rgba(0,141,218,0.3)">AACE</span>
+        </a>
+      </div>
+    </div>
 
-    <div class="nav-group-title">المكتب الفني والحصر والتسعير</div>
-    <a class="nav-item" onclick="switchView('wbs-boq')">
-      <i class="fas fa-sitemap"></i><span class="nav-text">جدول الكميات (WBS / BOQ)</span>
-    </a>
-    <a class="nav-item" onclick="switchView('takeoff')">
-      <i class="fas fa-ruler-combined"></i><span class="nav-text">دفتر الحصر الهندسي (QTO)</span>
-    </a>
-    <a class="nav-item" onclick="switchView('rate-analysis')">
-      <i class="fas fa-calculator"></i><span class="nav-text">التحليل السعري للبنود</span>
-    </a>
-    <a class="nav-item" onclick="switchView('bim-viewer')">
-      <i class="fas fa-cubes" style="color:var(--purple)"></i><span class="nav-text">نمذجة البناء 3D / 4D BIM</span>
-      <span class="badge-pill" style="background:rgba(124,58,237,0.3)">IFC/QTO</span>
-    </a>
-    <a class="nav-item" onclick="switchView('clash')">
-      <i class="fas fa-arrows-to-dot" style="color:var(--red)"></i><span class="nav-text">فحص التعارضات (BIM Clash)</span>
-      <span class="badge-pill" style="background:rgba(225,29,72,0.25)">BCF</span>
-    </a>
-    <a class="nav-item" onclick="switchView('submittals')">
-      <i class="fas fa-file-circle-check" style="color:var(--teal)"></i><span class="nav-text">اعتمادات المخططات والمواد</span>
-      <span class="badge-pill" style="background:rgba(13,148,136,0.3)">Codes A-D</span>
-    </a>
-    <a class="nav-item" onclick="switchView('rebar')">
-      <i class="fas fa-bars-staggered" style="color:var(--blue)"></i><span class="nav-text">تفريد حديد التسليح (BBS)</span>
-      <span class="badge-pill" style="background:rgba(0,141,218,0.3)">D²/162</span>
-    </a>
+    <!-- GROUP 2: البيانات الأساسية -->
+    <div class="nav-group" id="nav-grp-master">
+      <div class="nav-group-header" onclick="toggleNavGroup(this)">
+        <div class="nav-group-title">
+          <i class="fas fa-database nav-group-icon"></i>
+          <span>البيانات الأساسية (Master Data)</span>
+        </div>
+        <div class="nav-group-meta">
+          <span class="nav-group-count">3</span>
+          <i class="fas fa-chevron-down nav-group-chevron"></i>
+        </div>
+      </div>
+      <div class="nav-group-items">
+        <a class="nav-item" onclick="switchView('companies')">
+          <i class="fas fa-building-user"></i><span class="nav-text">الشركات والفروع</span>
+        </a>
+        <a class="nav-item" onclick="switchView('partners')">
+          <i class="fas fa-handshake-simple"></i><span class="nav-text">الشركاء التجاريون (BP 360°)</span>
+        </a>
+        <a class="nav-item" onclick="switchView('projects')">
+          <i class="fas fa-diagram-project"></i><span class="nav-text">محفظة المشاريع والعقود</span>
+        </a>
+      </div>
+    </div>
 
-    <div class="nav-group-title">سلسلة الإمداد والمستودعات</div>
-    <a class="nav-item" onclick="switchView('procurement')">
-      <i class="fas fa-cart-shopping"></i><span class="nav-text">أوامر الشراء والتوريد</span>
-    </a>
-    <a class="nav-item" onclick="switchView('supplier-comparison')">
-      <i class="fas fa-scale-balanced" style="color:var(--teal)"></i><span class="nav-text">مقارنة أسعار الموردين</span>
-      <span class="badge-pill" style="background:rgba(13,148,136,0.3)">SSOT</span>
-    </a>
-    <a class="nav-item" onclick="switchView('contractors-matrix')">
-      <i class="fas fa-users-gear" style="color:var(--blue)"></i><span class="nav-text">سجل ومصفوفة المقاولين</span>
-    </a>
-    <a class="nav-item" onclick="switchView('inventory')">
-      <i class="fas fa-warehouse"></i><span class="nav-text">إدارة المخازن المتعددة</span>
-    </a>
-    <a class="nav-item" onclick="switchView('subcontracts')">
-      <i class="fas fa-user-gear"></i><span class="nav-text">إدارة مقاولي الباطن</span>
-    </a>
+    <!-- GROUP 3: المكتب الفني والحصر والتسعير -->
+    <div class="nav-group" id="nav-grp-engineering">
+      <div class="nav-group-header" onclick="toggleNavGroup(this)">
+        <div class="nav-group-title">
+          <i class="fas fa-drafting-compass nav-group-icon"></i>
+          <span>المكتب الفني والحصر والتسعير</span>
+        </div>
+        <div class="nav-group-meta">
+          <span class="nav-group-count">7</span>
+          <i class="fas fa-chevron-down nav-group-chevron"></i>
+        </div>
+      </div>
+      <div class="nav-group-items">
+        <a class="nav-item" onclick="switchView('wbs-boq')">
+          <i class="fas fa-sitemap"></i><span class="nav-text">جدول الكميات (WBS / BOQ)</span>
+        </a>
+        <a class="nav-item" onclick="switchView('takeoff')">
+          <i class="fas fa-ruler-combined"></i><span class="nav-text">دفتر الحصر الهندسي (QTO)</span>
+        </a>
+        <a class="nav-item" onclick="switchView('rate-analysis')">
+          <i class="fas fa-calculator"></i><span class="nav-text">التحليل السعري للبنود</span>
+        </a>
+        <a class="nav-item" onclick="switchView('bim-viewer')">
+          <i class="fas fa-cubes" style="color:var(--purple)"></i><span class="nav-text">نمذجة البناء 3D / 4D BIM</span>
+          <span class="badge-pill" style="background:rgba(124,58,237,0.3)">IFC/QTO</span>
+        </a>
+        <a class="nav-item" onclick="switchView('clash')">
+          <i class="fas fa-arrows-to-dot" style="color:var(--red)"></i><span class="nav-text">فحص التعارضات (BIM Clash)</span>
+          <span class="badge-pill" style="background:rgba(225,29,72,0.25)">BCF</span>
+        </a>
+        <a class="nav-item" onclick="switchView('submittals')">
+          <i class="fas fa-file-circle-check" style="color:var(--teal)"></i><span class="nav-text">اعتمادات المخططات والمواد</span>
+          <span class="badge-pill" style="background:rgba(13,148,136,0.3)">Codes A-D</span>
+        </a>
+        <a class="nav-item" onclick="switchView('rebar')">
+          <i class="fas fa-bars-staggered" style="color:var(--blue)"></i><span class="nav-text">تفريد حديد التسليح (BBS)</span>
+          <span class="badge-pill" style="background:rgba(0,141,218,0.3)">D²/162</span>
+        </a>
+      </div>
+    </div>
 
-    <div class="nav-group-title">التنفيذ والتحكم والفوترة</div>
-    <a class="nav-item" onclick="switchView('site-diary')">
-      <i class="fas fa-calendar-check" style="color:var(--teal)"></i><span class="nav-text">يوميات وتقارير الموقع</span>
-    </a>
-    <a class="nav-item" onclick="switchView('punch-list')">
-      <i class="fas fa-clipboard-list" style="color:var(--amber)"></i><span class="nav-text">قائمة الملاحظات (Punch List)</span>
-    </a>
-    <a class="nav-item" onclick="switchView('rfi')">
-      <i class="fas fa-circle-question" style="color:var(--purple)"></i><span class="nav-text">استفسارات الموقع (RFI Hub)</span>
-      <span class="badge-pill" style="background:rgba(124,58,237,0.3)">Impact</span>
-    </a>
-    <a class="nav-item" onclick="switchView('scheduling')">
-      <i class="fas fa-calendar-days"></i><span class="nav-text">الجدول الزمني والمسار الحرج</span>
-    </a>
-    <a class="nav-item" onclick="switchView('billing')">
-      <i class="fas fa-file-invoice-dollar"></i><span class="nav-text">المستخلصات التراكمية (IPC)</span>
-      <span class="badge-pill" style="background:rgba(5,150,105,0.3)">ZATCA</span>
-    </a>
-    <a class="nav-item" onclick="switchView('qa-qc')">
-      <i class="fas fa-clipboard-check"></i><span class="nav-text">ضبط وتوكيد الجودة (QA/QC)</span>
-    </a>
-    <a class="nav-item" onclick="switchView('doc-control')">
-      <i class="fas fa-folder-tree"></i><span class="nav-text">إدارة الوثائق (ISO 19650)</span>
-    </a>
-    <a class="nav-item" onclick="switchView('contract-admin')">
-      <i class="fas fa-file-signature"></i><span class="nav-text">إدارة العقود والمطالبات (EOT)</span>
-    </a>
-    <a class="nav-item" onclick="switchView('variations')">
-      <i class="fas fa-file-pen" style="color:var(--amber)"></i><span class="nav-text">أوامر التغيير (Change Orders)</span>
-      <span class="badge-pill" style="background:rgba(217,119,6,0.3)">Variations</span>
-    </a>
+    <!-- GROUP 4: سلسلة الإمداد والمستودعات -->
+    <div class="nav-group" id="nav-grp-supply">
+      <div class="nav-group-header" onclick="toggleNavGroup(this)">
+        <div class="nav-group-title">
+          <i class="fas fa-boxes-packing nav-group-icon"></i>
+          <span>سلسلة الإمداد والمستودعات</span>
+        </div>
+        <div class="nav-group-meta">
+          <span class="nav-group-count">5</span>
+          <i class="fas fa-chevron-down nav-group-chevron"></i>
+        </div>
+      </div>
+      <div class="nav-group-items">
+        <a class="nav-item" onclick="switchView('procurement')">
+          <i class="fas fa-cart-shopping"></i><span class="nav-text">أوامر الشراء والتوريد</span>
+        </a>
+        <a class="nav-item" onclick="switchView('supplier-comparison')">
+          <i class="fas fa-scale-balanced" style="color:var(--teal)"></i><span class="nav-text">مقارنة أسعار الموردين</span>
+          <span class="badge-pill" style="background:rgba(13,148,136,0.3)">SSOT</span>
+        </a>
+        <a class="nav-item" onclick="switchView('contractors-matrix')">
+          <i class="fas fa-users-gear" style="color:var(--blue)"></i><span class="nav-text">سجل ومصفوفة المقاولين</span>
+        </a>
+        <a class="nav-item" onclick="switchView('inventory')">
+          <i class="fas fa-warehouse"></i><span class="nav-text">إدارة المخازن المتعددة</span>
+        </a>
+        <a class="nav-item" onclick="switchView('subcontracts')">
+          <i class="fas fa-user-gear"></i><span class="nav-text">إدارة مقاولي الباطن</span>
+        </a>
+      </div>
+    </div>
 
-    <div class="nav-group-title">الحوكمة والتقارير المؤسسية</div>
-    <a class="nav-item" onclick="switchView('hr')">
-      <i class="fas fa-users"></i><span class="nav-text">الموارد البشرية</span>
-    </a>
-    <a class="nav-item" onclick="switchView('payroll')">
-      <i class="fas fa-money-bill-wave"></i><span class="nav-text">كشوف المرتبات</span>
-    </a>
-    <a class="nav-item" onclick="switchView('finance')">
-      <i class="fas fa-landmark"></i><span class="nav-text">الإدارة المالية</span>
-      <span class="badge-pill" style="background:rgba(5,150,105,0.3)">ZATCA</span>
-    </a>
-    <a class="nav-item" onclick="switchView('equipment')">
-      <i class="fas fa-truck-monster"></i><span class="nav-text">إدارة المعدات</span>
-    </a>
-    <a class="nav-item" onclick="switchView('crm')">
-      <i class="fas fa-handshake"></i><span class="nav-text">إدارة علاقات العملاء</span>
-    </a>
-    <a class="nav-item" onclick="switchView('tenders')">
-      <i class="fas fa-gavel"></i><span class="nav-text">إدارة المناقصات</span>
-    </a>
-    <div class="nav-group-title">التقارير والحوكمة</div>
-    <a class="nav-item" onclick="switchView('reports')">
-      <i class="fas fa-chart-pie"></i><span class="nav-text">التقارير المؤسسية والـ BI</span>
-    </a>
-    <a class="nav-item" onclick="switchView('cvr')">
-      <i class="fas fa-scale-balanced"></i><span class="nav-text">سجل CVR — تسوية التكلفة والقيمة</span>
-    </a>
-    <a class="nav-item" onclick="switchView('cde')">
-      <i class="fas fa-folder-tree"></i><span class="nav-text">بيئة البيانات المشتركة (CDE) ISO 19650</span>
-    </a>
-    <a class="nav-item" onclick="switchView('safety')">
-      <i class="fas fa-hard-hat"></i><span class="nav-text">إدارة السلامة والصحة المهنية (HSE)</span>
-    </a>
-    <a class="nav-item" onclick="switchView('evm')">
-      <i class="fas fa-chart-gantt"></i><span class="nav-text">لوحة EVM — القيمة المكتسبة</span>
-    </a>
-    <a class="nav-item" onclick="switchView('audit-trail')">
-      <i class="fas fa-fingerprint"></i><span class="nav-text">سجل التدقيق الأمني (Audit Log)</span>
-    </a>
-    <a class="nav-item" onclick="switchView('settings')">
-      <i class="fas fa-gears"></i><span class="nav-text">إعدادات المنظومة والصلاحيات</span>
-    </a>
+    <!-- GROUP 5: التنفيذ والتحكم والفوترة -->
+    <div class="nav-group" id="nav-grp-execution">
+      <div class="nav-group-header" onclick="toggleNavGroup(this)">
+        <div class="nav-group-title">
+          <i class="fas fa-helmet-safety nav-group-icon"></i>
+          <span>التنفيذ والتحكم والفوترة</span>
+        </div>
+        <div class="nav-group-meta">
+          <span class="nav-group-count">9</span>
+          <i class="fas fa-chevron-down nav-group-chevron"></i>
+        </div>
+      </div>
+      <div class="nav-group-items">
+        <a class="nav-item" onclick="switchView('site-diary')">
+          <i class="fas fa-calendar-check" style="color:var(--teal)"></i><span class="nav-text">يوميات وتقارير الموقع</span>
+        </a>
+        <a class="nav-item" onclick="switchView('punch-list')">
+          <i class="fas fa-clipboard-list" style="color:var(--amber)"></i><span class="nav-text">قائمة الملاحظات (Punch List)</span>
+        </a>
+        <a class="nav-item" onclick="switchView('rfi')">
+          <i class="fas fa-circle-question" style="color:var(--purple)"></i><span class="nav-text">استفسارات الموقع (RFI Hub)</span>
+          <span class="badge-pill" style="background:rgba(124,58,237,0.3)">Impact</span>
+        </a>
+        <a class="nav-item" onclick="switchView('scheduling')">
+          <i class="fas fa-calendar-days"></i><span class="nav-text">الجدول الزمني والمسار الحرج</span>
+        </a>
+        <a class="nav-item" onclick="switchView('billing')">
+          <i class="fas fa-file-invoice-dollar"></i><span class="nav-text">المستخلصات التراكمية (IPC)</span>
+          <span class="badge-pill" style="background:rgba(5,150,105,0.3)">ZATCA</span>
+        </a>
+        <a class="nav-item" onclick="switchView('qa-qc')">
+          <i class="fas fa-clipboard-check"></i><span class="nav-text">ضبط وتوكيد الجودة (QA/QC)</span>
+        </a>
+        <a class="nav-item" onclick="switchView('doc-control')">
+          <i class="fas fa-folder-tree"></i><span class="nav-text">إدارة الوثائق (ISO 19650)</span>
+        </a>
+        <a class="nav-item" onclick="switchView('contract-admin')">
+          <i class="fas fa-file-signature"></i><span class="nav-text">إدارة العقود والمطالبات (EOT)</span>
+        </a>
+        <a class="nav-item" onclick="switchView('variations')">
+          <i class="fas fa-file-pen" style="color:var(--amber)"></i><span class="nav-text">أوامر التغيير (Change Orders)</span>
+          <span class="badge-pill" style="background:rgba(217,119,6,0.3)">Variations</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- GROUP 6: الحوكمة والتقارير المؤسسية -->
+    <div class="nav-group" id="nav-grp-enterprise">
+      <div class="nav-group-header" onclick="toggleNavGroup(this)">
+        <div class="nav-group-title">
+          <i class="fas fa-building-columns nav-group-icon"></i>
+          <span>الحوكمة والتقارير المؤسسية</span>
+        </div>
+        <div class="nav-group-meta">
+          <span class="nav-group-count">6</span>
+          <i class="fas fa-chevron-down nav-group-chevron"></i>
+        </div>
+      </div>
+      <div class="nav-group-items">
+        <a class="nav-item" onclick="switchView('hr')">
+          <i class="fas fa-users"></i><span class="nav-text">الموارد البشرية</span>
+        </a>
+        <a class="nav-item" onclick="switchView('payroll')">
+          <i class="fas fa-money-bill-wave"></i><span class="nav-text">كشوف المرتبات</span>
+        </a>
+        <a class="nav-item" onclick="switchView('finance')">
+          <i class="fas fa-landmark"></i><span class="nav-text">الإدارة المالية</span>
+          <span class="badge-pill" style="background:rgba(5,150,105,0.3)">ZATCA</span>
+        </a>
+        <a class="nav-item" onclick="switchView('equipment')">
+          <i class="fas fa-truck-monster"></i><span class="nav-text">إدارة المعدات</span>
+        </a>
+        <a class="nav-item" onclick="switchView('crm')">
+          <i class="fas fa-handshake"></i><span class="nav-text">إدارة علاقات العملاء</span>
+        </a>
+        <a class="nav-item" onclick="switchView('tenders')">
+          <i class="fas fa-gavel"></i><span class="nav-text">إدارة المناقصات</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- GROUP 7: التقارير والحوكمة -->
+    <div class="nav-group" id="nav-grp-governance">
+      <div class="nav-group-header" onclick="toggleNavGroup(this)">
+        <div class="nav-group-title">
+          <i class="fas fa-chart-pie nav-group-icon"></i>
+          <span>التقارير والحوكمة</span>
+        </div>
+        <div class="nav-group-meta">
+          <span class="nav-group-count">7</span>
+          <i class="fas fa-chevron-down nav-group-chevron"></i>
+        </div>
+      </div>
+      <div class="nav-group-items">
+        <a class="nav-item" onclick="switchView('reports')">
+          <i class="fas fa-chart-pie"></i><span class="nav-text">التقارير المؤسسية والـ BI</span>
+        </a>
+        <a class="nav-item" onclick="switchView('cvr')">
+          <i class="fas fa-scale-balanced"></i><span class="nav-text">سجل CVR — تسوية التكلفة والقيمة</span>
+        </a>
+        <a class="nav-item" onclick="switchView('cde')">
+          <i class="fas fa-folder-tree"></i><span class="nav-text">بيئة البيانات المشتركة (CDE) ISO 19650</span>
+        </a>
+        <a class="nav-item" onclick="switchView('safety')">
+          <i class="fas fa-hard-hat"></i><span class="nav-text">إدارة السلامة والصحة المهنية (HSE)</span>
+        </a>
+        <a class="nav-item" onclick="switchView('evm')">
+          <i class="fas fa-chart-gantt"></i><span class="nav-text">لوحة EVM — القيمة المكتسبة</span>
+        </a>
+        <a class="nav-item" onclick="switchView('audit-trail')">
+          <i class="fas fa-fingerprint"></i><span class="nav-text">سجل التدقيق الأمني (Audit Log)</span>
+        </a>
+        <a class="nav-item" onclick="switchView('settings')">
+          <i class="fas fa-gears"></i><span class="nav-text">إعدادات المنظومة والصلاحيات</span>
+        </a>
+      </div>
+    </div>
   </nav>
 
   <div class="sidebar-footer">
@@ -362,7 +470,7 @@
       <div class="card">
         <div class="card-header">
           <h3><i class="fas fa-building-user" style="color:var(--teal)"></i> دليل الشركات والكيانات المؤسسية (Multi-Company Master)</h3>
-          <button class="btn btn-primary btn-sm" onclick="openModal('modal-add-company')"><i class="fas fa-plus"></i> إضافة شركة جديدة</button>
+          <button class="btn btn-primary btn-sm" onclick="openAddCompanyModal()"><i class="fas fa-plus"></i> إضافة شركة جديدة</button>
         </div>
         <div class="card-body" style="padding:0;">
           <div class="table-wrapper">
@@ -378,7 +486,10 @@
       </div>
 
       <div class="card">
-        <div class="card-header"><h3><i class="fas fa-code-branch" style="color:var(--amber)"></i> الفروع الإقليمية والمكاتب التنفيذية</h3></div>
+        <div class="card-header">
+          <h3><i class="fas fa-code-branch" style="color:var(--amber)"></i> الفروع الإقليمية والمكاتب التنفيذية</h3>
+          <button class="btn btn-primary btn-sm" onclick="openAddBranchModal()"><i class="fas fa-plus"></i> إضافة فرع جديد</button>
+        </div>
         <div class="card-body" style="padding:0;">
           <div class="table-wrapper">
             <table id="tbl-branches">
@@ -403,6 +514,7 @@
           <option value="Subcontractor">مقاولو الباطن (Subcontractors)</option>
           <option value="Consultant">المكاتب الاستشارية (Consultants)</option>
         </select>
+        <button class="btn btn-primary btn-sm" onclick="openAddPartnerModal()"><i class="fas fa-plus"></i> إضافة شريك تجاري</button>
         <button class="btn btn-primary btn-sm" onclick="openAddCatalogModal()"><i class="fas fa-plus-circle"></i> إضافة خامة / بند للمورد</button>
       </div>
 
@@ -526,7 +638,7 @@
         </div>
         <div style="display:flex; gap:8px;">
           <span class="badge badge-green" id="prj-kpi-badge-active">مشاريع نشطة</span>
-          <button class="btn btn-primary btn-sm" onclick="openModal('modal-add-project')"><i class="fas fa-plus"></i> تسجيل مشروع جديد</button>
+          <button class="btn btn-primary btn-sm" onclick="openAddProjectModal()"><i class="fas fa-plus"></i> تسجيل مشروع جديد</button>
         </div>
       </div>
 
@@ -578,7 +690,7 @@
     <section class="page-view" id="view-wbs-boq">
       <div class="toolbar">
         <input class="search-input" id="search-boq" placeholder="بحث في بنود جدول الكميات أو كود CSI...">
-        <button class="btn btn-primary btn-sm" onclick="openModal('modal-add-boq')"><i class="fas fa-plus"></i> إضافة بند جديد</button>
+        <button class="btn btn-primary btn-sm" onclick="openAddBOQModal()"><i class="fas fa-plus"></i> إضافة بند جديد</button>
       </div>
 
       <div class="card">
@@ -615,7 +727,7 @@
     <section class="page-view" id="view-takeoff">
       <div class="toolbar">
         <input class="search-input" id="search-takeoff" placeholder="بحث في بنود الحصر أو المواقع...">
-        <button class="btn btn-primary btn-sm" onclick="openModal('modal-add-takeoff')"><i class="fas fa-plus"></i> إضافة قياس حصر هندسي</button>
+        <button class="btn btn-primary btn-sm" onclick="openAddTakeoffModal()"><i class="fas fa-plus"></i> إضافة قياس حصر هندسي</button>
       </div>
 
       <div class="card">
@@ -649,6 +761,7 @@
         <div style="display:flex; gap:8px;">
           <span class="badge badge-blue">71 بند محلل</span>
           <span class="badge badge-green">AACE Class 2</span>
+          <button class="btn btn-primary btn-sm" onclick="openAddRateAnalysisModal()"><i class="fas fa-plus"></i> إضافة تحليل سعر جديد</button>
         </div>
       </div>
 
@@ -834,11 +947,12 @@
       </div>
 
       <!-- Clash KPI Cards -->
-      <div class="kpi-grid" style="margin-bottom:24px;">
+      <div class="kpi-grid" style="margin-bottom:24px; grid-template-columns: repeat(5, 1fr);">
         <div class="kpi-card"><div class="kpi-header"><span class="kpi-label">إجمالي التعارضات المرصودة</span><div class="kpi-icon-wrap" style="background:var(--blue-bg); color:var(--blue);"><i class="fas fa-list-ol"></i></div></div><div class="kpi-value text-num" id="clash-kpi-total">4</div><div class="kpi-footer">تداخل هندسي مسجل</div></div>
         <div class="kpi-card" style="border-top:4px solid var(--red);"><div class="kpi-header"><span class="kpi-label">تعارضات حرجة (Critical Hard)</span><div class="kpi-icon-wrap" style="background:var(--red-bg); color:var(--red);"><i class="fas fa-triangle-exclamation"></i></div></div><div class="kpi-value text-num" style="color:var(--red);" id="clash-kpi-critical">2</div><div class="kpi-footer">تتطلب تعديل مسار أو Sleeve تعويضي</div></div>
         <div class="kpi-card amber"><div class="kpi-header"><span class="kpi-label">مسافات خلوص (Clearance)</span><div class="kpi-icon-wrap" style="background:var(--amber-bg); color:var(--amber);"><i class="fas fa-ruler-horizontal"></i></div></div><div class="kpi-value text-num" style="color:var(--amber);" id="clash-kpi-clearance">2</div><div class="kpi-footer">أقل من الحد الأدنى للمواصفات</div></div>
         <div class="kpi-card green"><div class="kpi-header"><span class="kpi-label">تم الحل والاعتماد (Resolved)</span><div class="kpi-icon-wrap" style="background:var(--green-bg); color:var(--green);"><i class="fas fa-circle-check"></i></div></div><div class="kpi-value text-num" style="color:var(--green);" id="clash-kpi-resolved">3</div><div class="kpi-footer">تم تعديل الموديل والمخططات</div></div>
+        <div class="kpi-card" style="border-top:4px solid var(--purple);"><div class="kpi-header"><span class="kpi-label">الأثر المالي للتعارضات</span><div class="kpi-icon-wrap" style="background:rgba(124,58,237,0.15); color:var(--purple);"><i class="fas fa-money-bill-transfer"></i></div></div><div class="kpi-value text-num" style="color:var(--purple);" id="clash-kpi-cost">0</div><div class="kpi-footer">ر.س · تكلفة إعادة العمل والتنسيق</div></div>
       </div>
 
       <!-- Clash Detection Table Card -->
@@ -851,6 +965,7 @@
               <option value="نشط">نشط قيد المعالجة (Active)</option>
               <option value="محلول">محلول ومعتمد (Resolved)</option>
             </select>
+            <button class="btn btn-primary btn-sm" onclick="openAddClashModal()"><i class="fas fa-plus"></i> إضافة تعارض جديد</button>
           </div>
         </div>
         <div class="card-body" style="padding:0;">
@@ -859,7 +974,7 @@
               <thead><tr>
                 <th>كود التعارض</th><th>العنصر الأول (Discipline A)</th><th>العنصر الثاني (Discipline B)</th>
                 <th>نوع التعارض</th><th>مسافة التداخل / الخلوص</th><th>الموقع الإنشائي</th>
-                <th>درجة الخطورة</th><th>الحالة</th><th>التوجيه والحل المعتمد</th><th>مرجع RFI</th><th>الإجراء</th>
+                <th>درجة الخطورة</th><th>الحالة</th><th>الأثر المالي المقدر (ر.س)</th><th>التوجيه والحل المعتمد</th><th>مرجع RFI</th><th>الإجراء</th>
               </tr></thead>
               <tbody id="tbl-clash-list-body"></tbody>
             </table>
@@ -995,7 +1110,10 @@
       <div class="card">
         <div class="card-header">
           <h3><i class="fas fa-bars-staggered" style="color:var(--blue)"></i> جدول تفريد وتقطيع حديد التسليح التفصيلي (BBS Schedule)</h3>
-          <span class="badge badge-purple">طبقاً لمواصفات BS 8666 / SBC 304</span>
+          <div style="display:flex; gap:8px; align-items:center;">
+            <span class="badge badge-purple">طبقاً لمواصفات BS 8666 / SBC 304</span>
+            <button class="btn btn-primary btn-sm" onclick="openAddRebarBBSModal()"><i class="fas fa-plus"></i> إضافة بند تفريد حديد</button>
+          </div>
         </div>
         <div class="card-body" style="padding:0;">
           <div class="table-wrapper">
@@ -1024,6 +1142,7 @@
         <div style="display:flex; gap:8px;">
           <span class="badge badge-blue">AACE RP-10S-90</span>
           <span class="badge badge-purple">EVM Class 1</span>
+          <button class="btn btn-primary btn-sm" onclick="openAddCostControlModal()"><i class="fas fa-plus"></i> إضافة بند رقابة تكاليف</button>
         </div>
       </div>
 
@@ -1159,7 +1278,7 @@
       <div class="card">
         <div class="card-header">
           <h3><i class="fas fa-handshake" style="color:var(--teal)"></i> سجل الفرص التجارية والعملاء (Opportunity Register)</h3>
-          <button class="btn btn-primary btn-sm"><i class="fas fa-plus"></i> إضافة فرصة جديدة</button>
+          <button class="btn btn-primary btn-sm" onclick="openAddCRMModal()"><i class="fas fa-plus"></i> إضافة فرصة جديدة</button>
         </div>
         <div class="card-body" style="padding:0;">
           <div class="table-wrapper">
@@ -1224,7 +1343,7 @@
       <div class="card">
         <div class="card-header">
           <h3><i class="fas fa-gavel" style="color:var(--amber)"></i> سجل المناقصات والعطاءات (Tender Register)</h3>
-          <button class="btn btn-primary btn-sm"><i class="fas fa-plus"></i> تسجيل مناقصة جديدة</button>
+          <button class="btn btn-primary btn-sm" onclick="openAddTenderModal()"><i class="fas fa-plus"></i> تسجيل مناقصة جديدة</button>
         </div>
         <div class="card-body" style="padding:0;">
           <div class="table-wrapper">
@@ -1257,6 +1376,7 @@
         <div class="card">
           <div class="card-header">
             <h3><i class="fas fa-cart-shopping" style="color:var(--amber)"></i> أوامر الشراء الصادرة للمشروع</h3>
+            <button class="btn btn-primary btn-sm" onclick="openAddPOModal()"><i class="fas fa-plus"></i> إصدار أمر شراء جديد</button>
           </div>
           <div class="card-body" style="padding:0;">
             <div class="table-wrapper">
@@ -1317,7 +1437,7 @@
         </div>
         <div style="display:flex; gap:8px;">
           <span class="badge badge-green">تقييم WAC</span>
-          <button class="btn btn-primary btn-sm"><i class="fas fa-plus"></i> إذن استلام / صرف مخزني</button>
+          <button class="btn btn-primary btn-sm" onclick="openAddInventoryModal()"><i class="fas fa-plus"></i> إذن استلام / صرف مخزني</button>
         </div>
       </div>
 
@@ -1374,7 +1494,7 @@
         </div>
         <div style="display:flex; gap:8px;">
           <span class="badge badge-purple">FIDIC Subcontract Form</span>
-          <button class="btn btn-primary btn-sm"><i class="fas fa-plus"></i> إبرام عقد باطن جديد</button>
+          <button class="btn btn-primary btn-sm" onclick="openAddSubcontractModal()"><i class="fas fa-plus"></i> إبرام عقد باطن جديد</button>
         </div>
       </div>
 
@@ -1627,6 +1747,7 @@
     <!-- VIEW 11: SCHEDULING & CPM -->
     <section class="page-view" id="view-scheduling">
       <div class="toolbar">
+        <button class="btn btn-primary btn-sm" onclick="openAddScheduleModal()"><i class="fas fa-plus"></i> إضافة نشاط زمني جديد</button>
         <button class="btn btn-primary btn-sm" onclick="exportPrimaveraXER()"><i class="fas fa-download"></i> تصدير ملف Primavera P6 (.XER)</button>
         <button class="btn btn-outline btn-sm" onclick="calculateCPM()"><i class="fas fa-network-wired"></i> حساب المسار الحرج (CPM Forward/Backward)</button>
       </div>
@@ -1656,7 +1777,10 @@
       <div class="card">
         <div class="card-header">
           <h3><i class="fas fa-file-invoice-dollar" style="color:var(--green)"></i> شهادات الدفع والمستخلصات التراكمية (Interim Payment Certificates)</h3>
-          <span class="badge badge-green"><i class="fas fa-qrcode"></i> مطابق لمنظومة الفوترة الإلكترونية ZATCA المرحلة الثانية</span>
+          <div style="display:flex; gap:8px; align-items:center;">
+            <span class="badge badge-green"><i class="fas fa-qrcode"></i> مطابق لمنظومة الفوترة الإلكترونية ZATCA المرحلة الثانية</span>
+            <button class="btn btn-primary btn-sm" onclick="openAddBillingIPCModal()"><i class="fas fa-plus"></i> إنشاء مستخلص جديد (IPC)</button>
+          </div>
         </div>
         <div class="card-body" style="padding:0;">
           <div class="table-wrapper">
@@ -1679,7 +1803,10 @@
       <div class="card">
         <div class="card-header">
           <h3><i class="fas fa-clipboard-check" style="color:var(--teal)"></i> سجل طلبات الفحص الموقعي (WIR / MIR / NCR Log)</h3>
-          <span class="badge badge-blue">معايير كود البناء السعودي SBC ومواصفات الاستشاري</span>
+          <div style="display:flex; gap:8px; align-items:center;">
+            <span class="badge badge-blue">معايير كود البناء السعودي SBC ومواصفات الاستشاري</span>
+            <button class="btn btn-primary btn-sm" onclick="openAddInspectionModal()"><i class="fas fa-plus"></i> طلب فحص موقعي جديد (WIR/MIR)</button>
+          </div>
         </div>
         <div class="card-body" style="padding:0;">
           <div class="table-wrapper">
@@ -1701,7 +1828,10 @@
       <div class="card">
         <div class="card-header">
           <h3><i class="fas fa-folder-tree" style="color:var(--navy)"></i> سجل المخططات والوثائق الهندسية (Master Document Register - MDR)</h3>
-          <span class="badge badge-purple">معايير الآيزو ISO 19650 (IFR / IFA / IFC / As-Built)</span>
+          <div style="display:flex; gap:8px; align-items:center;">
+            <span class="badge badge-purple">معايير الآيزو ISO 19650 (IFR / IFA / IFC / As-Built)</span>
+            <button class="btn btn-primary btn-sm" onclick="openAddDrawingModal()"><i class="fas fa-plus"></i> تسجيل مخطط جديد</button>
+          </div>
         </div>
         <div class="card-body" style="padding:0;">
           <div class="table-wrapper">
@@ -2120,7 +2250,7 @@
         </div>
         <div style="display:flex;gap:8px;">
           <span class="badge badge-green">سجل موحد</span>
-          <button class="btn btn-primary btn-sm"><i class="fas fa-plus"></i> موظف جديد</button>
+          <button class="btn btn-primary btn-sm" onclick="openAddEmployeeModal()"><i class="fas fa-plus"></i> موظف جديد</button>
         </div>
       </div>
       <div class="kpi-grid" style="margin-bottom:24px;">
@@ -2154,7 +2284,7 @@
         <div class="kpi-card"><div class="kpi-header"><span class="kpi-label">إجمالي الاستقطاعات</span><div class="kpi-icon-wrap" style="background:var(--red-bg);color:var(--red)"><i class="fas fa-minus-circle"></i></div></div><div class="kpi-value text-num" id="pay-kpi-deductions">0</div><div class="kpi-footer">ضمان اجتماعي وغيرها</div></div>
         <div class="kpi-card green"><div class="kpi-header"><span class="kpi-label">صافي المرتبات</span><div class="kpi-icon-wrap" style="background:var(--green-bg);color:var(--green)"><i class="fas fa-hand-holding-dollar"></i></div></div><div class="kpi-value text-num" id="pay-kpi-net">0</div><div class="kpi-footer">ر.س شهرياً</div></div>
       </div>
-      <div class="card"><div class="card-header"><h3><i class="fas fa-file-invoice-dollar" style="color:var(--green)"></i> كشف المرتبات الشهري</h3><button class="btn btn-outline btn-sm"><i class="fas fa-print"></i> طباعة</button></div>
+      <div class="card"><div class="card-header"><h3><i class="fas fa-file-invoice-dollar" style="color:var(--green)"></i> كشف المرتبات الشهري</h3><div style="display:flex;gap:8px;"><button class="btn btn-primary btn-sm" onclick="openAddPayrollModal()"><i class="fas fa-plus"></i> إضافة قيد راتب</button><button class="btn btn-outline btn-sm"><i class="fas fa-print"></i> طباعة</button></div></div>
         <div class="card-body" style="padding:0;"><div class="table-wrapper">
           <table id="tbl-payroll"><thead><tr>
             <th>الموظف</th><th>القسم</th><th class="text-num">الراتب الأساسي</th><th class="text-num">بدل السكن</th>
@@ -2189,12 +2319,18 @@
           <button class="tab-link" onclick="switchFinanceTab(this,'fin-tab-budget')"><i class="fas fa-chart-bar"></i> الميزانية</button>
         </div>
         <div class="tab-content active" id="fin-tab-billings" style="padding:0;">
+          <div style="padding:10px 16px; display:flex; justify-content:flex-end; border-bottom:1px solid var(--line);">
+            <button class="btn btn-primary btn-sm" onclick="openAddFinanceBillingModal()"><i class="fas fa-plus"></i> إضافة مستخلص وارد جديد</button>
+          </div>
           <div class="table-wrapper"><table id="tbl-finance-billings"><thead><tr>
             <th>رقم المستخلص</th><th>المشروع</th><th>المالك</th><th class="text-num">المبلغ (ر.س)</th>
             <th>تاريخ التقديم</th><th>تاريخ الموافقة</th><th>الحالة</th><th class="text-num">المحصل</th>
           </tr></thead><tbody id="tbl-finance-billings-body"></tbody></table></div>
         </div>
         <div class="tab-content" id="fin-tab-ap" style="padding:0;">
+          <div style="padding:10px 16px; display:flex; justify-content:flex-end; border-bottom:1px solid var(--line);">
+            <button class="btn btn-primary btn-sm" onclick="openAddFinanceAPModal()"><i class="fas fa-plus"></i> تسجيل فاتورة مورد (AP)</button>
+          </div>
           <div class="table-wrapper"><table id="tbl-finance-ap"><thead><tr>
             <th>رقم الفاتورة</th><th>المورد</th><th class="text-num">المبلغ (ر.س)</th><th>تاريخ الاستحقاق</th><th>الحالة</th>
           </tr></thead><tbody id="tbl-finance-ap-body"></tbody></table></div>
@@ -2223,7 +2359,7 @@
         <div class="kpi-card amber"><div class="kpi-header"><span class="kpi-label">في الصيانة</span><div class="kpi-icon-wrap" style="background:var(--amber-bg);color:var(--amber)"><i class="fas fa-wrench"></i></div></div><div class="kpi-value text-num" id="equip-kpi-maintenance">0</div><div class="kpi-footer">قيد الإصلاح</div></div>
         <div class="kpi-card"><div class="kpi-header"><span class="kpi-label">متوقفة</span><div class="kpi-icon-wrap" style="background:var(--red-bg);color:var(--red)"><i class="fas fa-ban"></i></div></div><div class="kpi-value text-num" id="equip-kpi-idle">0</div><div class="kpi-footer">غير مشغلة</div></div>
       </div>
-      <div class="card"><div class="card-header"><h3><i class="fas fa-truck" style="color:var(--amber)"></i> سجل الأسطول الميكانيكي (Fleet Register)</h3><button class="btn btn-primary btn-sm"><i class="fas fa-plus"></i> إضافة معدة</button></div>
+      <div class="card"><div class="card-header"><h3><i class="fas fa-truck" style="color:var(--amber)"></i> سجل الأسطول الميكانيكي (Fleet Register)</h3><button class="btn btn-primary btn-sm" onclick="openAddEquipmentModal()"><i class="fas fa-plus"></i> إضافة معدة</button></div>
         <div class="card-body" style="padding:0;"><div class="table-wrapper">
           <table id="tbl-equipment"><thead><tr>
             <th>كود المعدة</th><th>الاسم</th><th>النوع</th><th>الموديل</th><th>المشروع</th>
@@ -2336,7 +2472,8 @@
             <h3><i class="fas fa-users-gear" style="color:var(--blue)"></i> سجل ومصفوفة تقييم مقاولي الباطن (Subcontractor Matrix)</h3>
             <small style="color:var(--text-muted)">تحليل تشكيلة الأطقم البشرية، التخصص، سرعة التنفيذ وسابقة المشاريع</small>
           </div>
-          <div>
+          <div style="display:flex; gap:8px;">
+            <button class="btn btn-primary btn-sm" onclick="openAddContractorModal()"><i class="fas fa-plus"></i> إضافة مقاول باطن</button>
             <a href="Contractors-Master.xlsx" download class="btn btn-outline btn-sm"><i class="fas fa-file-excel" style="color:var(--teal)"></i> تحميل مصنف المقاولين (Contractors-Master.xlsx)</a>
           </div>
         </div>
@@ -2382,7 +2519,10 @@
       <div class="card" style="margin-top:20px;">
         <div class="card-header">
           <h3><i class="fas fa-calculator" style="color:var(--teal)"></i> أسعار المصنعيات ومعدلات الإنتاج اليومية (Activity Subcontract Rates & Productivity)</h3>
-          <span class="badge badge-teal">تحديث فوري لدفاتر تحليل الأسعار</span>
+          <div style="display:flex; gap:8px; align-items:center;">
+            <span class="badge badge-teal">تحديث فوري لدفاتر تحليل الأسعار</span>
+            <button class="btn btn-primary btn-sm" onclick="openAddContractorRateModal()"><i class="fas fa-plus"></i> إضافة تسعيرة مصنعية</button>
+          </div>
         </div>
         <div class="card-body" style="padding:0;">
           <div class="table-wrapper">
@@ -2402,6 +2542,22 @@
               <tbody></tbody>
             </table>
           </div>
+        </div>
+      </div>
+
+      <!-- Subcontract Tender Packages & Bid Evaluation Card -->
+      <div class="card" style="margin-top:20px;">
+        <div class="card-header" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+          <div>
+            <h3><i class="fas fa-file-contract" style="color:var(--purple)"></i> حزم ومناقصات مقاولي الباطن وتحليل العروض (Subcontract Tender Packages & Bid Analysis)</h3>
+            <small style="color:var(--text-muted)">تقييم عروض مقاولي الباطن مقارنة بتقدير المهندس (Baseline Factor)، نسب التوطين (نطاقات) والدرجة الفنية المركبة</small>
+          </div>
+          <div style="display:flex; gap:8px;">
+            <span class="badge badge-purple">معايير فيديك FIDIC وكود البناء السعودي SBC</span>
+          </div>
+        </div>
+        <div class="card-body" style="padding:16px;">
+          <div id="tender-packages-container"></div>
         </div>
       </div>
     </section>
@@ -2834,6 +2990,7 @@
 <script src="assets/js/jszip.min.js"></script>
 <script src="assets/js/config.js"></script>
 <script src="assets/js/evm-calculator.js"></script>
+<script src="assets/js/enterprise-features.js"></script>
 <script src="assets/js/app.js"></script>
 <script src="assets/js/crud-engine.js"></script>
 <script src="assets/js/crud-extension.js"></script>

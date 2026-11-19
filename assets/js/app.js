@@ -7,6 +7,7 @@ document.addEventListener("DOMContentLoaded", () => {
   applyActiveContext();
   renderAllViews();
   drawSCurve();
+  loadNavGroupState();
 });
 
 function populateCompanyDropdown() {
@@ -96,11 +97,67 @@ function switchView(viewId) {
   navItems.forEach(n => {
     if (n.getAttribute("onclick") && n.getAttribute("onclick").includes(viewId)) {
       n.classList.add("active");
+      const parentGroup = n.closest(".nav-group");
+      if (parentGroup && parentGroup.classList.contains("collapsed")) {
+        parentGroup.classList.remove("collapsed");
+        saveNavGroupState();
+      }
     }
   });
 
   if (viewId === "dashboard") drawSCurve();
 }
+
+function toggleNavGroup(headerEl) {
+  const group = headerEl.closest(".nav-group");
+  if (!group) return;
+  group.classList.toggle("collapsed");
+  saveNavGroupState();
+}
+
+function collapseAllNavGroups(collapse = true) {
+  document.querySelectorAll(".nav-group").forEach(grp => {
+    if (collapse) {
+      grp.classList.add("collapsed");
+    } else {
+      grp.classList.remove("collapsed");
+    }
+  });
+  saveNavGroupState();
+}
+
+function saveNavGroupState() {
+  try {
+    const states = {};
+    document.querySelectorAll(".nav-group").forEach(grp => {
+      if (grp.id) {
+        states[grp.id] = grp.classList.contains("collapsed");
+      }
+    });
+    localStorage.setItem("mimar_nav_collapsed_groups", JSON.stringify(states));
+  } catch (e) {}
+}
+
+function loadNavGroupState() {
+  try {
+    const raw = localStorage.getItem("mimar_nav_collapsed_groups");
+    if (!raw) return;
+    const states = JSON.parse(raw);
+    for (const [id, isCollapsed] of Object.entries(states)) {
+      const el = document.getElementById(id);
+      if (el) {
+        if (isCollapsed) el.classList.add("collapsed");
+        else el.classList.remove("collapsed");
+      }
+    }
+  } catch (e) {}
+}
+
+window.switchView = switchView;
+window.toggleNavGroup = toggleNavGroup;
+window.collapseAllNavGroups = collapseAllNavGroups;
+window.saveNavGroupState = saveNavGroupState;
+window.loadNavGroupState = loadNavGroupState;
 
 function toggleSidebar() {
   document.getElementById("sidebar").classList.toggle("collapsed");
@@ -129,6 +186,8 @@ function renderAllViews() {
   if (typeof renderVariationsList === 'function') renderVariationsList();
   if (typeof renderPunchList === 'function') renderPunchList();
   if (typeof renderSiteDiary === 'function') renderSiteDiary();
+  if (typeof renderSupplierComparisonTable === 'function') renderSupplierComparisonTable();
+  if (typeof renderContractorsMatrixTable === 'function') renderContractorsMatrixTable();
 }
 
 function renderCompaniesTable() {
@@ -1470,6 +1529,11 @@ function renderSupplierComparisonTable() {
     `;
     tbody.appendChild(tr);
   });
+
+  const kpiSuppliers = document.getElementById("kpi-comp-suppliers");
+  if (kpiSuppliers) kpiSuppliers.textContent = (MimarERP.suppliersMaster || []).length;
+  const kpiItems = document.getElementById("kpi-comp-items");
+  if (kpiItems) kpiItems.textContent = compData.length;
 }
 
 function filterSupplierComparison() {
@@ -1519,6 +1583,11 @@ function filterSupplierComparison() {
     `;
     tbody.appendChild(tr);
   });
+
+  const kpiSuppliers = document.getElementById("kpi-comp-suppliers");
+  if (kpiSuppliers) kpiSuppliers.textContent = (MimarERP.suppliersMaster || []).length;
+  const kpiItems = document.getElementById("kpi-comp-items");
+  if (kpiItems) kpiItems.textContent = compData.length;
 }
 
 // -------------------------------------------------------------
