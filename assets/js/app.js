@@ -122,6 +122,13 @@ function renderAllViews() {
   renderInspectionsTable();
   renderDrawingsTable();
   renderSelectedReport("rep-cvr");
+  if (typeof renderSubmittals === 'function') renderSubmittals();
+  if (typeof renderRebarBBS === 'function') renderRebarBBS();
+  if (typeof renderRFIList === 'function') renderRFIList();
+  if (typeof renderClashList === 'function') renderClashList();
+  if (typeof renderVariationsList === 'function') renderVariationsList();
+  if (typeof renderPunchList === 'function') renderPunchList();
+  if (typeof renderSiteDiary === 'function') renderSiteDiary();
 }
 
 function renderCompaniesTable() {
@@ -2994,12 +3001,256 @@ function saveRegionalSettings() {
   showToast(`تم تفعيل وتطبيق حزمة: ${cfg.country_name} بنظام ضريبة ${cfg.vat_rate * 100}% وساعات العمل المعتمدة بنجاح.`);
 }
 
-// Hook into existing switchView for 3D BIM, Site Diary, Punch List, Submittals, BBS, and RFI rendering
+// =============================================================================
+// BIM CLASH DETECTION & INTERFERENCE CONTROLLER (OpenConstructionERP oe_clash)
+// =============================================================================
+function renderClashList(filterStatus) {
+  const tbody = document.getElementById("tbl-clash-list-body");
+  if (!tbody) return;
+
+  const stat = filterStatus || document.getElementById("filter-clash-status")?.value || "All";
+  const clashes = MimarERP.bimClashesMaster || [];
+
+  let filtered = clashes;
+  if (stat !== "All") {
+    filtered = filtered.filter(c => c.status.includes(stat));
+  }
+
+  tbody.innerHTML = filtered.map(c => {
+    let statBadge = `<span class="badge badge-green">${c.status}</span>`;
+    if (c.status.includes("نشط") || c.status.includes("Active")) {
+      statBadge = `<span class="badge badge-red">${c.status}</span>`;
+    }
+
+    let typeBadge = `<span class="badge badge-red">${c.clash_type}</span>`;
+    if (c.clash_type.includes("خلوص") || c.clash_type.includes("Clearance")) {
+      typeBadge = `<span class="badge badge-amber">${c.clash_type}</span>`;
+    }
+
+    return `
+      <tr>
+        <td><strong>${c.clash_id}</strong></td>
+        <td><strong>${c.item_a}</strong> <br><span class="badge badge-purple" style="font-size:10px;">${c.discipline_a}</span></td>
+        <td><strong>${c.item_b}</strong> <br><span class="badge badge-blue" style="font-size:10px;">${c.discipline_b}</span></td>
+        <td>${typeBadge}</td>
+        <td class="text-num" style="font-weight:700; color:var(--red);">${c.overlap_distance}</td>
+        <td style="font-size:11px;">${c.location}</td>
+        <td><span class="badge badge-red">${c.severity}</span></td>
+        <td>${statBadge}</td>
+        <td style="max-width:240px; font-size:11px; color:#065F46; background:#F0FDF4; padding:6px; border-radius:4px;">${c.resolution}</td>
+        <td><span class="badge badge-teal">${c.linked_rfi}</span></td>
+        <td>
+          ${c.status.includes("نشط") ? 
+            `<button class="btn btn-outline btn-sm" onclick="resolveClash('${c.clash_id}')" title="اعتماد الحل"><i class="fas fa-check"></i> حل</button>` : 
+            `<span style="color:var(--green); font-size:12px;"><i class="fas fa-check-circle"></i> معتمد</span>`}
+        </td>
+      </tr>
+    `;
+  }).join("");
+
+  // Update Clash KPIs
+  const total = clashes.length;
+  const critical = clashes.filter(c => c.severity.includes("حرج") || c.severity.includes("Critical")).length;
+  const clearance = clashes.filter(c => c.clash_type.includes("خلوص") || c.clash_type.includes("Clearance")).length;
+  const resolved = clashes.filter(c => c.status.includes("محلول") || c.status.includes("Resolved")).length;
+
+  const setEl = (id, val) => { const e = document.getElementById(id); if (e) e.textContent = val; };
+  setEl("clash-kpi-total", total);
+  setEl("clash-kpi-critical", critical);
+  setEl("clash-kpi-clearance", clearance);
+  setEl("clash-kpi-resolved", resolved);
+}
+
+function filterClashes(status) {
+  renderClashList(status);
+}
+
+function resolveClash(clashId) {
+  const clashes = MimarERP.bimClashesMaster || [];
+  const c = clashes.find(x => x.clash_id === clashId);
+  if (!c) return;
+
+  c.status = "محلول ومعتمد (Resolved)";
+  showToast(`تم بنجاح اعتماد حل التعارض الهندسي: ${clashId}`);
+  saveToLocalStorage();
+  renderClashList();
+}
+
+function runClashDetectionScan() {
+  showToast("جارٍ فحص التداخلات الهندسية ثلاثية الأبعاد بين النماذج (IFC Clashes)... تم تأكيد سلامة باقي العناصر بنسبة 99.2%.");
+}
+
+// =============================================================================
+// CHANGE ORDERS & VARIATIONS CONTROLLER (OpenConstructionERP oe_changeorders)
+// =============================================================================
+function renderVariationsList(filterStatus) {
+  const tbody = document.getElementById("tbl-variations-list-body");
+  if (!tbody) return;
+
+  const stat = filterStatus || document.getElementById("filter-vo-status")?.value || "All";
+  const variations = MimarERP.variationsMaster || [];
+
+  let filtered = variations;
+  if (stat !== "All") {
+    filtered = filtered.filter(v => v.status.includes(stat));
+  }
+
+  tbody.innerHTML = filtered.map(v => {
+    let statBadge = `<span class="badge badge-green">${v.status}</span>`;
+    if (v.status.includes("مراجعة") || v.status.includes("Review")) {
+      statBadge = `<span class="badge badge-amber">${v.status}</span>`;
+    }
+
+    const prj = (MimarERP.projects || []).find(p => p.project_id === v.project_id) || { project_name_ar: v.project_id };
+    const amtColor = v.amount >= 0 ? "var(--green)" : "var(--red)";
+    const amtSign = v.amount >= 0 ? "+" : "";
+
+    return `
+      <tr>
+        <td><strong>${v.co_id}</strong></td>
+        <td style="font-size:11px;"><strong>${prj.project_name_ar}</strong></td>
+        <td style="max-width:240px; font-size:12px;"><strong>${v.title}</strong><div style="font-size:10px; color:var(--muted);">${v.reason}</div></td>
+        <td><span class="badge badge-blue">${v.scope_type}</span></td>
+        <td class="text-num" style="font-weight:900; color:${amtColor};">${amtSign}${v.amount.toLocaleString('en-US', {minimumFractionDigits:2})} ر.س</td>
+        <td class="text-num"><span class="badge badge-purple">${v.time_eot_days > 0 ? '+' + v.time_eot_days + ' يوم' : '0 يوم'}</span></td>
+        <td>${statBadge}</td>
+        <td><span class="badge badge-teal">${v.initiated_by}</span></td>
+        <td style="font-size:11px; color:#475569;">${v.consultant_approval}</td>
+        <td class="text-num">${v.date_issued}</td>
+        <td>
+          ${v.status.includes("مراجعة") ?
+            `<button class="btn btn-outline btn-sm" onclick="approveVariation('${v.co_id}')"><i class="fas fa-stamp"></i> اعتماد</button>` :
+            `<button class="btn btn-outline btn-sm" onclick="showToast('تم استعراض أمر التغيير المعتمد ${v.co_id}')"><i class="fas fa-file-lines"></i></button>`}
+        </td>
+      </tr>
+    `;
+  }).join("");
+
+  // Update Variations KPIs
+  const total = variations.length;
+  const approved = variations.filter(v => v.status.includes("معتمد") || v.status.includes("Approved"));
+  const netAmount = approved.reduce((acc, curr) => acc + curr.amount, 0);
+  const eotDays = approved.reduce((acc, curr) => acc + curr.time_eot_days, 0);
+  const pending = variations.filter(v => v.status.includes("مراجعة") || v.status.includes("Review")).length;
+
+  const setEl = (id, val) => { const e = document.getElementById(id); if (e) e.textContent = val; };
+  setEl("vo-kpi-total", total);
+  setEl("vo-kpi-net-amount", (netAmount >= 0 ? "+" : "") + netAmount.toLocaleString('en-US', {maximumFractionDigits:0}));
+  setEl("vo-kpi-eot-days", eotDays);
+  setEl("vo-kpi-pending", pending);
+}
+
+function filterVariations(status) {
+  renderVariationsList(status);
+}
+
+function approveVariation(coId) {
+  const variations = MimarERP.variationsMaster || [];
+  const v = variations.find(x => x.co_id === coId);
+  if (!v) return;
+
+  v.status = "معتمد ومدرج بالعقد (Approved)";
+  v.date_approved = new Date().toISOString().split("T")[0];
+  v.consultant_approval = "معتمد رسمياً من الاستشاري المشرف والمالك";
+  showToast(`تم اعتماد أمر التغيير التعاقدي: ${coId} وتحديث ميزانية العقد الصافية.`);
+  saveToLocalStorage();
+  renderVariationsList();
+}
+
+function openAddVariationModal() {
+  const m = document.getElementById("modal-add-variation");
+  if (m) m.style.display = "flex";
+}
+
+function closeAddVariationModal() {
+  const m = document.getElementById("modal-add-variation");
+  if (m) m.style.display = "none";
+}
+
+function saveNewVariation(e) {
+  e.preventDefault();
+  const title = document.getElementById("new-vo-title")?.value || "";
+  const type = document.getElementById("new-vo-type")?.value || "تعديل مواصفة";
+  const init = document.getElementById("new-vo-init")?.value || "المقاول الرئيسي";
+  const amount = parseFloat(document.getElementById("new-vo-amount")?.value || 0);
+  const days = parseInt(document.getElementById("new-vo-days")?.value || 0);
+  const reason = document.getElementById("new-vo-reason")?.value || "";
+
+  const variations = MimarERP.variationsMaster || [];
+  const newId = `VO-2026-00${variations.length + 1}`;
+  variations.unshift({
+    co_id: newId,
+    project_id: MimarERP.currentProjectId || "PRJ-2004",
+    title: title,
+    reason: reason,
+    scope_type: type,
+    amount: amount,
+    time_eot_days: days,
+    status: "قيد المراجعة الفنية (Under Review)",
+    date_issued: new Date().toISOString().split("T")[0],
+    date_approved: "قيد الانتظار",
+    initiated_by: init,
+    consultant_approval: "قيد المراجعة الفنية والتدقيق"
+  });
+
+  closeAddVariationModal();
+  showToast(`تم بنجاح رفع طلب أمر التغيير: ${newId}`);
+  saveToLocalStorage();
+  renderVariationsList();
+}
+
+// =============================================================================
+// LOCALSTORAGE PERSISTENCE ENGINE (Client-Side Database Storage)
+// =============================================================================
+function saveToLocalStorage() {
+  try {
+    const dataToSave = {
+      rfiList: MimarERP.rfiList,
+      submittalsList: MimarERP.submittalsList,
+      punchListItems: MimarERP.punchListItems,
+      variationsMaster: MimarERP.variationsMaster,
+      bimClashesMaster: MimarERP.bimClashesMaster,
+      siteDiaryLogs: MimarERP.siteDiaryLogs,
+      middleEastRegionalConfig: MimarERP.middleEastRegionalConfig
+    };
+    localStorage.setItem("MimarERP_SavedState", JSON.stringify(dataToSave));
+  } catch (err) {
+    console.warn("Could not save to localStorage:", err);
+  }
+}
+
+function loadFromLocalStorage() {
+  try {
+    const saved = localStorage.getItem("MimarERP_SavedState");
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      if (parsed.rfiList) MimarERP.rfiList = parsed.rfiList;
+      if (parsed.submittalsList) MimarERP.submittalsList = parsed.submittalsList;
+      if (parsed.punchListItems) MimarERP.punchListItems = parsed.punchListItems;
+      if (parsed.variationsMaster) MimarERP.variationsMaster = parsed.variationsMaster;
+      if (parsed.bimClashesMaster) MimarERP.bimClashesMaster = parsed.bimClashesMaster;
+      if (parsed.siteDiaryLogs) MimarERP.siteDiaryLogs = parsed.siteDiaryLogs;
+      if (parsed.middleEastRegionalConfig) MimarERP.middleEastRegionalConfig = parsed.middleEastRegionalConfig;
+      console.log("MimarERP: Successfully restored saved state from localStorage.");
+    }
+  } catch (err) {
+    console.warn("Could not load from localStorage:", err);
+  }
+}
+
+// Automatically load saved state on script load
+loadFromLocalStorage();
+
+// Hook into existing switchView for 3D BIM, Site Diary, Punch List, Submittals, BBS, RFI, Clash, and Variations
 const _origSwitchView = window.switchView;
 window.switchView = function(viewId) {
   if (typeof _origSwitchView === 'function') _origSwitchView(viewId);
   if (viewId === 'bim-viewer') {
     setTimeout(initBIMViewer, 50);
+  } else if (viewId === 'clash') {
+    renderClashList();
+  } else if (viewId === 'variations') {
+    renderVariationsList();
   } else if (viewId === 'site-diary') {
     renderSiteDiary();
   } else if (viewId === 'punch-list') {

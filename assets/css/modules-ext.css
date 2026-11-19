@@ -80,6 +80,13 @@ tr:hover td { background: rgba(0,141,218,0.03); }
   .kpi-value { font-size: 22px !important; }
 }
 
+/* Badge Teal */
+.badge-teal {
+  background: rgba(13, 148, 136, 0.15);
+  color: #0D9488;
+  border: 1px solid rgba(13, 148, 136, 0.3);
+}
+
 /* ==========================================================================
    PRINT STYLES — Professional Report Printing
    ========================================================================== */

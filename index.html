@@ -67,6 +67,10 @@
       <i class="fas fa-cubes" style="color:var(--purple)"></i><span class="nav-text">نمذجة البناء 3D / 4D BIM</span>
       <span class="badge-pill" style="background:rgba(124,58,237,0.3)">IFC/QTO</span>
     </a>
+    <a class="nav-item" onclick="switchView('clash')">
+      <i class="fas fa-arrows-to-dot" style="color:var(--red)"></i><span class="nav-text">فحص التعارضات (BIM Clash)</span>
+      <span class="badge-pill" style="background:rgba(225,29,72,0.25)">BCF</span>
+    </a>
     <a class="nav-item" onclick="switchView('submittals')">
       <i class="fas fa-file-circle-check" style="color:var(--teal)"></i><span class="nav-text">اعتمادات المخططات والمواد</span>
       <span class="badge-pill" style="background:rgba(13,148,136,0.3)">Codes A-D</span>
@@ -120,6 +124,10 @@
     </a>
     <a class="nav-item" onclick="switchView('contract-admin')">
       <i class="fas fa-file-signature"></i><span class="nav-text">إدارة العقود والمطالبات (EOT)</span>
+    </a>
+    <a class="nav-item" onclick="switchView('variations')">
+      <i class="fas fa-file-pen" style="color:var(--amber)"></i><span class="nav-text">أوامر التغيير (Change Orders)</span>
+      <span class="badge-pill" style="background:rgba(217,119,6,0.3)">Variations</span>
     </a>
 
     <div class="nav-group-title">الحوكمة والتقارير المؤسسية</div>
@@ -794,6 +802,54 @@
                 <th class="text-num">المساحة (م²)</th><th>المرحلة 4D</th><th>بند BOQ</th><th>الإجراء</th>
               </tr></thead>
               <tbody id="tbl-bim-elements-body"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW: BIM CLASH DETECTION & INTERFERENCE HUB (OpenConstructionERP oe_clash) -->
+    <section class="page-view" id="view-clash">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; flex-wrap:wrap; gap:12px;">
+        <div>
+          <h2 style="font-size:20px; font-weight:800; color:var(--navy);">مركز فحص وتنسيق التعارضات الهندسية (BIM Clash Detection)</h2>
+          <p style="color:var(--muted); font-size:12px;">رصد التداخلات المكانية الصريحة (Hard Clashes) ومسافات الخلوص (Clearance) بين المخططات الإنشائية والمعمارية والكهروميكانيكية</p>
+        </div>
+        <div style="display:flex; gap:8px;">
+          <span class="badge badge-purple"><i class="fas fa-arrows-to-dot"></i> BCF 2.1 Coordination</span>
+          <button class="btn btn-outline btn-sm" onclick="runClashDetectionScan()"><i class="fas fa-radar"></i> فحص تعارضات جديد</button>
+        </div>
+      </div>
+
+      <!-- Clash KPI Cards -->
+      <div class="kpi-grid" style="margin-bottom:24px;">
+        <div class="kpi-card"><div class="kpi-header"><span class="kpi-label">إجمالي التعارضات المرصودة</span><div class="kpi-icon-wrap" style="background:var(--blue-bg); color:var(--blue);"><i class="fas fa-list-ol"></i></div></div><div class="kpi-value text-num" id="clash-kpi-total">4</div><div class="kpi-footer">تداخل هندسي مسجل</div></div>
+        <div class="kpi-card" style="border-top:4px solid var(--red);"><div class="kpi-header"><span class="kpi-label">تعارضات حرجة (Critical Hard)</span><div class="kpi-icon-wrap" style="background:var(--red-bg); color:var(--red);"><i class="fas fa-triangle-exclamation"></i></div></div><div class="kpi-value text-num" style="color:var(--red);" id="clash-kpi-critical">2</div><div class="kpi-footer">تتطلب تعديل مسار أو Sleeve تعويضي</div></div>
+        <div class="kpi-card amber"><div class="kpi-header"><span class="kpi-label">مسافات خلوص (Clearance)</span><div class="kpi-icon-wrap" style="background:var(--amber-bg); color:var(--amber);"><i class="fas fa-ruler-horizontal"></i></div></div><div class="kpi-value text-num" style="color:var(--amber);" id="clash-kpi-clearance">2</div><div class="kpi-footer">أقل من الحد الأدنى للمواصفات</div></div>
+        <div class="kpi-card green"><div class="kpi-header"><span class="kpi-label">تم الحل والاعتماد (Resolved)</span><div class="kpi-icon-wrap" style="background:var(--green-bg); color:var(--green);"><i class="fas fa-circle-check"></i></div></div><div class="kpi-value text-num" style="color:var(--green);" id="clash-kpi-resolved">3</div><div class="kpi-footer">تم تعديل الموديل والمخططات</div></div>
+      </div>
+
+      <!-- Clash Detection Table Card -->
+      <div class="card">
+        <div class="card-header">
+          <h3><i class="fas fa-arrows-to-dot" style="color:var(--red)"></i> سجل التعارضات والتنسيق بين التخصصات (Inter-Disciplinary Clash Register)</h3>
+          <div style="display:flex; gap:8px;">
+            <select class="context-select" id="filter-clash-status" onchange="filterClashes(this.value)" style="padding:4px 8px; font-size:12px;">
+              <option value="All">جميع الحالات</option>
+              <option value="نشط">نشط قيد المعالجة (Active)</option>
+              <option value="محلول">محلول ومعتمد (Resolved)</option>
+            </select>
+          </div>
+        </div>
+        <div class="card-body" style="padding:0;">
+          <div class="table-wrapper">
+            <table id="tbl-clash-list">
+              <thead><tr>
+                <th>كود التعارض</th><th>العنصر الأول (Discipline A)</th><th>العنصر الثاني (Discipline B)</th>
+                <th>نوع التعارض</th><th>مسافة التداخل / الخلوص</th><th>الموقع الإنشائي</th>
+                <th>درجة الخطورة</th><th>الحالة</th><th>التوجيه والحل المعتمد</th><th>مرجع RFI</th><th>الإجراء</th>
+              </tr></thead>
+              <tbody id="tbl-clash-list-body"></tbody>
             </table>
           </div>
         </div>
@@ -1649,31 +1705,98 @@
       </div>
     </section>
 
-    <!-- VIEW 15: CONTRACT ADMIN & VARIATIONS -->
+    <!-- VIEW 15: CONTRACT ADMIN & EOT CLAIMS -->
     <section class="page-view" id="view-contract-admin">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; flex-wrap:wrap; gap:12px;">
+        <div>
+          <h2 style="font-size:20px; font-weight:800; color:var(--navy);">إدارة العقود والمطالبات الزمنية (Contract Admin & EOT Claims)</h2>
+          <p style="color:var(--muted); font-size:12px;">إدارة مطالبات تمديد الوقت (Extension of Time) والتعويض المالي وفق شروط عقد فيديك FIDIC Red Book</p>
+        </div>
+        <div style="display:flex; gap:8px;">
+          <span class="badge badge-purple"><i class="fas fa-file-contract"></i> FIDIC Clause 20.1</span>
+          <button class="btn btn-outline btn-sm" onclick="showToast('تم تصدير حزمة المطالبة التعاقدية بصيغة PDF.')"><i class="fas fa-file-pdf"></i> تصدير مذكرة المطالبة</button>
+        </div>
+      </div>
+
       <div class="card">
         <div class="card-header">
-          <h3><i class="fas fa-file-signature" style="color:var(--amber)"></i> سجل أوامر التغيير والمطالبات الزمنية (Variations & EOT Claims)</h3>
+          <h3><i class="fas fa-file-signature" style="color:var(--amber)"></i> سجل المطالبات الزمنية وحزم الإثبات الهندسي (Claims & Contemporaneous Evidence)</h3>
         </div>
         <div class="card-body" style="padding:0;">
           <div class="table-wrapper">
             <table>
               <thead><tr>
-                <th>رقم التغيير</th><th>الموضوع والوصف</th><th>المرجع التعاقدي</th>
-                <th>الأثر المالي (ر.س)</th><th>الأثر الزمني (أيام)</th><th>تاريخ الاعتماد</th><th>الحالة</th>
+                <th>رقم المطالبة</th><th>الموضوع والحدث المسبب للتأخير</th><th>السند والفقرة التعاقدية</th>
+                <th>أيام التمديد المطلوبة</th><th>الأثر المالي المطلوب</th><th>تاريخ الإخطار (Clause 20.1)</th><th>حالة المهندس المشرف</th>
               </tr></thead>
               <tbody>
                 <tr>
-                  <td>VO-01</td><td>استبعاد لياسة الأسقف واعتماد أسقف معلقة جبسية GP</td><td>توجيه المالك / RFI-01</td>
-                  <td class="text-num">-6,833.75</td><td class="text-num">0</td><td>2026-03-20</td>
-                  <td><span class="badge badge-green">معتمد ومعدل بالعقد</span></td>
+                  <td><strong>CLM-2026-01</strong></td>
+                  <td>تأخر تسليم إحداثيات ومناسيب الربط من الأمانة</td>
+                  <td>FIDIC 2017 Sub-Clause 1.9 & 8.4</td>
+                  <td class="text-num"><span class="badge badge-purple">14 يوم</span></td>
+                  <td class="text-num" style="color:var(--green); font-weight:700;">+48,500 ر.س</td>
+                  <td>2026-01-20</td>
+                  <td><span class="badge badge-green">معتمد جزئياً (7 أيام + 25,000 ر.س)</span></td>
                 </tr>
                 <tr>
-                  <td>VO-02</td><td>تعديل كمية لياسة السور الخارجي وفق الحصر الهندسي الفعلي</td><td>RFI-02 / حصر HW</td>
-                  <td class="text-num">+7,477.87</td><td class="text-num">+5</td><td>2026-04-10</td>
-                  <td><span class="badge badge-green">معتمد ومعدل بالعقد</span></td>
+                  <td><strong>CLM-2026-02</strong></td>
+                  <td>تعديل مسارات التكييف وسماكة العزل بموجب توجيه المالك</td>
+                  <td>FIDIC 2017 Sub-Clause 13.3</td>
+                  <td class="text-num"><span class="badge badge-purple">21 يوم</span></td>
+                  <td class="text-num" style="color:var(--green); font-weight:700;">+112,000 ر.س</td>
+                  <td>2026-02-15</td>
+                  <td><span class="badge badge-amber">قيد التدقيق والتقييم الحسابي</span></td>
                 </tr>
               </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW: CHANGE ORDERS & VARIATIONS MANAGEMENT (OpenConstructionERP oe_changeorders) -->
+    <section class="page-view" id="view-variations">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; flex-wrap:wrap; gap:12px;">
+        <div>
+          <h2 style="font-size:20px; font-weight:800; color:var(--navy);">سجل أوامر التغيير والمطالبات المالية (Change Orders & Variations)</h2>
+          <p style="color:var(--muted); font-size:12px;">تتبع التعديلات التعاقدية على نطاق الأعمال والميزانية والمدة الزمنية وفق شروط عقد الفيديك FIDIC</p>
+        </div>
+        <div style="display:flex; gap:8px;">
+          <span class="badge badge-amber"><i class="fas fa-file-signature"></i> FIDIC Sub-Clause 13.3</span>
+          <button class="btn btn-primary btn-sm" onclick="openAddVariationModal()"><i class="fas fa-plus"></i> طلب أمر تغيير جديد</button>
+        </div>
+      </div>
+
+      <!-- Variations KPI Cards -->
+      <div class="kpi-grid" style="margin-bottom:24px;">
+        <div class="kpi-card"><div class="kpi-header"><span class="kpi-label">إجمالي أوامر التغيير</span><div class="kpi-icon-wrap" style="background:var(--blue-bg); color:var(--blue);"><i class="fas fa-file-pen"></i></div></div><div class="kpi-value text-num" id="vo-kpi-total">4</div><div class="kpi-footer">طلب تغيير مسجل</div></div>
+        <div class="kpi-card green"><div class="kpi-header"><span class="kpi-label">صافي القيمة المعتمدة (+/-)</span><div class="kpi-icon-wrap" style="background:var(--green-bg); color:var(--green);"><i class="fas fa-money-bill-trend-up"></i></div></div><div class="kpi-value text-num" style="color:var(--green);" id="vo-kpi-net-amount">+1,288,500</div><div class="kpi-footer">ر.س · تضاف لقيمة العقد الأصلية</div></div>
+        <div class="kpi-card purple"><div class="kpi-header"><span class="kpi-label">تمديد الوقت المعتمد (EOT)</span><div class="kpi-icon-wrap" style="background:rgba(124,58,237,0.15); color:var(--purple);"><i class="fas fa-calendar-plus"></i></div></div><div class="kpi-value text-num" style="color:var(--purple);" id="vo-kpi-eot-days">35</div><div class="kpi-footer">يوم إضافي معتمد للمشروع</div></div>
+        <div class="kpi-card amber"><div class="kpi-header"><span class="kpi-label">قيد الدراسة والتدقيق</span><div class="kpi-icon-wrap" style="background:var(--amber-bg); color:var(--amber);"><i class="fas fa-hourglass-half"></i></div></div><div class="kpi-value text-num" style="color:var(--amber);" id="vo-kpi-pending">1</div><div class="kpi-footer">بانتظار موافقة الاستشاري والمالك</div></div>
+      </div>
+
+      <!-- Variations Table Card -->
+      <div class="card">
+        <div class="card-header">
+          <h3><i class="fas fa-file-pen" style="color:var(--amber)"></i> سجل أوامر التغيير والمطالبات المعتمدة وتحت الدراسة</h3>
+          <div style="display:flex; gap:8px;">
+            <select class="context-select" id="filter-vo-status" onchange="filterVariations(this.value)" style="padding:4px 8px; font-size:12px;">
+              <option value="All">جميع الحالات</option>
+              <option value="معتمد">معتمد ومدرج بالعقد</option>
+              <option value="مراجعة">قيد المراجعة الفنية</option>
+            </select>
+          </div>
+        </div>
+        <div class="card-body" style="padding:0;">
+          <div class="table-wrapper">
+            <table id="tbl-variations-list">
+              <thead><tr>
+                <th>رقم التغيير</th><th>المشروع</th><th>عنوان النطاق والتفاصيل</th><th>نوع التغيير</th>
+                <th>الأثر المالي (ر.س)</th><th>الأثر الزمني (أيام)</th><th>الحالة</th><th>الجهة الطالبة</th>
+                <th>اعتماد الاستشاري</th><th>تاريخ الإصدار</th><th>الإجراء</th>
+              </tr></thead>
+              <tbody id="tbl-variations-list-body"></tbody>
             </table>
           </div>
         </div>
@@ -2430,6 +2553,58 @@
       <div style="display:flex; justify-content:flex-end; gap:10px;">
         <button type="button" class="btn btn-outline" onclick="closeAddSubmittalModal()">إلغاء</button>
         <button type="submit" class="btn btn-primary"><i class="fas fa-check"></i> تسجيل الاعتماد وإرساله للاستشاري</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- MODAL: ADD VARIATION / CHANGE ORDER -->
+<div class="modal-overlay" id="modal-add-variation" style="display:none; position:fixed; inset:0; background:rgba(11,25,44,0.7); backdrop-filter:blur(4px); z-index:9999; align-items:center; justify-content:center;">
+  <div style="background:white; border-radius:var(--radius-lg); width:90%; max-width:620px; box-shadow:var(--shadow-lg); overflow:hidden; border:1px solid var(--line);">
+    <div style="background:linear-gradient(135deg, #0B192C 0%, #D97706 100%); color:white; padding:16px 20px; display:flex; justify-content:space-between; align-items:center;">
+      <h3 style="margin:0; font-size:15px; font-weight:800;"><i class="fas fa-plus-circle"></i> إصدار طلب أمر تغيير جديد (Variation Request)</h3>
+      <button onclick="closeAddVariationModal()" style="background:none; border:none; color:white; font-size:16px; cursor:pointer;"><i class="fas fa-xmark"></i></button>
+    </div>
+    <form onsubmit="saveNewVariation(event)" style="padding:20px;">
+      <div style="margin-bottom:12px;">
+        <label style="font-size:12px; font-weight:700; color:var(--navy); display:block; margin-bottom:4px;">عنوان وموضوع أمر التغيير:</label>
+        <input type="text" id="new-vo-title" class="search-input" style="width:100%;" required placeholder="مثال: تعديل مواصفات العزل المائي أو إضافة غرفة كهرباء">
+      </div>
+      <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-bottom:12px;">
+        <div>
+          <label style="font-size:12px; font-weight:700; color:var(--navy); display:block; margin-bottom:4px;">نوع التغيير (Scope Type):</label>
+          <select id="new-vo-type" class="context-select" style="width:100%;">
+            <option value="إضافة نطاق أعمال (Scope Addition)">إضافة نطاق أعمال (Scope Addition)</option>
+            <option value="تعديل مواصفة (Spec Modification)">تعديل مواصفة (Spec Modification)</option>
+            <option value="استبعاد بنود (Scope Deletion)">استبعاد بنود (Scope Deletion)</option>
+          </select>
+        </div>
+        <div>
+          <label style="font-size:12px; font-weight:700; color:var(--navy); display:block; margin-bottom:4px;">الجهة المبادرة بالطلب:</label>
+          <select id="new-vo-init" class="context-select" style="width:100%;">
+            <option value="المالك (Employer)">المالك (Employer)</option>
+            <option value="المقاول الرئيسي (Contractor)">المقاول الرئيسي (Contractor)</option>
+            <option value="الاستشاري المشرف (Engineer)">الاستشاري المشرف (Engineer)</option>
+          </select>
+        </div>
+      </div>
+      <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-bottom:12px;">
+        <div>
+          <label style="font-size:12px; font-weight:700; color:var(--navy); display:block; margin-bottom:4px;">الأثر المالي الصافي (ر.س):</label>
+          <input type="number" id="new-vo-amount" class="search-input" style="width:100%;" required value="50000" step="1000">
+        </div>
+        <div>
+          <label style="font-size:12px; font-weight:700; color:var(--navy); display:block; margin-bottom:4px;">تمديد الوقت المطلوب (أيام EOT):</label>
+          <input type="number" id="new-vo-days" class="search-input" style="width:100%;" required value="10" step="1">
+        </div>
+      </div>
+      <div style="margin-bottom:16px;">
+        <label style="font-size:12px; font-weight:700; color:var(--navy); display:block; margin-bottom:4px;">السبب الهندسي والمسوغ التعاقدي (FIDIC Justification):</label>
+        <textarea id="new-vo-reason" rows="2" class="search-input" style="width:100%; height:auto;" required placeholder="بيان الأسباب والمخططات والمراسلات الداعمة..."></textarea>
+      </div>
+      <div style="display:flex; justify-content:flex-end; gap:10px;">
+        <button type="button" class="btn btn-outline" onclick="closeAddVariationModal()">إلغاء</button>
+        <button type="submit" class="btn btn-primary"><i class="fas fa-check"></i> تسجيل وإرسال للمراجعة</button>
       </div>
     </form>
   </div>
