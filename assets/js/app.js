@@ -1388,10 +1388,10 @@ function closeModal(id) { document.getElementById(id)?.classList.remove("show");
 
 function showToast(msg) {
   const t = document.getElementById("toast-msg");
-  if (!t) return;
+  if (!t || !t.classList) return;
   t.textContent = msg;
   t.classList.add("show");
-  setTimeout(() => t.classList.remove("show"), 3500);
+  setTimeout(() => { if (t && t.classList) t.classList.remove("show"); }, 3500);
 }
 
 function switchProcTab(btn, tabId) {
@@ -3206,18 +3206,24 @@ function saveNewVariation(e) {
 // =============================================================================
 // LOCALSTORAGE PERSISTENCE ENGINE (Client-Side Database Storage)
 // =============================================================================
+const ERP_PERSIST_KEYS = [
+  'companies','branches','partners','partnerCatalog','projects','wbs','boq',
+  'takeoff','rateAnalysis','billing','suppliersMaster','supplierItemsMaster',
+  'priceComparisonMaster','contractorsMaster','contractorRatesMaster',
+  'costControlRegister','crmOpportunities','tendersMaster','hrEmployees',
+  'payrollRecords','financeBillings','financeAP','financeBudget','equipmentMaster',
+  'inventoryLedger','subcontractsMaster','bimElements','siteDiaryLogs',
+  'punchListItems','rfiList','submittalsList','rebarBBSItems',
+  'variationsMaster','cvrLedgerMaster','bimClashesMaster','cdeContainersMaster',
+  'safetyIncidents','safetyTrainings','purchaseOrders','scheduleTasks','auditLogs',
+  'middleEastRegionalConfig','currentCompanyId','currentProjectId','currentRole'
+];
+
 function saveToLocalStorage() {
   try {
-    const dataToSave = {
-      rfiList: MimarERP.rfiList,
-      submittalsList: MimarERP.submittalsList,
-      punchListItems: MimarERP.punchListItems,
-      variationsMaster: MimarERP.variationsMaster,
-      bimClashesMaster: MimarERP.bimClashesMaster,
-      siteDiaryLogs: MimarERP.siteDiaryLogs,
-      middleEastRegionalConfig: MimarERP.middleEastRegionalConfig
-    };
-    localStorage.setItem("MimarERP_SavedState", JSON.stringify(dataToSave));
+    const snap = {};
+    ERP_PERSIST_KEYS.forEach(k => { if (MimarERP[k] !== undefined) snap[k] = MimarERP[k]; });
+    localStorage.setItem("MimarERPData_v5", JSON.stringify(snap));
   } catch (err) {
     console.warn("Could not save to localStorage:", err);
   }
@@ -3225,16 +3231,10 @@ function saveToLocalStorage() {
 
 function loadFromLocalStorage() {
   try {
-    const saved = localStorage.getItem("MimarERP_SavedState");
+    const saved = localStorage.getItem("MimarERPData_v5") || localStorage.getItem("MimarERP_SavedState");
     if (saved) {
       const parsed = JSON.parse(saved);
-      if (parsed.rfiList) MimarERP.rfiList = parsed.rfiList;
-      if (parsed.submittalsList) MimarERP.submittalsList = parsed.submittalsList;
-      if (parsed.punchListItems) MimarERP.punchListItems = parsed.punchListItems;
-      if (parsed.variationsMaster) MimarERP.variationsMaster = parsed.variationsMaster;
-      if (parsed.bimClashesMaster) MimarERP.bimClashesMaster = parsed.bimClashesMaster;
-      if (parsed.siteDiaryLogs) MimarERP.siteDiaryLogs = parsed.siteDiaryLogs;
-      if (parsed.middleEastRegionalConfig) MimarERP.middleEastRegionalConfig = parsed.middleEastRegionalConfig;
+      Object.assign(MimarERP, parsed);
       console.log("MimarERP: Successfully restored saved state from localStorage.");
     }
   } catch (err) {
@@ -3287,7 +3287,7 @@ function renderCVRLedger() {
 
   // Populate project dropdown
   const projSel = document.getElementById('cvr-filter-proj');
-  if (projSel && projSel.options.length <= 1) {
+  if (projSel && projSel.options && projSel.options.length <= 1) {
     const projs = [...new Set(data.map(r => r.projectId))];
     projs.forEach(p => {
       const o = document.createElement('option');
@@ -3365,7 +3365,7 @@ function renderCDEContainers() {
 
   // Populate CDE new-doc project dropdown
   const projSel = document.getElementById('cde-new-proj');
-  if (projSel && projSel.options.length === 0) {
+  if (projSel && projSel.options && projSel.options.length === 0) {
     (MimarERP.projects || []).forEach(p => {
       const o = document.createElement('option');
       o.value = p.id; o.textContent = p.id + ' — ' + p.name;
@@ -3533,7 +3533,7 @@ function renderEVMDashboard() {
 
   // Populate dropdown
   const sel = document.getElementById('evm-filter-proj');
-  if (sel && sel.options.length <= 1) {
+  if (sel && sel.options && sel.options.length <= 1) {
     (MimarERP.projects || []).forEach(p => {
       const o = document.createElement('option');
       o.value = p.id; o.textContent = p.id + ' — ' + (p.name || p.project_name_ar || '');

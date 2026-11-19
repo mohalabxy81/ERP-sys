@@ -1,12 +1,12 @@
 # منصة مِعمار الدولية لإدارة مشاريع التشييد والشركات
 ## Mimar Enterprise Construction ERP & SaaS Management Platform
 
-![Version](https://img.shields.io/badge/version-4.0.0--enterprise-blue.svg)
+![Version](https://img.shields.io/badge/version-5.0.0--enterprise-blue.svg)
 ![Architecture](https://img.shields.io/badge/architecture-Multi--Tenant%20SaaS-emerald.svg)
-![Modules](https://img.shields.io/badge/web--modules-35%20active%20views-indigo.svg)
-![Formulas](https://img.shields.io/badge/live--formulas-809%20verified-success.svg)
-![Offline](https://img.shields.io/badge/offline--mode-100%25%20local-green.svg)
-![Standards](https://img.shields.io/badge/standards-FIDIC%20%7C%20PMI%20EVM%20%7C%20BIM%20%7C%20CSI%20%7C%20DIN276%20%7C%20SBC-orange.svg)
+![Modules](https://img.shields.io/badge/web--modules-39%20active%20views-indigo.svg)
+![CRUD](https://img.shields.io/badge/crud-100%25%20Dynamic%20CRUD-success.svg)
+![Persistence](https://img.shields.io/badge/persistence-LocalStorage%20Rehydration-teal.svg)
+![Standards](https://img.shields.io/badge/standards-FIDIC%20%7C%20PMI%20EVM%20%7C%20BIM%20%7C%20ISO19650%20%7C%20ISO45001-orange.svg)
 
 منظومة برمجية متكاملة لإدارة شركات المقاولات والتطوير العقاري والمشاريع الإنشائية الكبرى، مبنية وفق أعلى المعايير الهندسية والمالية العالمية (FIDIC Red Book, AACE International, CSI MasterFormat, PMI EVM, ZATCA Phase 2).
 
