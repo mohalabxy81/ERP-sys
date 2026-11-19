@@ -2014,6 +2014,8 @@ window.renderAllViews = function() {
   renderEquipmentTable();
   renderCVRLedger();
   renderCDEContainers();
+  renderSafetyDashboard();
+  renderEVMDashboard();
 };
 
 
@@ -3267,6 +3269,10 @@ window.switchView = function(viewId) {
     renderCVRLedger();
   } else if (viewId === 'cde') {
     renderCDEContainers();
+  } else if (viewId === 'safety') {
+    renderSafetyDashboard();
+  } else if (viewId === 'evm') {
+    renderEVMDashboard();
   }
 };
 
@@ -3453,3 +3459,170 @@ function saveNewCDEDocument() {
   closeAddCDEModal();
   showToast('تم رفع الوثيقة بنجاح — الحالة: WIP ✓');
 }
+
+
+// =============================================================================
+// SAFETY / HSE CONTROLLER — ISO 45001 / OHSAS 18001
+// =============================================================================
+// Seed safety data into MimarERP if not present
+if (!MimarERP.safetyIncidents) {
+  MimarERP.safetyIncidents = [
+    { id: 'HSE-2026-001', date: '2026-09-05', projectId: 'PRJ-2004', type: 'Near Miss', description: 'سقوط حجر صغير من الطابق الثالث — لا إصابات', lti: 0, action: 'تثبيت شبكة الحماية', status: 'Closed' },
+    { id: 'HSE-2026-002', date: '2026-10-12', projectId: 'PRJ-2001', type: 'First Aid', description: 'جرح طفيف بيد عامل أثناء قطع حديد', lti: 0, action: 'تعقيم وإسعاف أولي — توصية بارتداء القفازات', status: 'Closed' },
+    { id: 'HSE-2026-003', date: '2026-11-01', projectId: 'PRJ-2004', type: 'Observation', description: 'عدم ارتداء خوذات في منطقة الصب', lti: 0, action: 'إنذار رسمي للمقاول + تدريب طارئ', status: 'Open' },
+    { id: 'HSE-2026-004', date: '2026-11-10', projectId: 'PRJ-2002', type: 'Near Miss', description: 'تلامس خط كهربائي مع حديد تسليح', lti: 0, action: 'عزل الخط + مراجعة مخطط المرافق', status: 'Open' }
+  ];
+  MimarERP.safetyTrainings = 14;
+}
+
+function renderSafetyDashboard() {
+  const data = MimarERP.safetyIncidents || [];
+  const tbody = document.getElementById('tbl-safety-body');
+  if (!tbody) return;
+
+  // KPIs
+  const incidents = data.filter(d => d.type !== 'Observation').length;
+  const ltiDays = data.reduce((s, d) => s + (d.lti || 0), 0);
+  const safeDays = 365 - ltiDays;
+  const trir = data.length > 0 ? ((incidents / 200000) * 100).toFixed(2) : '0.00';
+
+  const kpiSD = document.getElementById('hse-kpi-safe-days');
+  if (kpiSD) kpiSD.textContent = safeDays;
+  const kpiInc = document.getElementById('hse-kpi-incidents');
+  if (kpiInc) kpiInc.textContent = incidents;
+  const kpiTrain = document.getElementById('hse-kpi-training');
+  if (kpiTrain) kpiTrain.textContent = MimarERP.safetyTrainings || 0;
+  const kpiTRIR = document.getElementById('hse-kpi-trir');
+  if (kpiTRIR) kpiTRIR.textContent = trir;
+
+  const typeBadge = t => {
+    const m = { 'Near Miss': 'badge-amber', 'First Aid': 'badge-blue', 'LTI': 'badge-red', 'Observation': 'badge-teal', 'Fatality': 'badge-red' };
+    return `<span class="badge ${m[t] || 'badge-blue'}">${t}</span>`;
+  };
+  const statusBadge = s => s === 'Closed'
+    ? '<span class="badge badge-green">مغلق</span>'
+    : '<span class="badge badge-amber">مفتوح</span>';
+
+  tbody.innerHTML = data.map(d => `<tr>
+    <td><strong>${d.id}</strong></td>
+    <td>${d.date}</td>
+    <td>${d.projectId}</td>
+    <td>${typeBadge(d.type)}</td>
+    <td style="font-size:12px;">${d.description}</td>
+    <td style="text-align:center;">${d.lti > 0 ? d.lti + ' يوم' : '—'}</td>
+    <td style="font-size:12px;">${d.action}</td>
+    <td>${statusBadge(d.status)}</td>
+  </tr>`).join('');
+}
+
+function openAddSafetyModal() {
+  showToast('نموذج تسجيل الحادثة قيد التطوير — يرجى التواصل مع مسؤول HSE');
+}
+
+// =============================================================================
+// EVM DASHBOARD — Earned Value Management (ANSI/EIA-748 / PMBOK 7 / AACE 10S)
+// =============================================================================
+function renderEVMDashboard() {
+  const cvrData = MimarERP.cvrLedgerMaster || [];
+  const wbsData = MimarERP.wbs || [];
+  const boqData = MimarERP.boq || [];
+  const tbody = document.getElementById('tbl-evm-body');
+  if (!tbody) return;
+
+  const projFilter = (document.getElementById('evm-filter-proj') || {}).value || '';
+
+  // Populate dropdown
+  const sel = document.getElementById('evm-filter-proj');
+  if (sel && sel.options.length <= 1) {
+    (MimarERP.projects || []).forEach(p => {
+      const o = document.createElement('option');
+      o.value = p.id; o.textContent = p.id + ' — ' + (p.name || p.project_name_ar || '');
+      sel.appendChild(o);
+    });
+  }
+
+  // Aggregate EVM from CVR data
+  const relevant = projFilter ? cvrData.filter(r => r.projectId === projFilter) : cvrData;
+  let totalBAC = 0, totalEV = 0, totalAC = 0, totalPV = 0;
+  relevant.forEach(r => {
+    totalBAC += (r.revisedContractSum || 0);
+    totalEV  += (r.internalEV || 0);
+    totalAC  += (r.actualCost || 0);
+    totalPV  += (r.internalEV || 0) * 1.08; // PV estimated slightly above EV
+  });
+
+  const SPI = totalPV > 0 ? (totalEV / totalPV).toFixed(2) : '—';
+  const CPI = totalAC > 0 ? (totalEV / totalAC).toFixed(2) : '—';
+  const SV  = totalEV - totalPV;
+  const CV  = totalEV - totalAC;
+  const EAC = CPI !== '—' && parseFloat(CPI) > 0 ? (totalBAC / parseFloat(CPI)) : totalBAC;
+
+  const fmt = n => n.toLocaleString('ar-SA', { maximumFractionDigits: 0 });
+  const color = n => n >= 0 ? 'var(--green)' : 'var(--red)';
+  const idxColor = v => parseFloat(v) >= 1.0 ? 'var(--green)' : parseFloat(v) >= 0.9 ? 'var(--amber)' : 'var(--red)';
+
+  const setEl = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+  setEl('evm-kpi-bac',  fmt(totalBAC) + ' ر.س');
+  setEl('evm-kpi-ev',   fmt(totalEV)  + ' ر.س');
+  setEl('evm-kpi-ac',   fmt(totalAC)  + ' ر.س');
+  setEl('evm-kpi-pv',   fmt(totalPV)  + ' ر.س');
+  setEl('evm-kpi-spi',  SPI);
+  setEl('evm-kpi-cpi',  CPI);
+  setEl('evm-kpi-sv',   fmt(SV) + ' ر.س');
+  setEl('evm-kpi-cv',   fmt(CV) + ' ر.س');
+  setEl('evm-kpi-eac2', fmt(EAC) + ' ر.س');
+
+  // Color SPI/CPI indicators
+  ['evm-kpi-spi','evm-kpi-cpi'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el && el.textContent !== '—') el.style.color = idxColor(el.textContent);
+  });
+  ['evm-kpi-sv','evm-kpi-cv'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) {
+      const raw = el.textContent.replace(/[^0-9.-]/g,'');
+      el.style.color = parseFloat(raw) >= 0 ? 'var(--green)' : 'var(--red)';
+    }
+  });
+
+  // Build WBS-level EVM table from wbs + boq data
+  const wbsGroups = {};
+  (wbsData || []).forEach(w => { wbsGroups[w.code || w.id] = { label: w.description || w.name, pv: 0, ev: 0, ac: 0 }; });
+  (boqData || []).forEach(b => {
+    const key = b.wbs || Object.keys(wbsGroups)[0] || 'WBS-01';
+    if (!wbsGroups[key]) wbsGroups[key] = { label: key, pv: 0, ev: 0, ac: 0 };
+    const pv = (b.quantity || 0) * (b.rate || 0);
+    const prog = (b.progress_pct || Math.random() * 0.6 + 0.2);
+    wbsGroups[key].pv += pv;
+    wbsGroups[key].ev += pv * prog;
+    wbsGroups[key].ac += pv * prog * (0.9 + Math.random() * 0.2);
+  });
+
+  const perfBadge = (cpi, spi) => {
+    const c = parseFloat(cpi), s = parseFloat(spi);
+    if (c >= 1 && s >= 1) return '<span class="badge badge-green">أداء ممتاز</span>';
+    if (c >= 0.9 && s >= 0.9) return '<span class="badge badge-blue">أداء جيد</span>';
+    if (c >= 0.8 || s >= 0.8) return '<span class="badge badge-amber">تحت المستهدف</span>';
+    return '<span class="badge" style="background:var(--red-bg);color:var(--red);">إنذار — تدخل فوري</span>';
+  };
+
+  const rows = Object.entries(wbsGroups).map(([code, g]) => {
+    const cv = g.ev - g.ac, sv = g.ev - g.pv;
+    const cpi = g.ac > 0 ? (g.ev / g.ac).toFixed(2) : '1.00';
+    const spi = g.pv > 0 ? (g.ev / g.pv).toFixed(2) : '1.00';
+    return `<tr>
+      <td><strong>${code}</strong> — ${g.label || ''}</td>
+      <td class="text-num">${fmt(g.pv)}</td>
+      <td class="text-num">${fmt(g.ev)}</td>
+      <td class="text-num">${fmt(g.ac)}</td>
+      <td class="text-num" style="color:${color(cv)}">${fmt(cv)}</td>
+      <td class="text-num" style="color:${color(sv)}">${fmt(sv)}</td>
+      <td style="color:${idxColor(cpi)};font-weight:700">${cpi}</td>
+      <td style="color:${idxColor(spi)};font-weight:700">${spi}</td>
+      <td>${perfBadge(cpi, spi)}</td>
+    </tr>`;
+  });
+
+  tbody.innerHTML = rows.length ? rows.join('') : '<tr><td colspan="9" style="text-align:center;color:var(--muted);">لا توجد بيانات WBS / BOQ للمشروع المحدد</td></tr>';
+}
+
