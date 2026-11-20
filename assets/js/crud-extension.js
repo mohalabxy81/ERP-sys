@@ -613,3 +613,356 @@ if (typeof document !== 'undefined') {
     }, 150);
   });
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+ * XLSXWorkerManager — Enterprise Excel Import/Export Engine v6
+ * Objective 24: Off-thread Excel operations via Web Worker
+ * ═══════════════════════════════════════════════════════════════════════════
+ * @description
+ *   Singleton manager that owns the xlsx-worker.js Web Worker instance.
+ *   Provides a simple Promise-based API for export/import operations
+ *   without blocking the main UI thread.
+ *
+ * @example
+ *   // Export subcontracts to CSV
+ *   XLSXWorkerManager.exportCSV('subcontracts', MimarERP.subcontractsMaster, 'عقود-مقاولي-الباطن.csv');
+ *
+ *   // Export BOQ to Excel
+ *   XLSXWorkerManager.exportExcel('boq', wbsData, 'جدول-الكميات-2026.xlsx');
+ *
+ *   // Import CSV
+ *   XLSXWorkerManager.importCSV('catalog', csvTextString).then(result => console.log(result.rows));
+ */
+window.XLSXWorkerManager = (() => {
+  'use strict';
+
+  let _worker = null;
+  let _ready  = false;
+  const _pending = new Map(); // requestId → { resolve, reject }
+  let _reqCounter = 0;
+
+  /** Initialize or return existing Worker */
+  function _getWorker() {
+    if (_worker) return _worker;
+
+    try {
+      _worker = new Worker('assets/js/workers/xlsx-worker.js');
+
+      _worker.onmessage = (e) => {
+        const { type, requestId, payload, error } = e.data || {};
+
+        if (type === 'WORKER_READY') {
+          _ready = true;
+          console.info('[XLSXWorker] Ready — entities:', payload?.entities?.join(', '));
+          return;
+        }
+
+        if (type === 'PONG') {
+          console.debug('[XLSXWorker] Ping OK:', payload?.timestamp);
+          return;
+        }
+
+        const promise = _pending.get(requestId);
+        if (!promise) return;
+        _pending.delete(requestId);
+
+        if (type === 'ERROR') {
+          promise.reject(new Error(error || 'Unknown worker error'));
+        } else {
+          promise.resolve({ type, payload });
+        }
+      };
+
+      _worker.onerror = (err) => {
+        console.error('[XLSXWorker] Worker error:', err.message);
+        // Reject all pending promises
+        _pending.forEach(p => p.reject(err));
+        _pending.clear();
+        _worker = null;
+        _ready  = false;
+      };
+
+    } catch (err) {
+      console.warn('[XLSXWorker] Web Workers not supported or worker failed to load:', err.message);
+      _worker = null;
+    }
+
+    return _worker;
+  }
+
+  /** Send a message to the worker and return a Promise */
+  function _send(type, payload) {
+    return new Promise((resolve, reject) => {
+      const worker = _getWorker();
+      if (!worker) {
+        // Fallback: handle synchronously on main thread for environments without Workers
+        return _fallback(type, payload, resolve, reject);
+      }
+
+      const requestId = 'req-' + (++_reqCounter);
+      _pending.set(requestId, { resolve, reject });
+
+      // Auto-timeout after 30s for large files
+      setTimeout(() => {
+        if (_pending.has(requestId)) {
+          _pending.delete(requestId);
+          reject(new Error('[XLSXWorker] Request timed out after 30s'));
+        }
+      }, 30000);
+
+      worker.postMessage({ type, payload, requestId });
+    });
+  }
+
+  /** Fallback: main-thread CSV generation when Web Workers unavailable */
+  function _fallback(type, payload, resolve, reject) {
+    try {
+      if (type === 'EXPORT_CSV') {
+        // Simple synchronous CSV fallback
+        const { data, filename, entity } = payload;
+        const rows = data || [];
+        if (!rows.length) { resolve({ payload: { csvString: '', filename } }); return; }
+        const headers = Object.keys(rows[0]);
+        const BOM = '\uFEFF';
+        const csv = BOM + [
+          headers.join(','),
+          ...rows.map(r => headers.map(h => {
+            const v = String(r[h] ?? '');
+            return v.includes(',') ? `"${v.replace(/"/g,'""')}"` : v;
+          }).join(','))
+        ].join('\r\n');
+        resolve({ payload: { csvString: csv, filename: filename || `${entity}.csv` } });
+        return;
+      }
+      reject(new Error('Fallback not implemented for type: ' + type));
+    } catch(e) { reject(e); }
+  }
+
+  /** Save a string/blob to disk via download link */
+  function _downloadText(text, filename, mimeType) {
+    const blob = new Blob([text], { type: mimeType || 'text/csv;charset=utf-8;' });
+    const url  = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href      = url;
+    link.download  = filename;
+    link.style.display = 'none';
+    document.body.appendChild(link);
+    link.click();
+    setTimeout(() => { URL.revokeObjectURL(url); document.body.removeChild(link); }, 2000);
+  }
+
+  /** Assemble XLSX using JSZip (main thread) from worker-prepared data */
+  function _assembleXLSX(xlsxData, filename) {
+    // xlsxData: { sheetName, headers: string[], rows: (string|number)[][] }
+    if (typeof JSZip === 'undefined') {
+      showToast('⚠ JSZip غير محمّل — جاري تصدير CSV بدلاً من Excel', 'warning');
+      return null;
+    }
+
+    const zip = new JSZip();
+
+    // Minimal OOXML sheet
+    const cols = xlsxData.headers.map((_, i) => `<col min="${i+1}" max="${i+1}" width="20" customWidth="1"/>`).join('');
+
+    const headerRow = xlsxData.headers.map((h, i) =>
+      `<c r="${colLetter(i)}1" t="inlineStr"><is><t>${escXML(h)}</t></is></c>`
+    ).join('');
+
+    const dataRows = xlsxData.rows.map((row, ri) =>
+      `<row r="${ri+2}">${
+        row.map((val, ci) => {
+          const ref = `${colLetter(ci)}${ri+2}`;
+          if (typeof val === 'number') return `<c r="${ref}"><v>${val}</v></c>`;
+          return `<c r="${ref}" t="inlineStr"><is><t>${escXML(String(val))}</t></is></c>`;
+        }).join('')
+      }</row>`
+    ).join('');
+
+    const sheetXML = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
+<sheetViews><sheetView workbookViewId="0" rightToLeft="1"/></sheetViews>
+<sheetFormatPr defaultRowHeight="15"/>
+<cols>${cols}</cols>
+<sheetData>
+<row r="1" s="1" customFormat="1">${headerRow}</row>
+${dataRows}
+</sheetData>
+</worksheet>`;
+
+    zip.file('xl/worksheets/sheet1.xml', sheetXML);
+    zip.file('[Content_Types].xml', `<?xml version="1.0" encoding="UTF-8"?>
+<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">
+<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>
+<Default Extension="xml" ContentType="application/xml"/>
+<Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/>
+<Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>
+</Types>`);
+    zip.file('_rels/.rels', `<?xml version="1.0" encoding="UTF-8"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/>
+</Relationships>`);
+    zip.file('xl/workbook.xml', `<?xml version="1.0" encoding="UTF-8"?>
+<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">
+<sheets><sheet name="${escXML(xlsxData.sheetName || 'Sheet1')}" sheetId="1" r:id="rId1"/></sheets>
+</workbook>`);
+    zip.file('xl/_rels/workbook.xml.rels', `<?xml version="1.0" encoding="UTF-8"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/>
+</Relationships>`);
+
+    return zip.generateAsync({ type: 'blob', mimeType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })
+      .then(blob => {
+        const url  = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href      = url;
+        link.download  = filename;
+        link.style.display = 'none';
+        document.body.appendChild(link);
+        link.click();
+        setTimeout(() => { URL.revokeObjectURL(url); document.body.removeChild(link); }, 2000);
+        return blob;
+      });
+  }
+
+  function colLetter(i) {
+    let result = '';
+    i = i + 1;
+    while (i > 0) {
+      const rem = (i - 1) % 26;
+      result = String.fromCharCode(65 + rem) + result;
+      i = Math.floor((i - 1) / 26);
+    }
+    return result;
+  }
+
+  function escXML(str) {
+    return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&apos;');
+  }
+
+  // Initialize worker on load
+  if (typeof Worker !== 'undefined') {
+    setTimeout(_getWorker, 500);
+  }
+
+  /* ── Public API ── */
+  return {
+
+    /**
+     * Export entity data to CSV and trigger download
+     * @param {string} entity - Entity type key (e.g. 'subcontracts', 'catalog')
+     * @param {object[]} data - Array of data objects
+     * @param {string} [filename] - Optional filename override
+     * @returns {Promise<void>}
+     */
+    async exportCSV(entity, data, filename) {
+      showToast('⏳ جاري تجهيز ملف CSV...', 'info');
+      try {
+        const result = await _send('EXPORT_CSV', { entity, data, filename });
+        const { csvString, filename: fname, rowCount } = result.payload;
+        _downloadText(csvString, fname, 'text/csv;charset=utf-8;');
+        showToast(`✅ تم تصدير ${rowCount} سطر إلى CSV بنجاح`);
+      } catch (err) {
+        console.error('[XLSXWorkerManager] CSV export error:', err);
+        showToast('❌ خطأ في تصدير CSV: ' + err.message, 'error');
+      }
+    },
+
+    /**
+     * Export entity data to Excel (.xlsx) and trigger download
+     * @param {string} entity - Entity type key
+     * @param {object[]} data - Array of data objects
+     * @param {string} [filename] - Optional filename override
+     * @returns {Promise<void>}
+     */
+    async exportExcel(entity, data, filename) {
+      showToast('⏳ جاري تجهيز ملف Excel...', 'info');
+      try {
+        const result = await _send('EXPORT_EXCEL', { entity, data, filename });
+        const { xlsxData, filename: fname, rowCount } = result.payload;
+        await _assembleXLSX(xlsxData, fname);
+        showToast(`✅ تم تصدير ${rowCount} سطر إلى Excel بنجاح`);
+      } catch (err) {
+        console.error('[XLSXWorkerManager] Excel export error:', err);
+        // Fallback to CSV on XLSX failure
+        showToast('⚠ تعذّر إنشاء Excel — جاري التصدير كـ CSV...', 'warning');
+        await this.exportCSV(entity, data, (filename || entity).replace('.xlsx', '.csv'));
+      }
+    },
+
+    /**
+     * Export invoices as ZATCA Phase 2 compliant CSV
+     * @param {object[]} invoices
+     * @param {string} [filename]
+     * @returns {Promise<void>}
+     */
+    async exportZATCA(invoices, filename) {
+      showToast('⏳ جاري تجهيز ملف فواتير ZATCA...', 'info');
+      try {
+        const result = await _send('EXPORT_ZATCA_CSV', { data: invoices, filename });
+        const { csvString, filename: fname, rowCount } = result.payload;
+        _downloadText(csvString, fname, 'text/csv;charset=utf-8;');
+        showToast(`✅ تم تصدير ${rowCount} فاتورة بتنسيق ZATCA Phase 2`);
+      } catch (err) {
+        console.error('[XLSXWorkerManager] ZATCA export error:', err);
+        showToast('❌ خطأ في تصدير ZATCA: ' + err.message, 'error');
+      }
+    },
+
+    /**
+     * Import CSV text and return parsed rows mapped to entity schema
+     * @param {string} entity - Entity type key
+     * @param {string} csvText - Raw CSV string
+     * @returns {Promise<{rows: object[], validCount: number, skippedCount: number}>}
+     */
+    async importCSV(entity, csvText) {
+      showToast('⏳ جاري تحليل ملف CSV...', 'info');
+      try {
+        const result = await _send('IMPORT_CSV', { entity, csvText });
+        const { rows, validCount, skippedCount } = result.payload;
+        showToast(`✅ تم استيراد ${validCount} سجل (${skippedCount} سطر تم تجاهله)`);
+        return result.payload;
+      } catch (err) {
+        console.error('[XLSXWorkerManager] CSV import error:', err);
+        showToast('❌ خطأ في استيراد CSV: ' + err.message, 'error');
+        throw err;
+      }
+    },
+
+    /**
+     * Handle CSV file input from <input type="file"> element
+     * @param {File} file - File object from input element
+     * @param {string} entity - Target entity type
+     * @param {function} onSuccess - Callback(rows) called on successful import
+     */
+    handleFileImport(file, entity, onSuccess) {
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = async (e) => {
+        try {
+          const result = await this.importCSV(entity, e.target.result);
+          if (typeof onSuccess === 'function') onSuccess(result.rows);
+        } catch (err) {
+          showToast('❌ فشل في معالجة الملف المستورد', 'error');
+        }
+      };
+      reader.readAsText(file, 'UTF-8');
+    },
+
+    /** Check worker health */
+    ping() { _send('PING', {}); },
+
+    /** Whether the worker is ready */
+    get isReady() { return _ready; },
+
+    /** Get list of supported entity types */
+    get supportedEntities() {
+      return ['boq','procurement','subcontracts','contractors','catalog','rate_analysis','evm_data'];
+    }
+  };
+})();
+
+// Expose shorthand exports for use in toolbar buttons
+window.exportToCSV   = (entity, data, filename) => window.XLSXWorkerManager.exportCSV(entity, data, filename);
+window.exportToExcel = (entity, data, filename) => window.XLSXWorkerManager.exportExcel(entity, data, filename);
+window.exportZATCA   = (invoices, filename)      => window.XLSXWorkerManager.exportZATCA(invoices, filename);
+

@@ -1,0 +1,27 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "ESNext",
+    "checkJs": true,
+    "allowJs": true,
+    "strict": false,
+    "noImplicitAny": false,
+    "strictNullChecks": true,
+    "baseUrl": ".",
+    "paths": {
+      "@core/*":    ["assets/js/core/*"],
+      "@workers/*": ["assets/js/workers/*"],
+      "@types/*":   ["src/types/*"]
+    },
+    "typeRoots":  ["./src/types"],
+    "lib": ["ES2020", "DOM", "DOM.Iterable", "WebWorker"]
+  },
+  "include": [
+    "assets/js/**/*.js",
+    "src/types/**/*.d.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "assets/js/jszip.min.js"
+  ]
+}

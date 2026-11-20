@@ -10,6 +10,8 @@
 <link rel="stylesheet" href="assets/css/font-awesome.min.css">
 
 <!-- External Modular Enterprise CSS Stylesheets -->
+<!-- Design Token System MUST load first — all other CSS inherits from it -->
+<link rel="stylesheet" href="assets/css/design-tokens.css">
 <link rel="stylesheet" href="assets/css/theme.css">
 <link rel="stylesheet" href="assets/css/main.css">
 <link rel="stylesheet" href="assets/css/dashboard.css">
@@ -19,6 +21,14 @@
 <link rel="stylesheet" href="assets/css/modules-ext.css">
 </head>
 <body>
+
+<!-- Mobile Hamburger Menu (visible only on screens ≤ 768px via CSS) -->
+<button class="mobile-menu-toggle" onclick="toggleSidebar()" aria-label="فتح القائمة الجانبية" title="القائمة">
+  <i class="fas fa-bars"></i>
+</button>
+
+<!-- Mobile Sidebar Backdrop (click to close sidebar on mobile) -->
+<div id="sidebar-backdrop" class="sidebar-backdrop"></div>
 
 <!-- ==========================================================================
      SIDEBAR NAVIGATION (18 COMMERCIAL ERP MODULES)
@@ -2989,6 +2999,16 @@
 <!-- External Modular JavaScript Dependencies & Application Modules -->
 <script src="assets/js/jszip.min.js"></script>
 <script src="assets/js/config.js"></script>
+<!-- ═══════════════════════════════════════════════════════════════════
+     Enterprise Core Architecture Layer — MimarERP v6
+     Load order: config → core/* → evm → enterprise-features → app → crud
+     ═══════════════════════════════════════════════════════════════════ -->
+<script src="assets/js/core/security-sanitizer.js"></script>
+<script src="assets/js/core/state-store.js"></script>
+<script src="assets/js/core/validation-engine.js"></script>
+<script src="assets/js/core/component-library.js"></script>
+<script src="assets/js/core/api-gateway.js"></script>
+<script src="assets/js/core/domain-services.js"></script>
 <script src="assets/js/evm-calculator.js"></script>
 <script src="assets/js/enterprise-features.js"></script>
 <script src="assets/js/app.js"></script>

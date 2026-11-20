@@ -57,7 +57,30 @@ function onProjectChange(newProjectId) {
 
 function onRoleChange(newRole) {
   MimarERP.currentRole = newRole;
-  showToast("تم تفعيل صلاحيات دور: " + newRole);
+
+  // ── RBAC: sync new role into enterprise PolicyGatekeeper ──
+  if (window.PolicyGatekeeper) {
+    window.PolicyGatekeeper.setActiveRole(newRole);
+    const titleAr = window.PolicyGatekeeper.getRoleTitleAr
+      ? window.PolicyGatekeeper.getRoleTitleAr(newRole)
+      : newRole;
+    showToast('تم تفعيل صلاحيات دور: ' + titleAr);
+  } else {
+    showToast('تم تفعيل صلاحيات دور: ' + newRole);
+  }
+
+  // ── State Store: broadcast role change ──
+  if (window.EnterpriseStore) {
+    window.EnterpriseStore.dispatch({ type: 'CONTEXT_SET_ROLE', payload: newRole });
+  }
+
+  // ── Audit: record role switch ──
+  if (window.AuditLogger) {
+    window.AuditLogger.record('ROLE_SWITCH', { from: MimarERP.currentRole, to: newRole }, 'SYSTEM');
+  }
+
+  // Re-render active view to apply permission-aware UI
+  if (typeof renderAllViews === 'function') renderAllViews();
 }
 
 function getActiveCompany() {
@@ -160,8 +183,37 @@ window.saveNavGroupState = saveNavGroupState;
 window.loadNavGroupState = loadNavGroupState;
 
 function toggleSidebar() {
-  document.getElementById("sidebar").classList.toggle("collapsed");
+  const sidebar  = document.getElementById('sidebar');
+  const backdrop = document.getElementById('sidebar-backdrop');
+  const isMobile = window.innerWidth <= 768;
+
+  if (isMobile) {
+    // Mobile: slide in/out from right (RTL)
+    sidebar.classList.toggle('sidebar-open');
+    if (backdrop) backdrop.classList.toggle('active');
+  } else {
+    // Desktop: collapse to icon-only rail
+    sidebar.classList.toggle('collapsed');
+  }
 }
+
+function closeSidebarMobile() {
+  const sidebar  = document.getElementById('sidebar');
+  const backdrop = document.getElementById('sidebar-backdrop');
+  sidebar.classList.remove('sidebar-open');
+  if (backdrop) backdrop.classList.remove('active');
+}
+
+// Close sidebar when clicking backdrop (mobile)
+document.addEventListener('DOMContentLoaded', () => {
+  const backdrop = document.getElementById('sidebar-backdrop');
+  if (backdrop) backdrop.addEventListener('click', closeSidebarMobile);
+
+  // Close sidebar on resize to desktop
+  window.addEventListener('resize', () => {
+    if (window.innerWidth > 768) closeSidebarMobile();
+  });
+});
 
 function renderAllViews() {
   renderCompaniesTable();

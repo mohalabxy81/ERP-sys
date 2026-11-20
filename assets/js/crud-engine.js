@@ -277,7 +277,23 @@ function executeCrudSave() {
 
   if (errEl) errEl.style.display = 'none';
   try {
+    // Sanitize string values
+    if (window.DOMSanitizer) {
+      Object.keys(data).forEach(k => {
+        if (typeof data[k] === 'string') {
+          data[k] = window.DOMSanitizer.clean(data[k]);
+        }
+      });
+    }
+
     onSave(data, record);
+
+    // Cryptographic Audit Trail
+    if (window.AuditLogger) {
+      const entityId = data.sub_id || data.contractor_id || data.rate_id || data.item_code || data.id || data.code || 'REC-' + Date.now();
+      window.AuditLogger.record(record ? 'UPDATE' : 'CREATE', 'CRUD_Entity', entityId, data);
+    }
+
     closeCrudModal();
   } catch(e) {
     console.error('Error saving CRUD data:', e);
@@ -292,6 +308,15 @@ function executeCrudSave() {
 // 3. UNIFIED CONFIRM DELETE DIALOG
 // =============================================================================
 function confirmDelete(message, onConfirm) {
+  // Enterprise RBAC Enforcement
+  if (window.PolicyGatekeeper) {
+    try {
+      window.PolicyGatekeeper.enforce('DELETE_MASTER_DATA', 'عملية الحذف والتعديل');
+    } catch (e) {
+      return;
+    }
+  }
+
   const overlay = document.createElement('div');
   overlay.className = 'modal-overlay show';
   overlay.style.cssText = 'display:flex; position:fixed; inset:0; background:rgba(11,25,44,0.65); z-index:100000; align-items:center; justify-content:center; backdrop-filter:blur(4px);';
@@ -322,6 +347,9 @@ function confirmDelete(message, onConfirm) {
   overlay.querySelector('#btn-cancel-del').onclick = cleanup;
   overlay.querySelector('#btn-confirm-del').onclick = () => {
     cleanup();
+    if (window.AuditLogger) {
+      window.AuditLogger.record('CONFIRM_DELETE', 'CRUD_Entity', 'Target', { message });
+    }
     onConfirm();
   };
 }
@@ -545,6 +573,11 @@ function openAddCatalogModal(record = null) {
       { key: 'status', label: 'الحالة', type: 'select', options: ['ساري ومعتمد','قيد التوريد','ملغى'], default: 'ساري ومعتمد' }
     ],
     onSave(data, rec) {
+      // RBAC: check CREATE_PO permission for catalog additions
+      if (!rec && window.PolicyGatekeeper) {
+        try { window.PolicyGatekeeper.enforce('CREATE_PO', 'إضافة بند للكتالوج'); } catch(e) { showToast(e.message, 'error'); return; }
+      }
+
       const p = MimarERP.partners?.find(x => x.partner_id === data.partner_id);
       if (p) {
         data.partner_name = p.partner_name;
@@ -567,6 +600,10 @@ function openAddCatalogModal(record = null) {
         if (!MimarERP.partnerCatalog) MimarERP.partnerCatalog = [];
         MimarERP.partnerCatalog.unshift(data);
         logAudit('CREATE', 'Catalog', `إضافة بند للكتالوج ${data.item_code} - ${data.desc}`);
+        // ── EnterpriseStore dispatch ──
+        if (window.EnterpriseStore) {
+          window.EnterpriseStore.dispatch({ type: 'CATALOG_ADD_ITEM', payload: data });
+        }
         showToast('تمت إضافة البند للكتالوج بنجاح ✓');
       }
       saveToLocalStorage();
@@ -879,6 +916,11 @@ function openAddSubcontractModal(record = null) {
       { key: 'status', label: 'حالة العقد', type: 'select', options: ['نشط وقيد التنفيذ','مكتمل ومسلم','قيد التسوية النهائية'], default: 'نشط وقيد التنفيذ' }
     ],
     onSave(data, rec) {
+      // RBAC: approve subcontract requires APPROVE_IPC permission
+      if (window.PolicyGatekeeper) {
+        try { window.PolicyGatekeeper.enforce('APPROVE_IPC', 'إبرام عقد مقاولة باطن'); } catch(e) { showToast(e.message, 'error'); return; }
+      }
+
       if (rec) {
         Object.assign(rec, data);
         logAudit('UPDATE', 'Subcontract', `تعديل عقد مقاول الباطن ${rec.sub_id} - ${rec.contractor_name}`);
@@ -887,6 +929,10 @@ function openAddSubcontractModal(record = null) {
         if (!MimarERP.subcontractsMaster) MimarERP.subcontractsMaster = [];
         MimarERP.subcontractsMaster.unshift(data);
         logAudit('CREATE', 'Subcontract', `إبرام عقد مقاول باطن جديد ${data.sub_id}`);
+        // ── EnterpriseStore dispatch ──
+        if (window.EnterpriseStore) {
+          window.EnterpriseStore.dispatch({ type: 'SUBCONTRACT_ADD', payload: data });
+        }
         showToast('تم إبرام العقد بنجاح ✓');
       }
       saveToLocalStorage();
@@ -1827,6 +1873,10 @@ function openAddContractorMasterModal(record = null) {
         if (!MimarERP.contractorsMaster) MimarERP.contractorsMaster = [];
         MimarERP.contractorsMaster.push(data);
         logAudit('CREATE', 'Contractors', `إضافة مقاول جديد ${data.contractor_name}`);
+        // ── EnterpriseStore dispatch ──
+        if (window.EnterpriseStore) {
+          window.EnterpriseStore.dispatch({ type: 'CONTRACTOR_ADD', payload: data });
+        }
         showToast('تمت إضافة المقاول بنجاح ✓');
       }
       saveToLocalStorage();
