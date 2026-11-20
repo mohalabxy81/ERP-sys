@@ -1,0 +1,1567 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>مِعمار ERP | نظام رقابة وضبط التكاليف وإدارة القيمة المكتسبة (EVM Cost Control)</title>
+  
+  <!-- Local Fonts & Icons -->
+  <link rel="stylesheet" href="../../assets/css/google-fonts.css">
+  <link rel="stylesheet" href="../../assets/css/font-awesome.min.css">
+  
+  <!-- Core Design System & Modular CSS -->
+  <link rel="stylesheet" href="../../assets/css/design-tokens.css">
+  <link rel="stylesheet" href="../../assets/css/theme.css">
+  <link rel="stylesheet" href="../../assets/css/main.css">
+  <link rel="stylesheet" href="../../assets/css/dashboard.css">
+  <link rel="stylesheet" href="../../assets/css/modules.css">
+  
+  <style>
+    :root {
+      --navy-main: #0B192C;
+      --navy-secondary: #1E3E62;
+      --navy-card: #122842;
+      --teal-accent: #008DDA;
+      --gold-accent: #c9a84c;
+      --success-green: #10b981;
+      --danger-red: #ef4444;
+      --warning-amber: #f59e0b;
+      --purple-accent: #8b5cf6;
+      --border-color: #cbd5e1;
+      --bg-slate: #f8fafc;
+    }
+
+    body {
+      font-family: 'Cairo', 'Tajawal', sans-serif;
+      background-color: #f1f5f9;
+      color: #1e293b;
+      margin: 0;
+      padding: 0;
+    }
+
+    .num {
+      font-family: 'Tajawal', sans-serif;
+      font-weight: 700;
+    }
+
+    /* Top Navigation Header */
+    .cost-header {
+      background: linear-gradient(135deg, #0B192C 0%, #152d4a 100%);
+      color: #ffffff;
+      padding: 16px 28px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 4px 18px rgba(11, 25, 44, 0.25);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .cost-brand {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .cost-logo-badge {
+      width: 44px;
+      height: 44px;
+      background: linear-gradient(135deg, #008DDA, #00c4ff);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #ffffff;
+      font-size: 20px;
+      font-weight: 900;
+      box-shadow: 0 4px 12px rgba(0, 141, 218, 0.4);
+    }
+
+    .cost-title h1 {
+      font-size: 20px;
+      font-weight: 800;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .cost-title p {
+      margin: 2px 0 0;
+      font-size: 12px;
+      color: #94a3b8;
+    }
+
+    .cost-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .btn-header-action {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: #ffffff;
+      padding: 7px 14px;
+      border-radius: 8px;
+      font-size: 12.5px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+
+    .btn-header-action:hover {
+      background: rgba(255, 255, 255, 0.2);
+      border-color: #ffffff;
+    }
+
+    .btn-primary-action {
+      background: linear-gradient(135deg, #008DDA, #006094);
+      color: #ffffff;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 13px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s;
+      box-shadow: 0 2px 8px rgba(0, 141, 218, 0.35);
+    }
+
+    .btn-primary-action:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(0, 141, 218, 0.5);
+    }
+
+    /* Container */
+    .cost-container {
+      max-width: 1600px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+
+    .breadcrumb-nav {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12.5px;
+      color: #64748b;
+      margin-bottom: 16px;
+    }
+
+    .breadcrumb-nav a {
+      color: #0284c7;
+      text-decoration: none;
+    }
+
+    /* Filter Bar */
+    .filter-bar {
+      background: #ffffff;
+      border-radius: 12px;
+      padding: 16px 20px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      border: 1px solid #e2e8f0;
+      margin-bottom: 24px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-end;
+      gap: 16px;
+    }
+
+    .filter-item {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      min-width: 180px;
+      flex: 1;
+    }
+
+    .filter-item label {
+      font-size: 12px;
+      font-weight: 700;
+      color: #475569;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .filter-input {
+      padding: 8px 12px;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 13px;
+      background: #f8fafc;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    .filter-input:focus {
+      outline: none;
+      border-color: #008DDA;
+      background: #ffffff;
+      box-shadow: 0 0 0 3px rgba(0, 141, 218, 0.15);
+    }
+
+    .export-btns {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .btn-export {
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-size: 12.5px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      border: 1px solid #cbd5e1;
+      background: #ffffff;
+      color: #334155;
+      transition: all 0.2s;
+    }
+
+    .btn-export:hover {
+      background: #f1f5f9;
+      border-color: #94a3b8;
+    }
+
+    .btn-export.excel {
+      color: #047857;
+      border-color: #a7f3d0;
+      background: #ecfdf5;
+    }
+    .btn-export.excel:hover { background: #d1fae5; }
+
+    .btn-export.pdf {
+      color: #b91c1c;
+      border-color: #fecaca;
+      background: #fef2f2;
+    }
+    .btn-export.pdf:hover { background: #fee2e2; }
+
+    /* EVM 12 Cards Grid */
+    .evm-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(185px, 1fr));
+      gap: 14px;
+      margin-bottom: 24px;
+    }
+
+    .evm-card {
+      background: #ffffff;
+      border-radius: 12px;
+      padding: 16px;
+      border: 1px solid #e2e8f0;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .evm-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 14px rgba(0,0,0,0.07);
+    }
+
+    .evm-card::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      right: 0;
+      left: 0;
+      height: 4px;
+      background: #64748b;
+    }
+
+    .evm-card.c-blue::before { background: #0284c7; }
+    .evm-card.c-teal::before { background: #008dda; }
+    .evm-card.c-green::before { background: #10b981; }
+    .evm-card.c-amber::before { background: #f59e0b; }
+    .evm-card.c-red::before { background: #ef4444; }
+    .evm-card.c-purple::before { background: #8b5cf6; }
+
+    .evm-tag {
+      font-size: 11px;
+      font-weight: 800;
+      padding: 2px 8px;
+      border-radius: 4px;
+      background: #f1f5f9;
+      color: #475569;
+      width: fit-content;
+      margin-bottom: 8px;
+    }
+
+    .evm-label {
+      font-size: 12px;
+      color: #64748b;
+      font-weight: 700;
+      margin-bottom: 4px;
+      line-height: 1.3;
+    }
+
+    .evm-value {
+      font-size: 20px;
+      font-weight: 900;
+      color: #0f172a;
+      margin-bottom: 4px;
+    }
+
+    .evm-desc {
+      font-size: 10.5px;
+      color: #94a3b8;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    /* Layout Sections */
+    .cost-grid-2 {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 24px;
+      margin-bottom: 24px;
+    }
+
+    @media (max-width: 1200px) {
+      .cost-grid-2 {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Cards */
+    .dashboard-panel {
+      background: #ffffff;
+      border-radius: 14px;
+      border: 1px solid #e2e8f0;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+      overflow: hidden;
+      margin-bottom: 24px;
+    }
+
+    .panel-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid #f1f5f9;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #ffffff;
+    }
+
+    .panel-title {
+      font-size: 15px;
+      font-weight: 800;
+      color: #0f172a;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .panel-body {
+      padding: 20px;
+    }
+
+    /* S-Curve SVG Chart */
+    .scurve-box {
+      width: 100%;
+      height: 320px;
+      position: relative;
+    }
+
+    .scurve-legend {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 18px;
+      margin-top: 12px;
+      font-size: 11.5px;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .legend-line {
+      width: 18px;
+      height: 3px;
+      border-radius: 2px;
+    }
+
+    /* Drill-down Table Styles */
+    .table-drilldown {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    .table-drilldown th {
+      background: #f8fafc;
+      padding: 12px 14px;
+      font-weight: 800;
+      color: #1e293b;
+      border-bottom: 2px solid #e2e8f0;
+      white-space: nowrap;
+      text-align: right;
+    }
+
+    .table-drilldown td {
+      padding: 10px 14px;
+      border-bottom: 1px solid #f1f5f9;
+      vertical-align: middle;
+    }
+
+    .row-level-1 {
+      background: #f8fafc;
+      font-weight: 800;
+      color: #0b192c;
+      cursor: pointer;
+    }
+    .row-level-1:hover { background: #f1f5f9; }
+
+    .row-level-2 {
+      background: #ffffff;
+      font-weight: 700;
+      color: #334155;
+      cursor: pointer;
+    }
+    .row-level-2:hover { background: #f8fafc; }
+
+    .row-level-3 {
+      background: #fafafa;
+      color: #475569;
+    }
+    .row-level-3:hover { background: #f1f5f9; }
+
+    .indent-1 { padding-right: 14px !important; }
+    .indent-2 { padding-right: 34px !important; }
+    .indent-3 { padding-right: 56px !important; }
+
+    .expand-toggle {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 18px;
+      height: 18px;
+      border-radius: 4px;
+      background: #e2e8f0;
+      color: #475569;
+      font-size: 10px;
+      margin-left: 8px;
+      transition: transform 0.2s;
+    }
+
+    .expand-toggle.open {
+      transform: rotate(90deg);
+      background: #008DDA;
+      color: #ffffff;
+    }
+
+    /* Modal for EVM Simulator */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(11, 25, 44, 0.65);
+      backdrop-filter: blur(4px);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal-box {
+      background: #ffffff;
+      width: 90%;
+      max-width: 600px;
+      border-radius: 14px;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
+      border: 1px solid #cbd5e1;
+      overflow: hidden;
+      animation: modalFadeIn 0.25s ease-out;
+    }
+
+    @keyframes modalFadeIn {
+      from { opacity: 0; transform: translateY(-15px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .modal-header {
+      padding: 18px 24px;
+      background: #0B192C;
+      color: #ffffff;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .modal-header h3 {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .modal-close {
+      background: transparent;
+      border: none;
+      color: #94a3b8;
+      font-size: 18px;
+      cursor: pointer;
+    }
+    .modal-close:hover { color: white; }
+
+    .modal-body {
+      padding: 24px;
+    }
+
+    .badge-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .badge-favorable { background: #d1fae5; color: #065f46; }
+    .badge-unfavorable { background: #fee2e2; color: #991b1b; }
+    .badge-neutral { background: #f1f5f9; color: #475569; }
+  </style>
+</head>
+<body>
+
+  <!-- Top Cost Control Header -->
+  <header class="cost-header">
+    <div class="cost-brand">
+      <div class="cost-logo-badge"><i class="fas fa-chart-line"></i></div>
+      <div class="cost-title">
+        <h1>
+          <span>منظومة رقابة وضبط التكاليف (EVM Cost Control)</span>
+          <span style="font-size: 12px; background: rgba(0,141,218,0.25); color: #7dd3fc; padding: 2px 8px; border-radius: 4px; border: 1px solid rgba(0,141,218,0.4);">AACE International 10S-90</span>
+        </h1>
+        <p>مِعمار ERP — تحليل القيمة المكتسبة وإدارة التكاليف التقديرية والتراكمية للمشاريع الكبرى</p>
+      </div>
+    </div>
+
+    <div class="cost-actions">
+      <button class="btn-header-action" onclick="openSimulationModal()">
+        <i class="fas fa-calculator"></i> <span>محاكي التنبؤ (EVM Simulator)</span>
+      </button>
+
+      <a href="../executive-dashboard/index.html" class="btn-header-action" title="لوحة القيادة التنفيذية">
+        <i class="fas fa-gauge-high"></i> <span>لوحة القيادة التنفيذية</span>
+      </a>
+
+      <a href="../../index.html" class="btn-header-action" title="الرجوع للرئيسية">
+        <i class="fas fa-house"></i> <span>الرئيسية</span>
+      </a>
+
+      <button class="btn-primary-action" onclick="recalculateAllEVM()">
+        <i class="fas fa-rotate"></i> <span>إعادة احتساب المؤشرات اللحظية</span>
+      </button>
+    </div>
+  </header>
+
+  <main class="cost-container">
+
+    <!-- Navigation Breadcrumbs -->
+    <div class="breadcrumb-nav">
+      <a href="../../index.html"><i class="fas fa-home"></i> مِعمار ERP</a>
+      <i class="fas fa-chevron-left" style="font-size: 10px;"></i>
+      <span>لوحات القيادة والمتابعة</span>
+      <i class="fas fa-chevron-left" style="font-size: 10px;"></i>
+      <span style="color: #0f172a; font-weight: 700;">ضبط التكاليف والقيمة المكتسبة (Cost Control)</span>
+    </div>
+
+    <!-- Master Filter Bar & Export Actions -->
+    <section class="filter-bar">
+      <div class="filter-item">
+        <label><i class="fas fa-diagram-project" style="color: #008DDA;"></i> المشروع الإنشائي:</label>
+        <select class="filter-input" id="filterProject" onchange="applyFilters()">
+          <option value="PRJ-2024-001" selected>PRJ-2024-001 | برج العاصمة الإداري — الرياض</option>
+          <option value="PRJ-2024-003">PRJ-2024-003 | مستشفى الدكتور سليمان الحبيب — جدة</option>
+          <option value="PRJ-2024-007">PRJ-2024-007 | منتجع وفندق لاغونا — البحر الأحمر</option>
+          <option value="PRJ-2024-012">PRJ-2024-012 | تقاطع جسر مطار الملك خالد الدولي</option>
+          <option value="PRJ-2024-015">PRJ-2024-015 | مجمع الفلل الدبلوماسي — الدرعية</option>
+        </select>
+      </div>
+
+      <div class="filter-item" style="max-width: 170px;">
+        <label><i class="fas fa-calendar-alt" style="color: #008DDA;"></i> فترة التقرير (Cut-off):</label>
+        <select class="filter-input" id="filterPeriod" onchange="applyFilters()">
+          <option value="2026-M11" selected>نوفمبر 2026 (الشهر الحالي)</option>
+          <option value="2026-M10">أكتوبر 2026</option>
+          <option value="2026-Q3">الربع الثالث 2026</option>
+          <option value="2026-Q2">الربع الثاني 2026</option>
+          <option value="2026-YTD">من بداية العام حتى تاريخه (YTD)</option>
+        </select>
+      </div>
+
+      <div class="filter-item" style="max-width: 190px;">
+        <label><i class="fas fa-sitemap" style="color: #008DDA;"></i> مركز التكلفة (Cost Center):</label>
+        <select class="filter-input" id="filterCostCenter" onchange="applyFilters()">
+          <option value="ALL">كافة مراكز التكلفة</option>
+          <option value="CC-CIVIL">CC-101 | الأعمال المدنية والإنشائية</option>
+          <option value="CC-MEP">CC-102 | الأعمال الكهروميكانيكية</option>
+          <option value="CC-ARCH">CC-103 | التشطيبات والديكور</option>
+          <option value="CC-INFR">CC-104 | البنية التحتية والموقع العام</option>
+        </select>
+      </div>
+
+      <div class="filter-item" style="flex: 1.5; min-width: 220px;">
+        <label><i class="fas fa-search" style="color: #008DDA;"></i> البحث بكود الحساب / بند التكلفة:</label>
+        <input type="text" class="filter-input" id="searchCostCode" onkeyup="filterDrilldownTable()" placeholder="ابحث بكود التكلفة (مثل 03-3000) أو اسم البند...">
+      </div>
+
+      <div class="export-btns">
+        <button class="btn-export excel" onclick="exportToExcel()" title="تصدير جدول التكاليف إلى ملف إكسل">
+          <i class="fas fa-file-excel"></i> <span>تصدير Excel</span>
+        </button>
+        <button class="btn-export pdf" onclick="exportToPDF()" title="تصدير تقرير EVM بصيغة PDF">
+          <i class="fas fa-file-pdf"></i> <span>تصدير PDF</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- EVM Complete 12 Metrics Cards Row -->
+    <section>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+        <h2 style="font-size: 15px; font-weight: 800; color: #0b192c; margin: 0; display: flex; align-items: center; gap: 8px;">
+          <i class="fas fa-calculator" style="color: #008DDA;"></i> المؤشرات الإثنا عشر لإدارة القيمة المكتسبة (EVM Standard Metrics)
+        </h2>
+        <span style="font-size: 12px; color: #64748b;">المشروع المختار: <strong>برج العاصمة الإداري</strong> | العملة: ر.س (SAR)</span>
+      </div>
+
+      <div class="evm-grid">
+        
+        <!-- 1. BAC -->
+        <div class="evm-card c-blue">
+          <div>
+            <span class="evm-tag">BAC</span>
+            <div class="evm-label">الميزانية عند الاكتمال (Budget at Completion)</div>
+            <div class="evm-value num" id="valBAC">450,000,000</div>
+          </div>
+          <div class="evm-desc"><i class="fas fa-info-circle"></i> خط الأساس المالي المعتمد</div>
+        </div>
+
+        <!-- 2. PV -->
+        <div class="evm-card c-teal">
+          <div>
+            <span class="evm-tag">PV</span>
+            <div class="evm-label">القيمة المخططة (Planned Value)</div>
+            <div class="evm-value num" id="valPV">324,000,000</div>
+          </div>
+          <div class="evm-desc"><i class="fas fa-calendar-check"></i> الخطة المقررة: 72.0%</div>
+        </div>
+
+        <!-- 3. EV -->
+        <div class="evm-card c-green">
+          <div>
+            <span class="evm-tag">EV</span>
+            <div class="evm-label">القيمة المكتسبة (Earned Value)</div>
+            <div class="evm-value num" id="valEV" style="color: #10b981;">335,250,000</div>
+          </div>
+          <div class="evm-desc"><i class="fas fa-hammer"></i> الإنجاز الفعلي: 74.5%</div>
+        </div>
+
+        <!-- 4. AC -->
+        <div class="evm-card c-purple">
+          <div>
+            <span class="evm-tag">AC</span>
+            <div class="evm-label">التكلفة الفعلية (Actual Cost)</div>
+            <div class="evm-value num" id="valAC">321,000,000</div>
+          </div>
+          <div class="evm-desc"><i class="fas fa-receipt"></i> المصروفات المنفقة حتى اليوم</div>
+        </div>
+
+        <!-- 5. CV -->
+        <div class="evm-card c-green">
+          <div>
+            <span class="evm-tag" style="background: #d1fae5; color: #065f46;">CV = EV - AC</span>
+            <div class="evm-label">انحراف التكلفة (Cost Variance)</div>
+            <div class="evm-value num" id="valCV" style="color: #10b981;">+14,250,000</div>
+          </div>
+          <div class="evm-desc" style="color: #10b981;"><i class="fas fa-check-circle"></i> وفر مالي إيجابي (Under Budget)</div>
+        </div>
+
+        <!-- 6. SV -->
+        <div class="evm-card c-green">
+          <div>
+            <span class="evm-tag" style="background: #d1fae5; color: #065f46;">SV = EV - PV</span>
+            <div class="evm-label">انحراف الجدول (Schedule Variance)</div>
+            <div class="evm-value num" id="valSV" style="color: #10b981;">+11,250,000</div>
+          </div>
+          <div class="evm-desc" style="color: #10b981;"><i class="fas fa-clock"></i> متقدم عن الجدول (Ahead)</div>
+        </div>
+
+        <!-- 7. CPI -->
+        <div class="evm-card c-green">
+          <div>
+            <span class="evm-tag" style="background: #d1fae5; color: #065f46;">CPI = EV / AC</span>
+            <div class="evm-label">مؤشر أداء التكلفة (Cost Index)</div>
+            <div class="evm-value num" id="valCPI" style="color: #10b981;">1.044</div>
+          </div>
+          <div class="evm-desc" style="color: #10b981;"><i class="fas fa-arrow-up"></i> كل 1 ر.س ينفق يحقق 1.04 ر.س</div>
+        </div>
+
+        <!-- 8. SPI -->
+        <div class="evm-card c-green">
+          <div>
+            <span class="evm-tag" style="background: #d1fae5; color: #065f46;">SPI = EV / PV</span>
+            <div class="evm-label">مؤشر أداء الجدول (Schedule Index)</div>
+            <div class="evm-value num" id="valSPI" style="color: #10b981;">1.035</div>
+          </div>
+          <div class="evm-desc" style="color: #10b981;"><i class="fas fa-forward"></i> معدل سرعة التنفيذ الفعلي 103%</div>
+        </div>
+
+        <!-- 9. EAC -->
+        <div class="evm-card c-blue">
+          <div>
+            <span class="evm-tag">EAC = BAC / CPI</span>
+            <div class="evm-label">التقدير عند الاكتمال (At Completion)</div>
+            <div class="evm-value num" id="valEAC">431,034,482</div>
+          </div>
+          <div class="evm-desc"><i class="fas fa-bullseye"></i> التكلفة الإجمالية المتوقعة للمشروع</div>
+        </div>
+
+        <!-- 10. ETC -->
+        <div class="evm-card c-blue">
+          <div>
+            <span class="evm-tag">ETC = EAC - AC</span>
+            <div class="evm-label">المتبقي حتى الاكتمال (To Complete)</div>
+            <div class="evm-value num" id="valETC">110,034,482</div>
+          </div>
+          <div class="evm-desc"><i class="fas fa-coins"></i> السيولة المطلوبة لإنهاء الأعمال</div>
+        </div>
+
+        <!-- 11. VAC -->
+        <div class="evm-card c-green">
+          <div>
+            <span class="evm-tag" style="background: #d1fae5; color: #065f46;">VAC = BAC - EAC</span>
+            <div class="evm-label">الانحراف المتوقع عند الانتهاء</div>
+            <div class="evm-value num" id="valVAC" style="color: #10b981;">+18,965,518</div>
+          </div>
+          <div class="evm-desc" style="color: #10b981;"><i class="fas fa-trophy"></i> وفر إجمالي متوقع عند التسليم</div>
+        </div>
+
+        <!-- 12. TCPI -->
+        <div class="evm-card c-teal">
+          <div>
+            <span class="evm-tag">TCPI (BAC)</span>
+            <div class="evm-label">مؤشر الأداء المطلوب للإنجاز</div>
+            <div class="evm-value num" id="valTCPI">0.890</div>
+          </div>
+          <div class="evm-desc" style="color: #059669;"><i class="fas fa-thumbs-up"></i> أداء مرن (أقل من 1.00 مريح)</div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Middle Split: EVM S-Curve Chart & Budget vs Actual Bar Chart -->
+    <section class="cost-grid-2">
+      
+      <!-- S-Curve Chart Panel -->
+      <div class="dashboard-panel">
+        <div class="panel-header">
+          <div class="panel-title">
+            <i class="fas fa-chart-area" style="color: #008DDA;"></i>
+            <span>منحنى التدفق التراكمي ومسار القيمة المكتسبة (EVM S-Curve)</span>
+          </div>
+          <div style="display: flex; gap: 8px;">
+            <button class="btn-export" style="padding: 4px 10px; font-size: 11px;" onclick="toggleForecastCurve()">
+              <i class="fas fa-eye"></i> إظهار/إخفاء التنبؤ (Forecast)
+            </button>
+          </div>
+        </div>
+        <div class="panel-body">
+          <div class="scurve-box">
+            <svg viewBox="0 0 700 300" style="width: 100%; height: 100%; overflow: visible;">
+              <defs>
+                <linearGradient id="scurveEvGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stop-color="#10b981" stop-opacity="0.25"/>
+                  <stop offset="100%" stop-color="#10b981" stop-opacity="0.0"/>
+                </linearGradient>
+              </defs>
+
+              <!-- Y-Axis horizontal grid lines and labels (0 to 450M) -->
+              <line x1="60" y1="30" x2="680" y2="30" stroke="#f1f5f9" stroke-dasharray="4,4" />
+              <text x="50" y="34" font-size="11" fill="#94a3b8" text-anchor="end" class="num">450M (BAC)</text>
+
+              <line x1="60" y1="85" x2="680" y2="85" stroke="#f1f5f9" stroke-dasharray="4,4" />
+              <text x="50" y="89" font-size="11" fill="#94a3b8" text-anchor="end" class="num">350M</text>
+
+              <line x1="60" y1="140" x2="680" y2="140" stroke="#f1f5f9" stroke-dasharray="4,4" />
+              <text x="50" y="144" font-size="11" fill="#94a3b8" text-anchor="end" class="num">250M</text>
+
+              <line x1="60" y1="195" x2="680" y2="195" stroke="#f1f5f9" stroke-dasharray="4,4" />
+              <text x="50" y="199" font-size="11" fill="#94a3b8" text-anchor="end" class="num">150M</text>
+
+              <line x1="60" y1="250" x2="680" y2="250" stroke="#cbd5e1" stroke-width="1.5" />
+              <text x="50" y="254" font-size="11" fill="#94a3b8" text-anchor="end" class="num">0</text>
+
+              <!-- Vertical Cut-off Line (Current Date: Month 11) -->
+              <line x1="490" y1="20" x2="490" y2="250" stroke="#ef4444" stroke-width="1.5" stroke-dasharray="3,3" />
+              <rect x="445" y="6" width="90" height="20" rx="4" fill="#fee2e2" />
+              <text x="490" y="20" font-size="10" fill="#dc2626" font-weight="bold" text-anchor="middle">تاريخ اليوم (Cut-off)</text>
+
+              <!-- EV Shaded Area -->
+              <path d="M 60 250 Q 140 240 220 200 T 360 130 T 490 68 L 490 250 Z" fill="url(#scurveEvGradient)" />
+
+              <!-- PV Line (Planned Value - Blue dashed) -->
+              <path d="M 60 250 Q 140 235 220 195 T 360 120 T 490 74 T 610 40 T 670 30" fill="none" stroke="#0284c7" stroke-width="3" stroke-dasharray="5,3" />
+
+              <!-- EV Line (Earned Value - Green solid up to cut-off) -->
+              <path d="M 60 250 Q 140 240 220 200 T 360 130 T 490 68" fill="none" stroke="#10b981" stroke-width="3.5" />
+
+              <!-- AC Line (Actual Cost - Purple solid up to cut-off) -->
+              <path d="M 60 250 Q 140 245 220 210 T 360 145 T 490 78" fill="none" stroke="#8b5cf6" stroke-width="2.5" />
+
+              <!-- Forecast Line (EAC Forecast - Amber dashed after cut-off) -->
+              <path id="forecastPath" d="M 490 68 Q 570 45 660 38" fill="none" stroke="#f59e0b" stroke-width="2.5" stroke-dasharray="4,2" />
+
+              <!-- Milestones Circles and Callouts -->
+              <circle cx="220" cy="200" r="4.5" fill="#0284c7" />
+              <circle cx="360" cy="130" r="5" fill="#10b981" />
+              <circle cx="490" cy="68" r="6" fill="#10b981" stroke="#ffffff" stroke-width="2" />
+              <circle cx="490" cy="74" r="5" fill="#0284c7" stroke="#ffffff" stroke-width="2" />
+              <circle cx="490" cy="78" r="5" fill="#8b5cf6" stroke="#ffffff" stroke-width="2" />
+              <circle cx="660" cy="38" r="5" fill="#f59e0b" />
+
+              <!-- X-Axis timeline labels -->
+              <text x="60" y="270" font-size="11" fill="#64748b" text-anchor="middle">البداية</text>
+              <text x="145" y="270" font-size="11" fill="#64748b" text-anchor="middle">شهر 2</text>
+              <text x="230" y="270" font-size="11" fill="#64748b" text-anchor="middle">شهر 4</text>
+              <text x="315" y="270" font-size="11" fill="#64748b" text-anchor="middle">شهر 6</text>
+              <text x="400" y="270" font-size="11" fill="#64748b" text-anchor="middle">شهر 8</text>
+              <text x="490" y="270" font-size="11" fill="#0f172a" font-weight="bold" text-anchor="middle">شهر 11 (الآن)</text>
+              <text x="580" y="270" font-size="11" fill="#64748b" text-anchor="middle">شهر 14</text>
+              <text x="670" y="270" font-size="11" fill="#64748b" text-anchor="middle">الإغلاق (شهر 16)</text>
+            </svg>
+          </div>
+
+          <div class="scurve-legend">
+            <div class="legend-item">
+              <span class="legend-line" style="background: #0284c7; border: 1px dashed #0284c7;"></span>
+              <span><strong>PV:</strong> القيمة المخططة (324M)</span>
+            </div>
+            <div class="legend-item">
+              <span class="legend-line" style="background: #10b981; height: 4px;"></span>
+              <span><strong>EV:</strong> القيمة المكتسبة (335.25M)</span>
+            </div>
+            <div class="legend-item">
+              <span class="legend-line" style="background: #8b5cf6;"></span>
+              <span><strong>AC:</strong> التكلفة الفعلية (321M)</span>
+            </div>
+            <div class="legend-item">
+              <span class="legend-line" style="background: #f59e0b; border: 1px dashed #f59e0b;"></span>
+              <span><strong>EAC Forecast:</strong> مسار التنبؤ حتى الاكتمال (431M)</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column: Budget vs Actual Bar Chart & Forecast Trend -->
+      <div>
+        
+        <!-- Budget vs Actual Bar Chart -->
+        <div class="dashboard-panel" style="margin-bottom: 24px;">
+          <div class="panel-header">
+            <div class="panel-title">
+              <i class="fas fa-chart-bar" style="color: #008DDA;"></i>
+              <span>الميزانية مقابل المنصرف حسب الحزم (Trades)</span>
+            </div>
+            <span style="font-size: 11px; color: #64748b;" class="num">مليون ر.س</span>
+          </div>
+          <div class="panel-body">
+            <div style="display: flex; flex-direction: column; gap: 14px;">
+              
+              <!-- Trade 1: Substructure -->
+              <div>
+                <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 4px;">
+                  <span style="font-weight: 700;">الأعمال الإنشائية والأساسات</span>
+                  <span class="num">92M / 95M (وفّر 3M)</span>
+                </div>
+                <div style="background: #e2e8f0; height: 10px; border-radius: 5px; overflow: hidden; display: flex;">
+                  <div style="width: 96.8%; background: #10b981;"></div>
+                </div>
+              </div>
+
+              <!-- Trade 2: Superstructure -->
+              <div>
+                <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 4px;">
+                  <span style="font-weight: 700;">الهيكل الخرساني والأبراج</span>
+                  <span class="num">124M / 130M (وفّر 6M)</span>
+                </div>
+                <div style="background: #e2e8f0; height: 10px; border-radius: 5px; overflow: hidden; display: flex;">
+                  <div style="width: 95.3%; background: #10b981;"></div>
+                </div>
+              </div>
+
+              <!-- Trade 3: MEP -->
+              <div>
+                <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 4px;">
+                  <span style="font-weight: 700;">الأعمال الكهروميكانيكية (MEP)</span>
+                  <span class="num" style="color: #ef4444;">68M / 65M (تجاوز 3M)</span>
+                </div>
+                <div style="background: #e2e8f0; height: 10px; border-radius: 5px; overflow: hidden; display: flex;">
+                  <div style="width: 104.6%; background: #ef4444;"></div>
+                </div>
+              </div>
+
+              <!-- Trade 4: Architectural & Finishes -->
+              <div>
+                <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 4px;">
+                  <span style="font-weight: 700;">التشطيبات المعمارية والواجهات</span>
+                  <span class="num">32M / 45M (قيد التنفيذ)</span>
+                </div>
+                <div style="background: #e2e8f0; height: 10px; border-radius: 5px; overflow: hidden; display: flex;">
+                  <div style="width: 71.1%; background: #008dda;"></div>
+                </div>
+              </div>
+
+              <!-- Trade 5: External & Site Works -->
+              <div>
+                <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 4px;">
+                  <span style="font-weight: 700;">أعمال الموقع العام والخدمات</span>
+                  <span class="num">5M / 15M (مرحلة مبكرة)</span>
+                </div>
+                <div style="background: #e2e8f0; height: 10px; border-radius: 5px; overflow: hidden; display: flex;">
+                  <div style="width: 33.3%; background: #008dda;"></div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <!-- Forecast to Complete Trend Widget -->
+        <div class="dashboard-panel">
+          <div class="panel-header">
+            <div class="panel-title">
+              <i class="fas fa-arrow-trend-down" style="color: #10b981;"></i>
+              <span>تطور التقدير عند الاكتمال (EAC Trend)</span>
+            </div>
+          </div>
+          <div class="panel-body">
+            <p style="font-size: 12.5px; color: #475569; margin: 0 0 12px 0;">
+              انخفاض قيمة EAC مقارنة بالميزانية الأساسية BAC يعكس كفاءة الإدارة وضبط تكاليف الشراء والمعدات:
+            </p>
+            <div style="display: flex; justify-content: space-around; background: #f8fafc; padding: 14px; border-radius: 10px; border: 1px solid #e2e8f0;">
+              <div style="text-align: center;">
+                <div style="font-size: 11px; color: #64748b;">BAC الأصلي</div>
+                <div class="num" style="font-size: 16px; font-weight: 800; color: #0b192c;">450.0M</div>
+              </div>
+              <div style="text-align: center;">
+                <div style="font-size: 11px; color: #64748b;">EAC الحالي</div>
+                <div class="num" style="font-size: 16px; font-weight: 800; color: #0284c7;">431.0M</div>
+              </div>
+              <div style="text-align: center;">
+                <div style="font-size: 11px; color: #64748b;">صافي الوفر (VAC)</div>
+                <div class="num" style="font-size: 16px; font-weight: 800; color: #10b981;">+18.9M</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- Cost Variance Hierarchical Drill-down Table -->
+    <section class="dashboard-panel">
+      <div class="panel-header">
+        <div class="panel-title">
+          <i class="fas fa-table-cells" style="color: #008DDA;"></i>
+          <span>جدول تحليل وتفصيل انحراف التكاليف بحسب أكواد الحسابات (Cost Variance Breakdown by Cost Code)</span>
+        </div>
+        <div style="display: flex; gap: 8px;">
+          <button class="btn-export" onclick="expandAllRows(true)">
+            <i class="fas fa-plus-square"></i> توسيع جميع البنود
+          </button>
+          <button class="btn-export" onclick="expandAllRows(false)">
+            <i class="fas fa-minus-square"></i> طي البنود
+          </button>
+        </div>
+      </div>
+      <div class="panel-body" style="padding: 0;">
+        <div class="table-wrapper">
+          <table class="table-drilldown" id="costCodeTable">
+            <thead>
+              <tr>
+                <th style="width: 140px;">كود التكلفة (Code)</th>
+                <th>وصف الحزمة وبند التكلفة</th>
+                <th>الميزانية الأصلية (BAC)</th>
+                <th>القيمة المخططة (PV)</th>
+                <th>القيمة المكتسبة (EV)</th>
+                <th>التكلفة الفعلية (AC)</th>
+                <th>الالتزامات (PO Commit)</th>
+                <th>انحراف التكلفة (CV)</th>
+                <th>مؤشر الأداء (CPI)</th>
+                <th>الحالة المالية</th>
+              </tr>
+            </thead>
+            <tbody>
+              
+              <!-- DIVISION 1: أعمال الخرسانة والأساسات (Level 1) -->
+              <tr class="row-level-1" onclick="toggleRowGroup('div-03')">
+                <td class="num font-bold">
+                  <span class="expand-toggle open" id="icon-div-03"><i class="fas fa-chevron-left"></i></span>
+                  03-0000
+                </td>
+                <td><strong>أعمال الخرسانة والأساسات المسلحة (Division 03 Concrete)</strong></td>
+                <td class="text-num num">95,000,000</td>
+                <td class="text-num num">92,000,000</td>
+                <td class="text-num num">93,500,000</td>
+                <td class="text-num num">90,200,000</td>
+                <td class="text-num num">4,100,000</td>
+                <td class="text-num num" style="color: #10b981;">+3,300,000</td>
+                <td class="text-num num" style="font-weight: 800; color: #10b981;">1.036</td>
+                <td><span class="badge-pill badge-favorable">وفر تكلفة</span></td>
+              </tr>
+
+              <!-- Sub-category 1.1: الخرسانة سابقة الصب والأساسات (Level 2) -->
+              <tr class="row-level-2 group-div-03 indent-1" onclick="toggleSubGroup('sub-03-1000')">
+                <td class="num font-bold">
+                  <span class="expand-toggle open" id="icon-sub-03-1000"><i class="fas fa-chevron-left"></i></span>
+                  03-1000
+                </td>
+                <td>اللبشة الخرسانية والقواعد العميقة (Raft & Deep Foundations)</td>
+                <td class="text-num num">40,000,000</td>
+                <td class="text-num num">40,000,000</td>
+                <td class="text-num num">40,000,000</td>
+                <td class="text-num num">38,500,000</td>
+                <td class="text-num num">500,000</td>
+                <td class="text-num num" style="color: #10b981;">+1,500,000</td>
+                <td class="text-num num" style="font-weight: 800; color: #10b981;">1.039</td>
+                <td><span class="badge-pill badge-favorable">مكتمل 100%</span></td>
+              </tr>
+
+              <!-- Item 1.1.1: توريد خرسانة جاهزة (Level 3) -->
+              <tr class="row-level-3 group-sub-03-1000 indent-2">
+                <td class="num">03-1100</td>
+                <td>توريد خرسانة جاهزة مقاومة للكبريتات SRC C40 (35,000 m³)</td>
+                <td class="text-num num">22,500,000</td>
+                <td class="text-num num">22,500,000</td>
+                <td class="text-num num">22,500,000</td>
+                <td class="text-num num">21,700,000</td>
+                <td class="text-num num">0</td>
+                <td class="text-num num" style="color: #10b981;">+800,000</td>
+                <td class="text-num num">1.037</td>
+                <td><span class="badge-pill badge-neutral">منتهي</span></td>
+              </tr>
+
+              <!-- Item 1.1.2: توريد وتركيب حديد تسليح (Level 3) -->
+              <tr class="row-level-3 group-sub-03-1000 indent-2">
+                <td class="num">03-1200</td>
+                <td>توريد وقص وثني حديد سابك عالي المقاومة (4,200 طن)</td>
+                <td class="text-num num">17,500,000</td>
+                <td class="text-num num">17,500,000</td>
+                <td class="text-num num">17,500,000</td>
+                <td class="text-num num">16,800,000</td>
+                <td class="text-num num">500,000</td>
+                <td class="text-num num" style="color: #10b981;">+700,000</td>
+                <td class="text-num num">1.042</td>
+                <td><span class="badge-pill badge-neutral">منتهي</span></td>
+              </tr>
+
+              <!-- Sub-category 1.2: أعمدة وجسور الدور المتكرر (Level 2) -->
+              <tr class="row-level-2 group-div-03 indent-1" onclick="toggleSubGroup('sub-03-2000')">
+                <td class="num font-bold">
+                  <span class="expand-toggle open" id="icon-sub-03-2000"><i class="fas fa-chevron-left"></i></span>
+                  03-2000
+                </td>
+                <td>الهيكل الخرساني للأدوار المتكررة (Columns, Beams & Slabs)</td>
+                <td class="text-num num">55,000,000</td>
+                <td class="text-num num">52,000,000</td>
+                <td class="text-num num">53,500,000</td>
+                <td class="text-num num">51,700,000</td>
+                <td class="text-num num">3,600,000</td>
+                <td class="text-num num" style="color: #10b981;">+1,800,000</td>
+                <td class="text-num num" style="font-weight: 800; color: #10b981;">1.035</td>
+                <td><span class="badge-pill badge-favorable">وفر مستمر</span></td>
+              </tr>
+
+              <!-- Item 1.2.1: أعمال الشدات المعدنية (Level 3) -->
+              <tr class="row-level-3 group-sub-03-2000 indent-2">
+                <td class="num">03-2100</td>
+                <td>تأجير وتركيب شدات معدنية حديثة (Formwork Doka / Peri)</td>
+                <td class="text-num num">18,000,000</td>
+                <td class="text-num num">17,000,000</td>
+                <td class="text-num num">17,500,000</td>
+                <td class="text-num num">16,900,000</td>
+                <td class="text-num num">1,100,000</td>
+                <td class="text-num num" style="color: #10b981;">+600,000</td>
+                <td class="text-num num">1.035</td>
+                <td><span class="badge-pill badge-favorable">نشط</span></td>
+              </tr>
+
+              <!-- DIVISION 2: الأعمال الكهروميكانيكية (Level 1) -->
+              <tr class="row-level-1" onclick="toggleRowGroup('div-15')">
+                <td class="num font-bold">
+                  <span class="expand-toggle open" id="icon-div-15"><i class="fas fa-chevron-left"></i></span>
+                  15-0000
+                </td>
+                <td><strong>الأعمال الميكانيكية والكهربائية (Division 15 & 16 MEP)</strong></td>
+                <td class="text-num num">65,000,000</td>
+                <td class="text-num num">48,000,000</td>
+                <td class="text-num num">46,500,000</td>
+                <td class="text-num num">49,200,000</td>
+                <td class="text-num num">12,400,000</td>
+                <td class="text-num num" style="color: #ef4444;">-2,700,000</td>
+                <td class="text-num num" style="font-weight: 800; color: #ef4444;">0.945</td>
+                <td><span class="badge-pill badge-unfavorable">تجاوز تكلفة</span></td>
+              </tr>
+
+              <!-- Sub-category 2.1: التكييف والتهوية HVAC (Level 2) -->
+              <tr class="row-level-2 group-div-15 indent-1" onclick="toggleSubGroup('sub-15-1000')">
+                <td class="num font-bold">
+                  <span class="expand-toggle open" id="icon-sub-15-1000"><i class="fas fa-chevron-left"></i></span>
+                  15-1000
+                </td>
+                <td>أنظمة التكييف والتهوية المركزية (HVAC Chillers & Ducting)</td>
+                <td class="text-num num">38,000,000</td>
+                <td class="text-num num">28,000,000</td>
+                <td class="text-num num">26,800,000</td>
+                <td class="text-num num">29,100,000</td>
+                <td class="text-num num">7,500,000</td>
+                <td class="text-num num" style="color: #ef4444;">-2,300,000</td>
+                <td class="text-num num" style="font-weight: 800; color: #ef4444;">0.921</td>
+                <td><span class="badge-pill badge-unfavorable">تحت المراجعة</span></td>
+              </tr>
+
+              <!-- Item 2.1.1: محطة التبريد والمبردات (Level 3) -->
+              <tr class="row-level-3 group-sub-15-1000 indent-2">
+                <td class="num">15-1100</td>
+                <td>مبردات مائية طاردة مركزية (Water-Cooled Chillers 3x 1200 TR)</td>
+                <td class="text-num num">21,000,000</td>
+                <td class="text-num num">16,000,000</td>
+                <td class="text-num num">15,000,000</td>
+                <td class="text-num num">16,800,000</td>
+                <td class="text-num num">4,200,000</td>
+                <td class="text-num num" style="color: #ef4444;">-1,800,000</td>
+                <td class="text-num num">0.893</td>
+                <td><span class="badge-pill badge-unfavorable">تجاوز أسعار شحن</span></td>
+              </tr>
+
+              <!-- DIVISION 3: التشطيبات المعمارية (Level 1) -->
+              <tr class="row-level-1" onclick="toggleRowGroup('div-09')">
+                <td class="num font-bold">
+                  <span class="expand-toggle open" id="icon-div-09"><i class="fas fa-chevron-left"></i></span>
+                  09-0000
+                </td>
+                <td><strong>التشطيبات المعمارية والديكور (Division 09 Finishes)</strong></td>
+                <td class="text-num num">45,000,000</td>
+                <td class="text-num num">22,000,000</td>
+                <td class="text-num num">23,100,000</td>
+                <td class="text-num num">21,800,000</td>
+                <td class="text-num num">18,500,000</td>
+                <td class="text-num num" style="color: #10b981;">+1,300,000</td>
+                <td class="text-num num" style="font-weight: 800; color: #10b981;">1.060</td>
+                <td><span class="badge-pill badge-favorable">وفر ممتاز</span></td>
+              </tr>
+
+              <!-- Sub-category 3.1: الواجهات الزجاجية Curtain Walls (Level 2) -->
+              <tr class="row-level-2 group-div-09 indent-1">
+                <td class="num font-bold">09-1000</td>
+                <td>واجهات زجاجية مزدوجة معزولة (Unitized Double Glazed Façade)</td>
+                <td class="text-num num">28,000,000</td>
+                <td class="text-num num">14,000,000</td>
+                <td class="text-num num">14,800,000</td>
+                <td class="text-num num">13,900,000</td>
+                <td class="text-num num">12,000,000</td>
+                <td class="text-num num" style="color: #10b981;">+900,000</td>
+                <td class="text-num num">1.065</td>
+                <td><span class="badge-pill badge-favorable">التزام عالي</span></td>
+              </tr>
+
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Modal: EVM Simulation & Forecasting Calculator -->
+  <div id="simModal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="simTitle">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 id="simTitle"><i class="fas fa-sliders"></i> محاكي التنبؤ المالي وضبط التكاليف (EVM Simulator)</h3>
+        <button class="modal-close" onclick="closeSimulationModal()"><i class="fas fa-times"></i></button>
+      </div>
+      <div class="modal-body">
+        <p style="font-size: 12.5px; color: #475569; margin-top: 0;">
+          يتيح لك هذا المحاكي نمذجة سيناريوهات التكلفة المستقبلية بافتراض تغير أداء التكلفة (CPI) للعمل المتبقي:
+        </p>
+        
+        <div style="margin-bottom: 16px;">
+          <label style="font-size: 13px; font-weight: 700; color: #1e293b; display: block; margin-bottom: 6px;">
+            الميزانية الأصلية المعتمدة (BAC):
+          </label>
+          <input type="text" id="simBAC" class="filter-input num" value="450,000,000" readonly>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 16px;">
+          <div>
+            <label style="font-size: 13px; font-weight: 700; color: #1e293b; display: block; margin-bottom: 6px;">
+              التكلفة الفعلية الحالية (AC):
+            </label>
+            <input type="text" id="simAC" class="filter-input num" value="321,000,000" readonly>
+          </div>
+          <div>
+            <label style="font-size: 13px; font-weight: 700; color: #1e293b; display: block; margin-bottom: 6px;">
+              القيمة المكتسبة الحالية (EV):
+            </label>
+            <input type="text" id="simEV" class="filter-input num" value="335,250,000" readonly>
+          </div>
+        </div>
+
+        <div style="margin-bottom: 16px;">
+          <label style="font-size: 13px; font-weight: 700; color: #1e293b; display: flex; justify-content: space-between; margin-bottom: 6px;">
+            <span>معدل كفاءة الأداء المفترض للمتبقي (Future CPI Factor):</span>
+            <span id="cpiSliderVal" class="num font-bold" style="color: #008DDA;">1.00</span>
+          </label>
+          <input type="range" id="cpiSlider" min="0.70" max="1.30" step="0.01" value="1.00" oninput="runEvmSimulation()" style="width: 100%;">
+          <div style="display: flex; justify-content: space-between; font-size: 11px; color: #64748b; margin-top: 4px;">
+            <span>0.70 (أداء حرج جداً)</span>
+            <span>1.00 (وفق الميزانية)</span>
+            <span>1.30 (أداء ممتاز)</span>
+          </div>
+        </div>
+
+        <div style="background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 14px; margin-bottom: 16px;">
+          <div style="display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 6px;">
+            <span>التقدير المتوقع عند الاكتمال (Simulated EAC):</span>
+            <strong id="simResultEAC" class="num" style="color: #0284c7; font-size: 15px;">435,750,000 ر.س</strong>
+          </div>
+          <div style="display: flex; justify-content: space-between; font-size: 13px;">
+            <span>صافي الوفر أو العجز المتوقع (Simulated VAC):</span>
+            <strong id="simResultVAC" class="num" style="color: #10b981; font-size: 15px;">+14,250,000 ر.س (وفر)</strong>
+          </div>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 10px;">
+          <button type="button" class="btn-export" onclick="closeSimulationModal()">إغلاق</button>
+          <button type="button" class="btn-primary-action" onclick="applySimulationToView()">
+            <i class="fas fa-check"></i> تطبيق النتائج على لوحة العرض
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Vanilla JavaScript Logic for Cost Control -->
+  <script>
+    // Project Dataset Configuration
+    const projectDatabase = {
+      'PRJ-2024-001': {
+        bac: 450000000,
+        pv: 324000000,
+        ev: 335250000,
+        ac: 321000000
+      },
+      'PRJ-2024-003': {
+        bac: 280000000,
+        pv: 176400000,
+        ev: 162960000,
+        ac: 159764705
+      },
+      'PRJ-2024-007': {
+        bac: 395000000,
+        pv: 201450000,
+        ev: 161950000,
+        ac: 177967032
+      },
+      'PRJ-2024-012': {
+        bac: 165000000,
+        pv: 141900000,
+        ev: 146850000,
+        ac: 139857142
+      },
+      'PRJ-2024-015': {
+        bac: 310000000,
+        pv: 189100000,
+        ev: 194680000,
+        ac: 175387387
+      }
+    };
+
+    // Calculate & Refresh all EVM formulas dynamically
+    function recalculateAllEVM() {
+      const prjKey = document.getElementById('filterProject').value;
+      const data = projectDatabase[prjKey] || projectDatabase['PRJ-2024-001'];
+
+      const bac = data.bac;
+      const pv = data.pv;
+      const ev = data.ev;
+      const ac = data.ac;
+
+      const cv = ev - ac;
+      const sv = ev - pv;
+      const cpi = (ev / ac);
+      const spi = (ev / pv);
+      const eac = (bac / cpi);
+      const etc = eac - ac;
+      const vac = bac - eac;
+      const tcpi = (bac - ev) / (bac - ac);
+
+      // Format Numbers
+      document.getElementById('valBAC').innerText = formatSAR(bac);
+      document.getElementById('valPV').innerText = formatSAR(pv);
+      document.getElementById('valEV').innerText = formatSAR(ev);
+      document.getElementById('valAC').innerText = formatSAR(ac);
+      
+      const cvElem = document.getElementById('valCV');
+      cvElem.innerText = (cv >= 0 ? '+' : '') + formatSAR(cv);
+      cvElem.style.color = (cv >= 0 ? '#10b981' : '#ef4444');
+
+      const svElem = document.getElementById('valSV');
+      svElem.innerText = (sv >= 0 ? '+' : '') + formatSAR(sv);
+      svElem.style.color = (sv >= 0 ? '#10b981' : '#ef4444');
+
+      const cpiElem = document.getElementById('valCPI');
+      cpiElem.innerText = cpi.toFixed(3);
+      cpiElem.style.color = (cpi >= 1.0 ? '#10b981' : '#ef4444');
+
+      const spiElem = document.getElementById('valSPI');
+      spiElem.innerText = spi.toFixed(3);
+      spiElem.style.color = (spi >= 1.0 ? '#10b981' : '#ef4444');
+
+      document.getElementById('valEAC').innerText = formatSAR(Math.round(eac));
+      document.getElementById('valETC').innerText = formatSAR(Math.round(etc));
+
+      const vacElem = document.getElementById('valVAC');
+      vacElem.innerText = (vac >= 0 ? '+' : '') + formatSAR(Math.round(vac));
+      vacElem.style.color = (vac >= 0 ? '#10b981' : '#ef4444');
+
+      document.getElementById('valTCPI').innerText = tcpi.toFixed(3);
+
+      alert('تمت إعادة حساب مؤشرات القيمة المكتسبة بالكامل وفق أحدث مستخلصات الموقع وفواتير المشتريات.');
+    }
+
+    function formatSAR(val) {
+      return Number(val).toLocaleString('en-US');
+    }
+
+    function applyFilters() {
+      const prjKey = document.getElementById('filterProject').value;
+      const period = document.getElementById('filterPeriod').value;
+      const center = document.getElementById('filterCostCenter').value;
+      
+      // Update UI metrics for selected project
+      const data = projectDatabase[prjKey];
+      if (data) {
+        document.getElementById('valBAC').innerText = formatSAR(data.bac);
+        document.getElementById('valPV').innerText = formatSAR(data.pv);
+        document.getElementById('valEV').innerText = formatSAR(data.ev);
+        document.getElementById('valAC').innerText = formatSAR(data.ac);
+        
+        const cv = data.ev - data.ac;
+        const sv = data.ev - data.pv;
+        const cpi = (data.ev / data.ac);
+        const spi = (data.ev / data.pv);
+        const eac = (data.bac / cpi);
+        const etc = eac - data.ac;
+        const vac = data.bac - eac;
+        const tcpi = (data.bac - data.ev) / (data.bac - data.ac);
+
+        const cvElem = document.getElementById('valCV');
+        cvElem.innerText = (cv >= 0 ? '+' : '') + formatSAR(cv);
+        cvElem.style.color = (cv >= 0 ? '#10b981' : '#ef4444');
+
+        const svElem = document.getElementById('valSV');
+        svElem.innerText = (sv >= 0 ? '+' : '') + formatSAR(sv);
+        svElem.style.color = (sv >= 0 ? '#10b981' : '#ef4444');
+
+        const cpiElem = document.getElementById('valCPI');
+        cpiElem.innerText = cpi.toFixed(3);
+        cpiElem.style.color = (cpi >= 1.0 ? '#10b981' : '#ef4444');
+
+        const spiElem = document.getElementById('valSPI');
+        spiElem.innerText = spi.toFixed(3);
+        spiElem.style.color = (spi >= 1.0 ? '#10b981' : '#ef4444');
+
+        document.getElementById('valEAC').innerText = formatSAR(Math.round(eac));
+        document.getElementById('valETC').innerText = formatSAR(Math.round(etc));
+        
+        const vacElem = document.getElementById('valVAC');
+        vacElem.innerText = (vac >= 0 ? '+' : '') + formatSAR(Math.round(vac));
+        vacElem.style.color = (vac >= 0 ? '#10b981' : '#ef4444');
+
+        document.getElementById('valTCPI').innerText = tcpi.toFixed(3);
+      }
+    }
+
+    // Drilldown Table Expand / Collapse Management
+    function toggleRowGroup(groupId) {
+      const rows = document.querySelectorAll('.group-' + groupId);
+      const icon = document.getElementById('icon-' + groupId);
+      
+      let willShow = true;
+      if (icon.classList.contains('open')) {
+        icon.classList.remove('open');
+        willShow = false;
+      } else {
+        icon.classList.add('open');
+        willShow = true;
+      }
+
+      rows.forEach(row => {
+        row.style.display = willShow ? '' : 'none';
+      });
+    }
+
+    function toggleSubGroup(subId) {
+      const rows = document.querySelectorAll('.group-' + subId);
+      const icon = document.getElementById('icon-' + subId);
+      
+      let willShow = true;
+      if (icon.classList.contains('open')) {
+        icon.classList.remove('open');
+        willShow = false;
+      } else {
+        icon.classList.add('open');
+        willShow = true;
+      }
+
+      rows.forEach(row => {
+        row.style.display = willShow ? '' : 'none';
+      });
+    }
+
+    function expandAllRows(show) {
+      const toggles = document.querySelectorAll('.expand-toggle');
+      toggles.forEach(toggle => {
+        if (show) toggle.classList.add('open');
+        else toggle.classList.remove('open');
+      });
+
+      const childRows = document.querySelectorAll('.row-level-2, .row-level-3');
+      childRows.forEach(row => {
+        row.style.display = show ? '' : 'none';
+      });
+    }
+
+    function filterDrilldownTable() {
+      const input = document.getElementById('searchCostCode').value.toLowerCase();
+      const rows = document.querySelectorAll('#costCodeTable tbody tr');
+
+      rows.forEach(row => {
+        const text = row.innerText.toLowerCase();
+        if (text.includes(input)) {
+          row.style.display = '';
+        } else {
+          row.style.display = 'none';
+        }
+      });
+    }
+
+    // S-Curve Forecast Toggle
+    let forecastVisible = true;
+    function toggleForecastCurve() {
+      const path = document.getElementById('forecastPath');
+      if (path) {
+        forecastVisible = !forecastVisible;
+        path.style.display = forecastVisible ? 'block' : 'none';
+      }
+    }
+
+    // Modal Simulation Logic
+    function openSimulationModal() {
+      const modal = document.getElementById('simModal');
+      if (modal) modal.classList.add('active');
+    }
+
+    function closeSimulationModal() {
+      const modal = document.getElementById('simModal');
+      if (modal) modal.classList.remove('active');
+    }
+
+    function runEvmSimulation() {
+      const factor = parseFloat(document.getElementById('cpiSlider').value);
+      document.getElementById('cpiSliderVal').innerText = factor.toFixed(2);
+
+      const bac = 450000000;
+      const ac = 321000000;
+      const ev = 335250000;
+
+      // Simulated EAC = AC + (BAC - EV) / factor
+      const simulatedEac = ac + ((bac - ev) / factor);
+      const simulatedVac = bac - simulatedEac;
+
+      document.getElementById('simResultEAC').innerText = formatSAR(Math.round(simulatedEac)) + ' ر.س';
+      
+      const vacElem = document.getElementById('simResultVAC');
+      vacElem.innerText = (simulatedVac >= 0 ? '+' : '') + formatSAR(Math.round(simulatedVac)) + ' ر.س ' + (simulatedVac >= 0 ? '(وفر)' : '(عجز)');
+      vacElem.style.color = simulatedVac >= 0 ? '#10b981' : '#ef4444';
+    }
+
+    function applySimulationToView() {
+      const simulatedEac = document.getElementById('simResultEAC').innerText;
+      document.getElementById('valEAC').innerText = simulatedEac.replace(' ر.س', '');
+      closeSimulationModal();
+      alert('تم تحديث التقدير عند الاكتمال EAC على اللوحة الرئيسية وفق سيناريو المحاكاة المعتمد.');
+    }
+
+    // Export Handlers
+    function exportToExcel() {
+      let csv = "كود التكلفة,وصف الحزمة,الميزانية الأصلية (BAC),القيمة المخططة (PV),القيمة المكتسبة (EV),التكلفة الفعلية (AC),الالتزامات,انحراف التكلفة (CV),CPI\n";
+      const rows = document.querySelectorAll('#costCodeTable tbody tr');
+      rows.forEach(r => {
+        const cols = r.querySelectorAll('td');
+        if (cols.length >= 9) {
+          const code = cols[0].innerText.replace(/[\n\r]+/g, ' ').trim();
+          const desc = cols[1].innerText.replace(/[\n\r]+/g, ' ').trim();
+          const bac = cols[2].innerText.replace(/,/g, '').trim();
+          const pv = cols[3].innerText.replace(/,/g, '').trim();
+          const ev = cols[4].innerText.replace(/,/g, '').trim();
+          const ac = cols[5].innerText.replace(/,/g, '').trim();
+          const comm = cols[6].innerText.replace(/,/g, '').trim();
+          const cv = cols[7].innerText.replace(/,/g, '').trim();
+          const cpi = cols[8].innerText.trim();
+
+          csv += `"${code}","${desc}","${bac}","${pv}","${ev}","${ac}","${comm}","${cv}","${cpi}"\n`;
+        }
+      });
+
+      const blob = new Blob(["\uFEFF" + csv], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement("a");
+      const url = URL.createObjectURL(blob);
+      link.setAttribute("href", url);
+      link.setAttribute("download", "MimarERP_Cost_Control_Report.csv");
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    function exportToPDF() {
+      window.print();
+    }
+  </script>
+</body>
+</html>

@@ -1,14 +1,63 @@
 # منصة مِعمار الدولية لإدارة مشاريع التشييد والشركات
 ## Mimar Enterprise Construction ERP & SaaS Management Platform
 
-![Version](https://img.shields.io/badge/version-5.0.0--enterprise-blue.svg)
-![Architecture](https://img.shields.io/badge/architecture-Multi--Tenant%20SaaS-emerald.svg)
-![Modules](https://img.shields.io/badge/web--modules-39%20active%20views-indigo.svg)
+![Version](https://img.shields.io/badge/version-7.0.0--enterprise-blue.svg)
+![Architecture](https://img.shields.io/badge/architecture-Cloud--Native%20Multi--Tenant%20SaaS-emerald.svg)
+![Modules](https://img.shields.io/badge/enterprise--modules-25%20specialized%20domains-indigo.svg)
 ![CRUD](https://img.shields.io/badge/crud-100%25%20Dynamic%20CRUD-success.svg)
-![Persistence](https://img.shields.io/badge/persistence-LocalStorage%20Rehydration-teal.svg)
-![Standards](https://img.shields.io/badge/standards-FIDIC%20%7C%20PMI%20EVM%20%7C%20BIM%20%7C%20ISO19650%20%7C%20ISO45001-orange.svg)
+![Suites](https://img.shields.io/badge/standalone--suites-6%20interactive%20dashboards-purple.svg)
+![Standards](https://img.shields.io/badge/standards-FIDIC%20%7C%20PMI%20EVM%20%7C%20BIM%20%7C%20ZATCA%20%7C%20ISO-orange.svg)
 
 منظومة برمجية متكاملة لإدارة شركات المقاولات والتطوير العقاري والمشاريع الإنشائية الكبرى، مبنية وفق أعلى المعايير الهندسية والمالية العالمية (FIDIC Red Book, AACE International, CSI MasterFormat, PMI EVM, ZATCA Phase 2).
+
+---
+
+## 🏛️ معمارية المنظومة المؤسسية v7.0 (Enterprise Architecture Blueprint)
+
+تمت ترقية وتوسيع منصة **مِعمار ERP** إلى الجيل السابع (v7.0 Enterprise Architecture) لمنافسة كبرى المنصات العالمية (Oracle Primavera Unifier, Oracle Aconex, Procore, Autodesk Construction Cloud, SAP Construction):
+
+### 1. الوثائق المعمارية الأساسية (`docs/architecture/`)
+- **[01-system-architecture.md](docs/architecture/01-system-architecture.md):** مواصفات العمارة الشاملة، خريطة الخدمات المصغرة الـ 25، معمارية الأحداث (Apache Kafka)، وبوابة الخدمات (Kong)، والأمان المتعدد للمستأجرين (RLS).
+- **[02-database-schema.md](docs/architecture/02-database-schema.md):** مخطط قواعد البيانات الشامل بأكثر من 3,400 سطر DDL لجميع الجداول ومخطط العلاقات (Mermaid ERD).
+- **[03-api-design.md](docs/architecture/03-api-design.md):** المواصفات الكاملة لواجهات البرمجة RESTful (OpenAPI 3.0)، مصفوفة الصلاحيات (Roles × Permissions)، وخطافات الويب (Webhooks).
+- **[04-roadmap-mvp-backlog.md](docs/architecture/04-roadmap-mvp-backlog.md):** خطة الإطلاق المؤسسي على مدار 18 شهراً، مخططات التسلسل (Sequence Diagrams)، وسجل المهام التطويري لـ 24 Sprint.
+
+### 2. المنظومات التخصصية المستقلة (`modules/`)
+شاشات تفاعلية متكاملة يمكن تشغيلها مباشرة أو من داخل النظام الرئيسي:
+- **[لوحة القيادة التنفيذية (Executive Cockpit)](modules/executive-dashboard/index.html):** محفظة المشاريع ومؤشرات RAG والتدفق النقدي وإدارة المخاطر.
+- **[استوديو ضبط التكاليف (EVM Cost Control)](modules/cost-control/index.html):** منحنيات S-Curve وتحليل انحرافات CPI/SPI والتنبؤ عند الاكتمال EAC.
+- **[استوديو التخطيط والجدولة (Primavera Gantt Studio)](modules/planning/index.html):** مخططات جانت التفاعلية، حساب المسار الحرج (CPM)، ومتابعة الاستشراف Lookahead.
+- **[بوابة المشتريات والتوريد (P2P Procurement Hub)](modules/procurement/index.html):** دورة المشتريات والمنافسات، المقارنة السعرية، ومطابقة الفواتير ثلاثية الأبعاد.
+- **[بوابة السلامة والصحة المهنية (HSE Portal)](modules/hse/index.html):** إدارة تصاريح العمل PTW، تسجيل الحوادث ومعدلات LTIFR، ومصفوفة تقييم المخاطر 5×5.
+- **[نظام إدارة ومراقبة الوثائق (CDE / EDMS)](modules/document-control/index.html):** مراقبة الوثائق والمخططات، طلبات الاستفسار RFI، واعتمادات المواد وتتبع المراجعات.
+
+### 3. دليل مجلدات المشروع المنظم (Directory Structure)
+```
+d:\ERP sys\
+├── index.html                   # البوابة الرئيسية لمنظومة مِعمار ERP v7
+├── start-erp.bat                # مشغل الخادم المحلي بنقرة واحدة
+├── jsconfig.json                # تكوينات بيئة التطوير وربط الأنواع TypeScript
+├── assets/                      # أصول التصميم والمكتبات
+│   ├── css/                     # متغيرات التصميم (design-tokens.css), القوالب (theme.css)
+│   ├── js/                      # المحركات البرمجية:
+│   │   ├── core/                # معمارية النواة: Security, Redux Store, Validator, Components, Gateway
+│   │   ├── workers/             # معالجات الخلفية: xlsx-worker.js
+│   │   ├── app.js               # المشغل والتحكم في التنقل
+│   │   ├── config.js            # ثوابت النظام
+│   │   ├── crud-engine.js       # محرك العمليات الديناميكية
+│   │   └── evm-calculator.js    # حاسبة القيمة المكتسبة
+│   └── webfonts/                # الخطوط المحلية (Cairo, Tajawal, FontAwesome)
+├── docs/                        # وثائق المنظومة المؤسسية
+│   ├── architecture/            # وثائق العمارة والـ DB والـ API وخريطة الطريق
+│   └── modules/                 # مواصفات الـ 25 وحدة تخصصية كاملة
+├── modules/                     # المنظومات التخصصية المستقلة الـ 6 (HTML Dashboards)
+├── scripts/                     # نصوص الأتمتة والمولدات
+│   └── generators/              # مولدات الوثائق ومخططات قواعد البيانات (Python)
+├── src/                         # كود المصدر والأنواع
+│   └── types/                   # تعريفات الأنواع (index.d.ts) لجميع نماذج المنظومة
+├── data-workbooks/              # مصنفات البيانات القياسية (14 مصنف Excel)
+└── source-documents/            # المخططات والعقود والمقايسات المرجعية للمشروع
+```
 
 ---
 

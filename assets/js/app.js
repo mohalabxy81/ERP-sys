@@ -3747,3 +3747,25 @@ function renderEVMDashboard() {
   tbody.innerHTML = rows.length ? rows.join('') : '<tr><td colspan="9" style="text-align:center;color:var(--muted);">لا توجد بيانات WBS / BOQ للمشروع المحدد</td></tr>';
 }
 
+/* ═══════════════════════════════════════════════════════════════════════════
+   ENTERPRISE MODULES LAUNCHER (v7.0)
+   ═══════════════════════════════════════════════════════════════════════════ */
+function toggleModulesMenu(event) {
+  if (event) event.stopPropagation();
+  const menu = document.getElementById("dropdown-enterprise-modules");
+  if (!menu) return;
+  menu.classList.toggle("show");
+}
+
+// Close modules menu when clicking outside
+document.addEventListener("click", (e) => {
+  const menu = document.getElementById("dropdown-enterprise-modules");
+  const btn = document.getElementById("btn-enterprise-modules");
+  if (menu && menu.classList.contains("show")) {
+    if (!menu.contains(e.target) && (!btn || !btn.contains(e.target))) {
+      menu.classList.remove("show");
+    }
+  }
+});
+
+

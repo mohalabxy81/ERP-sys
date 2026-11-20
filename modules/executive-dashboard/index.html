@@ -1,0 +1,1601 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>مِعمار ERP | لوحة القيادة التنفيذية (Executive Cockpit)</title>
+  
+  <!-- Local Fonts & Icons -->
+  <link rel="stylesheet" href="../../assets/css/google-fonts.css">
+  <link rel="stylesheet" href="../../assets/css/font-awesome.min.css">
+  
+  <!-- Core Design System & Modular CSS -->
+  <link rel="stylesheet" href="../../assets/css/design-tokens.css">
+  <link rel="stylesheet" href="../../assets/css/theme.css">
+  <link rel="stylesheet" href="../../assets/css/main.css">
+  <link rel="stylesheet" href="../../assets/css/dashboard.css">
+  <link rel="stylesheet" href="../../assets/css/modules.css">
+  
+  <style>
+    :root {
+      --navy-deep: #0B192C;
+      --navy-card: #122842;
+      --gold-royal: #c9a84c;
+      --gold-light: #f5e7c4;
+      --emerald-500: #10b981;
+      --crimson-500: #ef4444;
+      --amber-500: #f59e0b;
+      --sky-500: #0284c7;
+    }
+
+    body {
+      font-family: 'Cairo', 'Tajawal', sans-serif;
+      background-color: #f1f5f9;
+      color: #1e293b;
+      margin: 0;
+      padding: 0;
+    }
+
+    .num {
+      font-family: 'Tajawal', sans-serif;
+      font-weight: 700;
+    }
+
+    /* Executive Topbar Customizations */
+    .exec-header {
+      background: linear-gradient(135deg, #0B192C 0%, #1e3a5f 100%);
+      color: #ffffff;
+      padding: 16px 28px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 4px 20px rgba(11, 25, 44, 0.25);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .exec-brand {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .exec-logo {
+      width: 44px;
+      height: 44px;
+      background: linear-gradient(135deg, #c9a84c, #e8c97a);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #0B192C;
+      font-size: 22px;
+      font-weight: 900;
+      box-shadow: 0 4px 12px rgba(201, 168, 76, 0.35);
+    }
+
+    .exec-title h1 {
+      font-size: 20px;
+      font-weight: 800;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      letter-spacing: -0.3px;
+    }
+
+    .exec-title p {
+      margin: 2px 0 0;
+      font-size: 12px;
+      color: #94a3b8;
+    }
+
+    .exec-actions {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .live-clock-badge {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      padding: 6px 14px;
+      border-radius: 30px;
+      font-size: 12px;
+      color: #e2e8f0;
+    }
+
+    .live-pulse {
+      width: 8px;
+      height: 8px;
+      background-color: #10b981;
+      border-radius: 50%;
+      box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+      animation: pulse-green 2s infinite;
+    }
+
+    @keyframes pulse-green {
+      0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+      70% { transform: scale(1); box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); }
+      100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+    }
+
+    .btn-exec-action {
+      background: linear-gradient(135deg, #c9a84c, #b39238);
+      color: #0b192c;
+      border: none;
+      padding: 8px 18px;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 13px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+      box-shadow: 0 2px 8px rgba(201, 168, 76, 0.3);
+    }
+
+    .btn-exec-action:hover {
+      background: linear-gradient(135deg, #dfbc5a, #c9a84c);
+      transform: translateY(-1px);
+    }
+
+    .btn-exec-outline {
+      background: transparent;
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      color: #ffffff;
+      padding: 7px 14px;
+      border-radius: 8px;
+      font-size: 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+
+    .btn-exec-outline:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: #ffffff;
+    }
+
+    /* Container */
+    .exec-container {
+      max-width: 1600px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+
+    /* Quick Action Buttons Row */
+    .quick-actions-bar {
+      background: #ffffff;
+      border-radius: 12px;
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      border: 1px solid #e2e8f0;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .quick-action-btns {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .qa-btn {
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid #cbd5e1;
+      background: #f8fafc;
+      color: #334155;
+      transition: all 0.2s;
+    }
+
+    .qa-btn:hover {
+      background: #e2e8f0;
+      color: #0f172a;
+    }
+
+    .qa-btn.ipc {
+      background: #ecfdf5;
+      border-color: #a7f3d0;
+      color: #065f46;
+    }
+    .qa-btn.ipc:hover { background: #d1fae5; }
+
+    .qa-btn.ncr {
+      background: #fef2f2;
+      border-color: #fecaca;
+      color: #991b1b;
+    }
+    .qa-btn.ncr:hover { background: #fee2e2; }
+
+    .qa-btn.rfi {
+      background: #eff6ff;
+      border-color: #bfdbfe;
+      color: #1e40af;
+    }
+    .qa-btn.rfi:hover { background: #dbeafe; }
+
+    /* KPI Cards Grid */
+    .exec-kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 18px;
+      margin-bottom: 24px;
+    }
+
+    .exec-kpi-card {
+      background: #ffffff;
+      border-radius: 14px;
+      padding: 20px;
+      border: 1px solid #e2e8f0;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .exec-kpi-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 16px rgba(0,0,0,0.06);
+    }
+
+    .exec-kpi-card::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      right: 0;
+      left: 0;
+      height: 4px;
+      background: var(--navy);
+    }
+
+    .exec-kpi-card.gold::before { background: #c9a84c; }
+    .exec-kpi-card.green::before { background: #10b981; }
+    .exec-kpi-card.blue::before { background: #0284c7; }
+    .exec-kpi-card.amber::before { background: #f59e0b; }
+    .exec-kpi-card.purple::before { background: #8b5cf6; }
+    .exec-kpi-card.red::before { background: #ef4444; }
+
+    .kpi-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .kpi-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: #64748b;
+    }
+
+    .kpi-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+    }
+
+    .kpi-val {
+      font-size: 26px;
+      font-weight: 900;
+      color: #0f172a;
+      line-height: 1.1;
+      margin-bottom: 8px;
+    }
+
+    .kpi-trend {
+      font-size: 11.5px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-weight: 600;
+    }
+
+    .trend-up { color: #10b981; }
+    .trend-down { color: #ef4444; }
+    .trend-neutral { color: #64748b; }
+
+    /* Layout 2-col & 3-col */
+    .dashboard-grid-2 {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 24px;
+      margin-bottom: 24px;
+    }
+
+    .dashboard-grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      margin-bottom: 24px;
+    }
+
+    @media (max-width: 1200px) {
+      .dashboard-grid-2, .dashboard-grid-3 {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Cards */
+    .exec-card {
+      background: #ffffff;
+      border-radius: 14px;
+      border: 1px solid #e2e8f0;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .exec-card-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid #f1f5f9;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #ffffff;
+    }
+
+    .exec-card-title {
+      font-size: 15px;
+      font-weight: 800;
+      color: #0f172a;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .exec-card-title i {
+      color: #0284c7;
+    }
+
+    .exec-card-body {
+      padding: 20px;
+      flex: 1;
+    }
+
+    /* SVG Charts Styling */
+    .chart-container {
+      width: 100%;
+      height: 250px;
+      position: relative;
+    }
+
+    .chart-svg {
+      width: 100%;
+      height: 100%;
+      overflow: visible;
+    }
+
+    /* Risk Heatmap (5x5) */
+    .heatmap-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 4px;
+      margin-top: 8px;
+    }
+
+    .heatmap-cell {
+      height: 48px;
+      border-radius: 6px;
+      text-align: center;
+      vertical-align: middle;
+      font-weight: 800;
+      font-size: 13px;
+      cursor: pointer;
+      position: relative;
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+
+    .heatmap-cell:hover {
+      transform: scale(1.05);
+      z-index: 2;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    }
+
+    .hm-green { background-color: #d1fae5; color: #065f46; border: 1px solid #a7f3d0; }
+    .hm-yellow { background-color: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
+    .hm-orange { background-color: #ffedd5; color: #9a3412; border: 1px solid #fed7aa; }
+    .hm-red { background-color: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
+    .hm-darkred { background-color: #f87171; color: #ffffff; border: 1px solid #ef4444; }
+
+    .hm-axis-lbl {
+      font-size: 11px;
+      font-weight: 700;
+      color: #64748b;
+      text-align: center;
+    }
+
+    /* Alerts Panel */
+    .alert-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 10px;
+      background: #f8fafc;
+      border-right: 4px solid #cbd5e1;
+    }
+
+    .alert-item.danger {
+      background: #fef2f2;
+      border-right-color: #ef4444;
+    }
+
+    .alert-item.warning {
+      background: #fffbeb;
+      border-right-color: #f59e0b;
+    }
+
+    .alert-item.info {
+      background: #f0f9ff;
+      border-right-color: #0284c7;
+    }
+
+    .alert-icon {
+      font-size: 16px;
+      margin-top: 2px;
+    }
+
+    .alert-content h4 {
+      margin: 0 0 3px 0;
+      font-size: 13px;
+      font-weight: 800;
+      color: #0f172a;
+    }
+
+    .alert-content p {
+      margin: 0;
+      font-size: 12px;
+      color: #475569;
+    }
+
+    .alert-time {
+      font-size: 11px;
+      color: #94a3b8;
+      margin-top: 4px;
+      display: block;
+    }
+
+    /* RAG Status Pill */
+    .rag-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 11.5px;
+      font-weight: 700;
+    }
+
+    .rag-green { background: #d1fae5; color: #047857; }
+    .rag-amber { background: #fef3c7; color: #b45309; }
+    .rag-red { background: #fee2e2; color: #b91c1c; }
+
+    .rag-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+
+    /* Modal Styling */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(11, 25, 44, 0.6);
+      backdrop-filter: blur(4px);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal-box {
+      background: #ffffff;
+      width: 90%;
+      max-width: 560px;
+      border-radius: 14px;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
+      border: 1px solid #cbd5e1;
+      overflow: hidden;
+      animation: modalFadeIn 0.25s ease-out;
+    }
+
+    @keyframes modalFadeIn {
+      from { opacity: 0; transform: translateY(-15px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .modal-header {
+      padding: 18px 24px;
+      background: #0B192C;
+      color: #ffffff;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .modal-header h3 {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .modal-close {
+      background: transparent;
+      border: none;
+      color: #94a3b8;
+      font-size: 18px;
+      cursor: pointer;
+      transition: color 0.15s;
+    }
+
+    .modal-close:hover {
+      color: #ffffff;
+    }
+
+    .modal-body {
+      padding: 24px;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 13px;
+      font-weight: 700;
+      color: #334155;
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 10px 14px;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 13px;
+      background: #f8fafc;
+      box-sizing: border-box;
+    }
+
+    .form-control:focus {
+      outline: none;
+      border-color: #0284c7;
+      background: #ffffff;
+      box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15);
+    }
+
+    .modal-footer {
+      padding: 16px 24px;
+      background: #f8fafc;
+      border-top: 1px solid #e2e8f0;
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+
+    /* Progress bar in table */
+    .progress-bar-container {
+      width: 100%;
+      height: 8px;
+      background-color: #e2e8f0;
+      border-radius: 4px;
+      overflow: hidden;
+      margin-top: 4px;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      border-radius: 4px;
+      background: #0284c7;
+    }
+
+    .breadcrumb-nav {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12.5px;
+      color: #64748b;
+      margin-bottom: 16px;
+    }
+
+    .breadcrumb-nav a {
+      color: #0284c7;
+      text-decoration: none;
+    }
+
+    .breadcrumb-nav a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Executive Header -->
+  <header class="exec-header">
+    <div class="exec-brand">
+      <div class="exec-logo">مِـ</div>
+      <div class="exec-title">
+        <h1>
+          <span>لوحة القيادة التنفيذية العليا</span>
+          <span style="font-size: 12px; background: rgba(201,168,76,0.25); color: #c9a84c; padding: 2px 8px; border-radius: 4px; border: 1px solid rgba(201,168,76,0.4);">C-Suite Cockpit</span>
+        </h1>
+        <p>مِعمار ERP — محفظة مشاريع المقاولات والبنية التحتية والمشاريع الكبرى</p>
+      </div>
+    </div>
+
+    <div class="exec-actions">
+      <div class="live-clock-badge">
+        <span class="live-pulse"></span>
+        <span>تحديث مباشر:</span>
+        <span id="liveTimestamp" class="num">2026-11-20 18:45:00</span>
+      </div>
+
+      <button class="btn-exec-outline" onclick="window.print()" title="طباعة تقرير الإدارة العليا">
+        <i class="fas fa-print"></i> <span>طباعة التقرير</span>
+      </button>
+
+      <a href="../../index.html" class="btn-exec-outline" title="الرجوع للرئيسية">
+        <i class="fas fa-house"></i> <span>الرئيسية</span>
+      </a>
+
+      <button class="btn-exec-action" onclick="refreshExecutiveData()">
+        <i class="fas fa-sync-alt"></i> <span>تحديث المؤشرات</span>
+      </button>
+    </div>
+  </header>
+
+  <main class="exec-container">
+
+    <!-- Navigation Breadcrumbs -->
+    <div class="breadcrumb-nav">
+      <a href="../../index.html"><i class="fas fa-home"></i> مِعمار ERP</a>
+      <i class="fas fa-chevron-left" style="font-size: 10px;"></i>
+      <span>لوحات القيادة والمتابعة</span>
+      <i class="fas fa-chevron-left" style="font-size: 10px;"></i>
+      <span style="color: #0f172a; font-weight: 700;">لوحة القيادة التنفيذية (Executive Dashboard)</span>
+    </div>
+
+    <!-- Quick Actions Bar -->
+    <div class="quick-actions-bar">
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <span style="font-weight: 800; font-size: 13px; color: #0b192c;"><i class="fas fa-bolt" style="color: #c9a84c;"></i> الإجراءات السريعة للمدير التنفيذي:</span>
+        <span style="font-size: 12px; color: #64748b;">(معاملات عاجلة بانتظار الاعتماد المالي والفني)</span>
+      </div>
+      <div class="quick-action-btns">
+        <button class="qa-btn ipc" onclick="openModal('ipcModal')">
+          <i class="fas fa-file-invoice-dollar"></i> <span>اعتماد مستخلص (Approve IPC)</span>
+          <span style="background: #059669; color: white; border-radius: 10px; padding: 1px 6px; font-size: 11px;" class="num">3</span>
+        </button>
+        <button class="qa-btn ncr" onclick="openModal('ncrModal')">
+          <i class="fas fa-exclamation-triangle"></i> <span>مراجعة عدم مطابقة (Review NCR)</span>
+          <span style="background: #dc2626; color: white; border-radius: 10px; padding: 1px 6px; font-size: 11px;" class="num">2</span>
+        </button>
+        <button class="qa-btn rfi" onclick="openModal('rfiModal')">
+          <i class="fas fa-question-circle"></i> <span>استفسار فني حرِج (Open RFI)</span>
+        </button>
+        <button class="qa-btn" onclick="exportExecutiveSummary()">
+          <i class="fas fa-file-pdf" style="color: #dc2626;"></i> <span>موجز مجلس الإدارة (Board Summary)</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Executive KPI Grid (6 Top Cards) -->
+    <section class="exec-kpi-grid">
+      
+      <!-- Card 1: Total Revenue -->
+      <div class="exec-kpi-card gold">
+        <div>
+          <div class="kpi-head">
+            <span class="kpi-title">إجمالي الإيرادات التعاقدية (Revenue)</span>
+            <div class="kpi-icon" style="background: rgba(201,168,76,0.15); color: #c9a84c;">
+              <i class="fas fa-sack-dollar"></i>
+            </div>
+          </div>
+          <div class="kpi-val num">845,620,000 <span style="font-size: 14px; font-weight: normal; color: #64748b;">ر.س</span></div>
+        </div>
+        <div class="kpi-trend trend-up">
+          <i class="fas fa-arrow-trend-up"></i>
+          <span>+14.2% مقارنة بالربع السابق</span>
+        </div>
+      </div>
+
+      <!-- Card 2: Total Projects -->
+      <div class="exec-kpi-card blue">
+        <div>
+          <div class="kpi-head">
+            <span class="kpi-title">إجمالي المحفظة (Portfolio Projects)</span>
+            <div class="kpi-icon" style="background: rgba(2,132,199,0.12); color: #0284c7;">
+              <i class="fas fa-city"></i>
+            </div>
+          </div>
+          <div class="kpi-val num">24 <span style="font-size: 14px; font-weight: normal; color: #64748b;">مشروعاً</span></div>
+        </div>
+        <div class="kpi-trend trend-neutral">
+          <i class="fas fa-check-double"></i>
+          <span>قيمة المحفظة: 2.1 مليار ر.س</span>
+        </div>
+      </div>
+
+      <!-- Card 3: Active Projects -->
+      <div class="exec-kpi-card green">
+        <div>
+          <div class="kpi-head">
+            <span class="kpi-title">المشاريع قيد التنفيذ (Active)</span>
+            <div class="kpi-icon" style="background: rgba(16,185,129,0.12); color: #10b981;">
+              <i class="fas fa-hard-hat"></i>
+            </div>
+          </div>
+          <div class="kpi-val num">18 <span style="font-size: 14px; font-weight: normal; color: #64748b;">موقع نشط</span></div>
+        </div>
+        <div class="kpi-trend trend-up">
+          <i class="fas fa-spinner fa-spin"></i>
+          <span>4 في مرحلة التسليم الابتدائي</span>
+        </div>
+      </div>
+
+      <!-- Card 4: Avg CPI -->
+      <div class="exec-kpi-card purple">
+        <div>
+          <div class="kpi-head">
+            <span class="kpi-title">متوسط كفاءة التكلفة (Avg CPI)</span>
+            <div class="kpi-icon" style="background: rgba(139,92,246,0.12); color: #8b5cf6;">
+              <i class="fas fa-scale-balanced"></i>
+            </div>
+          </div>
+          <div class="kpi-val num">1.06 <span style="font-size: 14px; font-weight: 700; color: #10b981;">(وفر تكلفة)</span></div>
+        </div>
+        <div class="kpi-trend trend-up">
+          <i class="fas fa-arrow-trend-up"></i>
+          <span>الهدف المؤسسي: ≥ 1.00</span>
+        </div>
+      </div>
+
+      <!-- Card 5: Safety Score -->
+      <div class="exec-kpi-card green">
+        <div>
+          <div class="kpi-head">
+            <span class="kpi-title">مؤشر السلامة المهنية (Safety Score)</span>
+            <div class="kpi-icon" style="background: rgba(16,185,129,0.12); color: #10b981;">
+              <i class="fas fa-shield-halved"></i>
+            </div>
+          </div>
+          <div class="kpi-val num">98.4%</div>
+        </div>
+        <div class="kpi-trend trend-up">
+          <i class="fas fa-award"></i>
+          <span>4.2 مليون ساعة عمل دون إصابة مقعدة (LTI)</span>
+        </div>
+      </div>
+
+      <!-- Card 6: Pending Approvals -->
+      <div class="exec-kpi-card amber">
+        <div>
+          <div class="kpi-head">
+            <span class="kpi-title">الموافقات المعلقة (Pending Approvals)</span>
+            <div class="kpi-icon" style="background: rgba(245,158,11,0.12); color: #f59e0b;">
+              <i class="fas fa-signature"></i>
+            </div>
+          </div>
+          <div class="kpi-val num">7 <span style="font-size: 14px; font-weight: normal; color: #64748b;">طلبات</span></div>
+        </div>
+        <div class="kpi-trend trend-down">
+          <i class="fas fa-clock"></i>
+          <span>متوسط فترة الدورة: 1.8 يوم عمل</span>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- 3 Core Analytical Visualizations -->
+    <section class="dashboard-grid-3">
+      
+      <!-- Chart 1: Revenue vs Target (Bar Chart) -->
+      <div class="exec-card">
+        <div class="exec-card-header">
+          <div class="exec-card-title">
+            <i class="fas fa-chart-column"></i>
+            <span>الإيرادات الفعلية مقابل المستهدف (شهرياً)</span>
+          </div>
+          <span style="font-size: 11.5px; color: #64748b;" class="num">2026 (مليون ر.س)</span>
+        </div>
+        <div class="exec-card-body">
+          <div class="chart-container">
+            <svg class="chart-svg" viewBox="0 0 400 220">
+              <!-- Y-axis guide lines -->
+              <line x1="40" y1="30" x2="380" y2="30" stroke="#f1f5f9" stroke-dasharray="3,3" />
+              <text x="35" y="34" font-size="10" fill="#94a3b8" text-anchor="end" class="num">100M</text>
+              <line x1="40" y1="80" x2="380" y2="80" stroke="#f1f5f9" stroke-dasharray="3,3" />
+              <text x="35" y="84" font-size="10" fill="#94a3b8" text-anchor="end" class="num">75M</text>
+              <line x1="40" y1="130" x2="380" y2="130" stroke="#f1f5f9" stroke-dasharray="3,3" />
+              <text x="35" y="134" font-size="10" fill="#94a3b8" text-anchor="end" class="num">50M</text>
+              <line x1="40" y1="180" x2="380" y2="180" stroke="#cbd5e1" />
+              <text x="35" y="184" font-size="10" fill="#94a3b8" text-anchor="end" class="num">0</text>
+
+              <!-- Month 1: Jan -->
+              <rect x="65" y="60" width="16" height="120" rx="3" fill="#e2e8f0" />
+              <rect x="85" y="50" width="16" height="130" rx="3" fill="#0284c7" />
+              <text x="82" y="196" font-size="10" fill="#64748b" text-anchor="middle">يناير</text>
+
+              <!-- Month 2: Feb -->
+              <rect x="120" y="55" width="16" height="125" rx="3" fill="#e2e8f0" />
+              <rect x="140" y="45" width="16" height="135" rx="3" fill="#0284c7" />
+              <text x="137" y="196" font-size="10" fill="#64748b" text-anchor="middle">فبراير</text>
+
+              <!-- Month 3: Mar -->
+              <rect x="175" y="50" width="16" height="130" rx="3" fill="#e2e8f0" />
+              <rect x="195" y="40" width="16" height="140" rx="3" fill="#0284c7" />
+              <text x="192" y="196" font-size="10" fill="#64748b" text-anchor="middle">مارس</text>
+
+              <!-- Month 4: Apr -->
+              <rect x="230" y="45" width="16" height="135" rx="3" fill="#e2e8f0" />
+              <rect x="250" y="35" width="16" height="145" rx="3" fill="#0284c7" />
+              <text x="247" y="196" font-size="10" fill="#64748b" text-anchor="middle">أبريل</text>
+
+              <!-- Month 5: May -->
+              <rect x="285" y="40" width="16" height="140" rx="3" fill="#e2e8f0" />
+              <rect x="305" y="30" width="16" height="150" rx="3" fill="#0284c7" />
+              <text x="302" y="196" font-size="10" fill="#64748b" text-anchor="middle">مايو</text>
+
+              <!-- Month 6: Jun -->
+              <rect x="340" y="35" width="16" height="145" rx="3" fill="#e2e8f0" />
+              <rect x="360" y="25" width="16" height="155" rx="3" fill="#10b981" />
+              <text x="357" y="196" font-size="10" fill="#64748b" text-anchor="middle">يونيو</text>
+            </svg>
+          </div>
+          <div style="display: flex; justify-content: center; gap: 20px; font-size: 11px; margin-top: 6px;">
+            <span style="display: flex; align-items: center; gap: 6px;">
+              <span style="width: 12px; height: 12px; background: #e2e8f0; border-radius: 2px;"></span> المستهدف المخطط
+            </span>
+            <span style="display: flex; align-items: center; gap: 6px;">
+              <span style="width: 12px; height: 12px; background: #0284c7; border-radius: 2px;"></span> الإيراد الفعلي المحقق
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Chart 2: Cash Flow (Line Chart) -->
+      <div class="exec-card">
+        <div class="exec-card-header">
+          <div class="exec-card-title">
+            <i class="fas fa-money-bill-transfer"></i>
+            <span>التدفقات النقدية (Cash Flow Trend)</span>
+          </div>
+          <span style="font-size: 11.5px; color: #10b981; font-weight: 700;">صافي موجب +48.2M</span>
+        </div>
+        <div class="exec-card-body">
+          <div class="chart-container">
+            <svg class="chart-svg" viewBox="0 0 400 220">
+              <!-- Grid lines -->
+              <line x1="30" y1="30" x2="380" y2="30" stroke="#f1f5f9" stroke-dasharray="3,3" />
+              <line x1="30" y1="80" x2="380" y2="80" stroke="#f1f5f9" stroke-dasharray="3,3" />
+              <line x1="30" y1="130" x2="380" y2="130" stroke="#f1f5f9" stroke-dasharray="3,3" />
+              <line x1="30" y1="180" x2="380" y2="180" stroke="#cbd5e1" />
+
+              <!-- Inflow curve (Green) -->
+              <path d="M 40 140 Q 110 110 180 80 T 320 40 T 370 30" fill="none" stroke="#10b981" stroke-width="3" />
+              
+              <!-- Outflow curve (Amber/Red) -->
+              <path d="M 40 160 Q 110 140 180 120 T 320 90 T 370 75" fill="none" stroke="#ef4444" stroke-width="2.5" stroke-dasharray="4,2" />
+
+              <!-- Net Cash curve (Blue) -->
+              <path d="M 40 170 Q 110 155 180 145 T 320 120 T 370 100" fill="none" stroke="#0284c7" stroke-width="2" />
+
+              <!-- Data markers -->
+              <circle cx="180" cy="80" r="4" fill="#10b981" />
+              <circle cx="370" cy="30" r="5" fill="#10b981" />
+              <circle cx="370" cy="75" r="4" fill="#ef4444" />
+              <circle cx="370" cy="100" r="4" fill="#0284c7" />
+
+              <!-- Month markers -->
+              <text x="40" y="196" font-size="10" fill="#64748b" text-anchor="middle">يناير</text>
+              <text x="120" y="196" font-size="10" fill="#64748b" text-anchor="middle">مارس</text>
+              <text x="200" y="196" font-size="10" fill="#64748b" text-anchor="middle">مايو</text>
+              <text x="280" y="196" font-size="10" fill="#64748b" text-anchor="middle">يوليو</text>
+              <text x="370" y="196" font-size="10" fill="#64748b" text-anchor="middle">سبتمبر</text>
+            </svg>
+          </div>
+          <div style="display: flex; justify-content: center; gap: 16px; font-size: 11px; margin-top: 6px;">
+            <span style="display: flex; align-items: center; gap: 5px;">
+              <span style="width: 14px; height: 3px; background: #10b981; border-radius: 2px;"></span> مقبوضات نقدية (Inflow)
+            </span>
+            <span style="display: flex; align-items: center; gap: 5px;">
+              <span style="width: 14px; height: 3px; background: #ef4444; border-radius: 2px;"></span> مدفوعات نقدية (Outflow)
+            </span>
+            <span style="display: flex; align-items: center; gap: 5px;">
+              <span style="width: 14px; height: 3px; background: #0284c7; border-radius: 2px;"></span> صافي النقد التراكمي
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Chart 3: Cost Performance Scatter (CPI vs SPI Quadrant) -->
+      <div class="exec-card">
+        <div class="exec-card-header">
+          <div class="exec-card-title">
+            <i class="fas fa-crosshairs"></i>
+            <span>كفاءة الأداء المالي والجدول (CPI vs SPI)</span>
+          </div>
+          <span style="font-size: 11px; background: #e0f2fe; color: #0369a1; padding: 2px 8px; border-radius: 12px; font-weight: 700;">AACE Standard</span>
+        </div>
+        <div class="exec-card-body">
+          <div class="chart-container">
+            <svg class="chart-svg" viewBox="0 0 360 220">
+              <!-- Background Quadrants -->
+              <!-- Top-Right: Good / Good (CPI>1, SPI>1) -->
+              <rect x="180" y="20" width="160" height="85" fill="#ecfdf5" rx="4" />
+              <text x="330" y="36" font-size="9" fill="#059669" text-anchor="end" font-weight="bold">متقدم وتحت الميزانية</text>
+
+              <!-- Top-Left: Late / Under Budget (CPI>1, SPI<1) -->
+              <rect x="20" y="20" width="160" height="85" fill="#fefce8" rx="4" />
+              <text x="30" y="36" font-size="9" fill="#ca8a04" text-anchor="start" font-weight="bold">متأخر وتحت الميزانية</text>
+
+              <!-- Bottom-Right: Ahead / Over Budget (CPI<1, SPI>1) -->
+              <rect x="180" y="105" width="160" height="85" fill="#eff6ff" rx="4" />
+              <text x="330" y="180" font-size="9" fill="#2563eb" text-anchor="end" font-weight="bold">متقدم وفوق الميزانية</text>
+
+              <!-- Bottom-Left: Late / Over Budget (CPI<1, SPI<1) -->
+              <rect x="20" y="105" width="160" height="85" fill="#fef2f2" rx="4" />
+              <text x="30" y="180" font-size="9" fill="#dc2626" text-anchor="start" font-weight="bold">منطقة الخطر (متأخر ومتجاوز)</text>
+
+              <!-- Axis Lines at 1.0 -->
+              <line x1="180" y1="15" x2="180" y2="195" stroke="#94a3b8" stroke-width="2" />
+              <line x1="15" y1="105" x2="345" y2="105" stroke="#94a3b8" stroke-width="2" />
+              
+              <text x="180" y="208" font-size="10" fill="#475569" text-anchor="middle" font-weight="bold">SPI = 1.0 (الجدول الزمني)</text>
+              <text x="8" y="108" font-size="10" fill="#475569" text-anchor="middle" font-weight="bold" transform="rotate(-90 8 108)">CPI = 1.0 (التكلفة)</text>
+
+              <!-- Project Scatter Points -->
+              <!-- Project 1: برج العاصمة (CPI=1.08, SPI=1.04) -->
+              <circle cx="230" cy="65" r="7" fill="#10b981" stroke="#ffffff" stroke-width="2" />
+              <text x="240" y="68" font-size="9" fill="#0f172a" font-weight="bold">برج العاصمة</text>
+
+              <!-- Project 2: مستشفى التخصصي (CPI=1.02, SPI=1.01) -->
+              <circle cx="200" cy="85" r="6" fill="#10b981" stroke="#ffffff" stroke-width="2" />
+              <text x="210" y="88" font-size="8.5" fill="#0f172a">مستشفى التخصصي</text>
+
+              <!-- Project 3: مجمع الفلل السكني (CPI=1.12, SPI=0.92) -->
+              <circle cx="110" cy="50" r="6" fill="#f59e0b" stroke="#ffffff" stroke-width="2" />
+              <text x="120" y="53" font-size="8.5" fill="#0f172a">مجمع الفلل</text>
+
+              <!-- Project 4: فندق البحر الأحمر (CPI=0.91, SPI=0.88) -->
+              <circle cx="95" cy="145" r="7" fill="#ef4444" stroke="#ffffff" stroke-width="2" />
+              <text x="105" y="148" font-size="9" fill="#dc2626" font-weight="bold">فندق البحر الأحمر</text>
+
+              <!-- Project 5: جسر المطار السريع (CPI=0.96, SPI=1.07) -->
+              <circle cx="250" cy="130" r="6" fill="#3b82f6" stroke="#ffffff" stroke-width="2" />
+              <text x="260" y="133" font-size="8.5" fill="#0f172a">جسر المطار</text>
+            </svg>
+          </div>
+          <div style="font-size: 11px; text-align: center; color: #64748b; margin-top: 4px;">
+            المشاريع في الربع العلوي الأيمن تحقق أعلى عوائد ربحية وانضباط في البرنامج الزمني
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- Portfolio Map Table with RAG Health -->
+    <section class="exec-card" style="margin-bottom: 24px;">
+      <div class="exec-card-header">
+        <div class="exec-card-title">
+          <i class="fas fa-layer-group"></i>
+          <span>محفظة المشاريع ومصفوفة الأداء الصحي (Portfolio Health & Status RAG)</span>
+        </div>
+        <div style="display: flex; gap: 10px;">
+          <input type="text" id="projectSearchInput" onkeyup="filterProjectTable()" placeholder="بحث باسم المشروع أو الكود..." style="padding: 6px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 12px; font-family: inherit;">
+          <select id="projectRagFilter" onchange="filterProjectTable()" style="padding: 6px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 12px; font-family: inherit;">
+            <option value="ALL">كافة الحالات (RAG)</option>
+            <option value="GREEN">أخضر (مستقر - Green)</option>
+            <option value="AMBER">برتقالي (تحت المراقبة - Amber)</option>
+            <option value="RED">أحمر (حرِج - Red)</option>
+          </select>
+        </div>
+      </div>
+      <div class="exec-card-body" style="padding: 0;">
+        <div class="table-wrapper">
+          <table class="data-table" id="portfolioTable">
+            <thead>
+              <tr>
+                <th>كود المشروع</th>
+                <th>اسم المشروع الاستراتيجي</th>
+                <th>العميل / المالك</th>
+                <th>الميزانية التعاقدية (SAR)</th>
+                <th>نسبة الإنجاز الفعلي</th>
+                <th>انحراف الميزانية (CV)</th>
+                <th>انحراف الجدول (SV)</th>
+                <th>مؤشر التكلفة (CPI)</th>
+                <th>مؤشر الجدول (SPI)</th>
+                <th>حالة RAG</th>
+                <th>إجراء سريع</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Row 1 -->
+              <tr data-rag="GREEN">
+                <td class="num font-bold">PRJ-2024-001</td>
+                <td style="font-weight: 800; color: #0b192c;">
+                  <i class="fas fa-building" style="color: #0284c7; margin-left: 6px;"></i> برج العاصمة الإداري — الرياض
+                </td>
+                <td>صندوق الاستثمارات العامة</td>
+                <td class="text-num num">450,000,000</td>
+                <td>
+                  <div style="display: flex; justify-content: space-between; font-size: 11px;">
+                    <span class="num">74.5%</span>
+                    <span style="color: #64748b;">(مخطط 72%)</span>
+                  </div>
+                  <div class="progress-bar-container">
+                    <div class="progress-bar-fill" style="width: 74.5%; background: #10b981;"></div>
+                  </div>
+                </td>
+                <td class="text-num num" style="color: #10b981;">+14,250,000</td>
+                <td class="text-num num" style="color: #10b981;">+18 يوم</td>
+                <td class="text-num num" style="font-weight: 800; color: #10b981;">1.08</td>
+                <td class="text-num num" style="font-weight: 800; color: #10b981;">1.04</td>
+                <td>
+                  <span class="rag-pill rag-green"><span class="rag-dot"></span> ممتاز (On Track)</span>
+                </td>
+                <td>
+                  <a href="../cost-control/index.html?project=PRJ-2024-001" class="qa-btn" style="padding: 4px 8px; font-size: 11px; text-decoration: none;">
+                    <i class="fas fa-magnifying-glass-chart"></i> فحص EVM
+                  </a>
+                </td>
+              </tr>
+
+              <!-- Row 2 -->
+              <tr data-rag="AMBER">
+                <td class="num font-bold">PRJ-2024-003</td>
+                <td style="font-weight: 800; color: #0b192c;">
+                  <i class="fas fa-hospital" style="color: #0284c7; margin-left: 6px;"></i> مستشفى الدكتور سليمان الحبيب — جدة
+                </td>
+                <td>مجموعة الحبيب الطبية</td>
+                <td class="text-num num">280,000,000</td>
+                <td>
+                  <div style="display: flex; justify-content: space-between; font-size: 11px;">
+                    <span class="num">58.2%</span>
+                    <span style="color: #64748b;">(مخطط 63%)</span>
+                  </div>
+                  <div class="progress-bar-container">
+                    <div class="progress-bar-fill" style="width: 58.2%; background: #f59e0b;"></div>
+                  </div>
+                </td>
+                <td class="text-num num" style="color: #10b981;">+4,800,000</td>
+                <td class="text-num num" style="color: #ef4444;">-24 يوم</td>
+                <td class="text-num num" style="font-weight: 800; color: #10b981;">1.02</td>
+                <td class="text-num num" style="font-weight: 800; color: #f59e0b;">0.92</td>
+                <td>
+                  <span class="rag-pill rag-amber"><span class="rag-dot"></span> تنبيه جدول (Schedule)</span>
+                </td>
+                <td>
+                  <a href="../cost-control/index.html?project=PRJ-2024-003" class="qa-btn" style="padding: 4px 8px; font-size: 11px; text-decoration: none;">
+                    <i class="fas fa-magnifying-glass-chart"></i> فحص EVM
+                  </a>
+                </td>
+              </tr>
+
+              <!-- Row 3 -->
+              <tr data-rag="RED">
+                <td class="num font-bold">PRJ-2024-007</td>
+                <td style="font-weight: 800; color: #0b192c;">
+                  <i class="fas fa-hotel" style="color: #dc2626; margin-left: 6px;"></i> منتجع وفندق لاغونا — البحر الأحمر
+                </td>
+                <td>شركة البحر الأحمر الدولية</td>
+                <td class="text-num num">395,000,000</td>
+                <td>
+                  <div style="display: flex; justify-content: space-between; font-size: 11px;">
+                    <span class="num">41.0%</span>
+                    <span style="color: #64748b;">(مخطط 51%)</span>
+                  </div>
+                  <div class="progress-bar-container">
+                    <div class="progress-bar-fill" style="width: 41%; background: #ef4444;"></div>
+                  </div>
+                </td>
+                <td class="text-num num" style="color: #ef4444;">-18,600,000</td>
+                <td class="text-num num" style="color: #ef4444;">-45 يوم</td>
+                <td class="text-num num" style="font-weight: 800; color: #ef4444;">0.91</td>
+                <td class="text-num num" style="font-weight: 800; color: #ef4444;">0.84</td>
+                <td>
+                  <span class="rag-pill rag-red"><span class="rag-dot"></span> تدقيق حرِج (Critical)</span>
+                </td>
+                <td>
+                  <a href="../cost-control/index.html?project=PRJ-2024-007" class="qa-btn" style="padding: 4px 8px; font-size: 11px; text-decoration: none; background: #fee2e2; border-color: #fca5a5; color: #991b1b;">
+                    <i class="fas fa-triangle-exclamation"></i> تدقيق عاجل
+                  </a>
+                </td>
+              </tr>
+
+              <!-- Row 4 -->
+              <tr data-rag="GREEN">
+                <td class="num font-bold">PRJ-2024-012</td>
+                <td style="font-weight: 800; color: #0b192c;">
+                  <i class="fas fa-road" style="color: #0284c7; margin-left: 6px;"></i> تقاطع جسر مطار الملك خالد الدولي
+                </td>
+                <td>وزارة النقل والخدمات اللوجستية</td>
+                <td class="text-num num">165,000,000</td>
+                <td>
+                  <div style="display: flex; justify-content: space-between; font-size: 11px;">
+                    <span class="num">89.0%</span>
+                    <span style="color: #64748b;">(مخطط 86%)</span>
+                  </div>
+                  <div class="progress-bar-container">
+                    <div class="progress-bar-fill" style="width: 89%; background: #10b981;"></div>
+                  </div>
+                </td>
+                <td class="text-num num" style="color: #10b981;">+8,400,000</td>
+                <td class="text-num num" style="color: #10b981;">+14 يوم</td>
+                <td class="text-num num" style="font-weight: 800; color: #10b981;">1.05</td>
+                <td class="text-num num" style="font-weight: 800; color: #10b981;">1.06</td>
+                <td>
+                  <span class="rag-pill rag-green"><span class="rag-dot"></span> متقدم عن الخطة</span>
+                </td>
+                <td>
+                  <a href="../cost-control/index.html?project=PRJ-2024-012" class="qa-btn" style="padding: 4px 8px; font-size: 11px; text-decoration: none;">
+                    <i class="fas fa-magnifying-glass-chart"></i> فحص EVM
+                  </a>
+                </td>
+              </tr>
+
+              <!-- Row 5 -->
+              <tr data-rag="GREEN">
+                <td class="num font-bold">PRJ-2024-015</td>
+                <td style="font-weight: 800; color: #0b192c;">
+                  <i class="fas fa-house-chimney" style="color: #0284c7; margin-left: 6px;"></i> مجمع الفلل الدبلوماسي — الدرعية
+                </td>
+                <td>هيئة تطوير بوابة الدرعية</td>
+                <td class="text-num num">310,000,000</td>
+                <td>
+                  <div style="display: flex; justify-content: space-between; font-size: 11px;">
+                    <span class="num">62.8%</span>
+                    <span style="color: #64748b;">(مخطط 61%)</span>
+                  </div>
+                  <div class="progress-bar-container">
+                    <div class="progress-bar-fill" style="width: 62.8%; background: #10b981;"></div>
+                  </div>
+                </td>
+                <td class="text-num num" style="color: #10b981;">+11,300,000</td>
+                <td class="text-num num" style="color: #10b981;">+6 أيام</td>
+                <td class="text-num num" style="font-weight: 800; color: #10b981;">1.11</td>
+                <td class="text-num num" style="font-weight: 800; color: #10b981;">1.02</td>
+                <td>
+                  <span class="rag-pill rag-green"><span class="rag-dot"></span> أداء ممتاز</span>
+                </td>
+                <td>
+                  <a href="../cost-control/index.html?project=PRJ-2024-015" class="qa-btn" style="padding: 4px 8px; font-size: 11px; text-decoration: none;">
+                    <i class="fas fa-magnifying-glass-chart"></i> فحص EVM
+                  </a>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- Bottom Split: 5x5 Risk Exposure Heat Map & Real-time Alerts Panel -->
+    <section class="dashboard-grid-2">
+      
+      <!-- 5x5 Risk Exposure Heat Map -->
+      <div class="exec-card">
+        <div class="exec-card-header">
+          <div class="exec-card-title">
+            <i class="fas fa-shield-virus" style="color: #ea580c;"></i>
+            <span>مصفوفة إدارة المخاطر التنفيذية (5×5 Risk Exposure Heat Map)</span>
+          </div>
+          <span style="font-size: 11.5px; color: #64748b;">الاحتمالية (Likelihood) × التأثير (Impact)</span>
+        </div>
+        <div class="exec-card-body">
+          <table class="heatmap-table">
+            <thead>
+              <tr>
+                <th style="width: 65px; background: transparent; border: none; font-size: 11px; color: #64748b;">الاحتمال</th>
+                <th class="hm-axis-lbl">1. ضئيل جداً</th>
+                <th class="hm-axis-lbl">2. منخفض</th>
+                <th class="hm-axis-lbl">3. متوسط</th>
+                <th class="hm-axis-lbl">4. مرتفع</th>
+                <th class="hm-axis-lbl">5. كارثي</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Row 5: شبه مؤكد (5) -->
+              <tr>
+                <td class="hm-axis-lbl">5. شبه مؤكد</td>
+                <td class="heatmap-cell hm-yellow" title="مخاطر إدارية طفيفة">2</td>
+                <td class="heatmap-cell hm-orange" title="تأخر اعتمادات استشارية">4</td>
+                <td class="heatmap-cell hm-red" title="تقلبات أسعار حديد التسليح">6</td>
+                <td class="heatmap-cell hm-darkred" title="تأخر تصاريح الدفاع المدني">3</td>
+                <td class="heatmap-cell hm-darkred" title="توقف أعمال موقع البحر الأحمر">1</td>
+              </tr>
+              <!-- Row 4: محتمل جداً (4) -->
+              <tr>
+                <td class="hm-axis-lbl">4. محتمل</td>
+                <td class="heatmap-cell hm-green">5</td>
+                <td class="heatmap-cell hm-yellow">7</td>
+                <td class="heatmap-cell hm-orange">9</td>
+                <td class="heatmap-cell hm-red">5</td>
+                <td class="heatmap-cell hm-darkred">2</td>
+              </tr>
+              <!-- Row 3: ممكن (3) -->
+              <tr>
+                <td class="hm-axis-lbl">3. ممكن</td>
+                <td class="heatmap-cell hm-green">8</td>
+                <td class="heatmap-cell hm-green">12</td>
+                <td class="heatmap-cell hm-yellow">6</td>
+                <td class="heatmap-cell hm-orange">4</td>
+                <td class="heatmap-cell hm-red">2</td>
+              </tr>
+              <!-- Row 2: غير مرجح (2) -->
+              <tr>
+                <td class="hm-axis-lbl">2. غير مرجح</td>
+                <td class="heatmap-cell hm-green">14</td>
+                <td class="heatmap-cell hm-green">10</td>
+                <td class="heatmap-cell hm-green">8</td>
+                <td class="heatmap-cell hm-yellow">3</td>
+                <td class="heatmap-cell hm-orange">1</td>
+              </tr>
+              <!-- Row 1: نادر (1) -->
+              <tr>
+                <td class="hm-axis-lbl">1. نادر جداً</td>
+                <td class="heatmap-cell hm-green">22</td>
+                <td class="heatmap-cell hm-green">18</td>
+                <td class="heatmap-cell hm-green">9</td>
+                <td class="heatmap-cell hm-green">4</td>
+                <td class="heatmap-cell hm-yellow">0</td>
+              </tr>
+            </tbody>
+          </table>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 14px; font-size: 11.5px; color: #475569; background: #f8fafc; padding: 8px 14px; border-radius: 8px;">
+            <span><i class="fas fa-info-circle" style="color: #0284c7;"></i> عدد المخاطر الحرجة المسجلة: <strong class="num" style="color: #dc2626;">6 مخاطر حمراء</strong> تحتاج تدخلاً تنفيذياً سريعاً</span>
+            <button class="btn-exec-action" style="padding: 4px 10px; font-size: 11px;" onclick="alert('جاري فتح سجل المخاطر الشامل للمؤسسة...')">فتح سجل المخاطر</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Real-Time Alerts Panel -->
+      <div class="exec-card">
+        <div class="exec-card-header">
+          <div class="exec-card-title">
+            <i class="fas fa-bell" style="color: #ef4444;"></i>
+            <span>التنبيهات الاستراتيجية والحرجة (Alerts Panel)</span>
+          </div>
+          <span class="badge badge-red num">4 بلاغات</span>
+        </div>
+        <div class="exec-card-body" style="max-height: 340px; overflow-y: auto;">
+          
+          <!-- Alert 1: Overdue milestone -->
+          <div class="alert-item danger">
+            <div class="alert-icon" style="color: #ef4444;"><i class="fas fa-circle-exclamation"></i></div>
+            <div class="alert-content">
+              <h4>تجاوز محطة رئيسية (Overdue Milestone): فندق البحر الأحمر</h4>
+              <p>تأخر صب خرسانة السقف العلوي للدور العاشر بأكثر من 15 يوماً عن خط الأساس المعتمد.</p>
+              <span class="alert-time"><i class="far fa-clock"></i> منذ 42 دقيقة — تقرير إدارة التخطيط</span>
+            </div>
+          </div>
+
+          <!-- Alert 2: Budget overrun > 10% -->
+          <div class="alert-item danger">
+            <div class="alert-icon" style="color: #ef4444;"><i class="fas fa-arrow-trend-up"></i></div>
+            <div class="alert-content">
+              <h4>تجاوز ميزانية بند الكهروميكانيك (MEP) بنسبة 12.4%</h4>
+              <p>مشروع مستشفى الحبيب — تكلفة أعمال مجاري الهواء وتمديدات التكييف تجاوزت البند المخصص.</p>
+              <span class="alert-time"><i class="far fa-clock"></i> منذ ساعتين — نظام رقابة التكاليف</span>
+            </div>
+          </div>
+
+          <!-- Alert 3: Safety incidents -->
+          <div class="alert-item warning">
+            <div class="alert-icon" style="color: #f59e0b;"><i class="fas fa-triangle-exclamation"></i></div>
+            <div class="alert-content">
+              <h4>تسجيل حالتي وشيكة الوقوع (Near-Miss) بموقع الدرعية</h4>
+              <p>تم إيقاف العمل في قطاع السقالات مؤقتاً لحين استكمال حزام الأمان وفحص شهادات التركيب.</p>
+              <span class="alert-time"><i class="far fa-clock"></i> منذ 4 ساعات — مكتب السلامة والصحة المهنية</span>
+            </div>
+          </div>
+
+          <!-- Alert 4: Upcoming contract expiry -->
+          <div class="alert-item info">
+            <div class="alert-icon" style="color: #0284c7;"><i class="fas fa-calendar-check"></i></div>
+            <div class="alert-content">
+              <h4>استحقاق تجديد خطاب الضمان البنكي النهائي</h4>
+              <p>مشروع برج العاصمة الإداري — تبقى 14 يوماً على تجديد ضمان الدفعة المقدمة في البنك الأهلي السعودي.</p>
+              <span class="alert-time"><i class="far fa-clock"></i> أمس — الإدارة المالية والخزينة</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- MODAL 1: Approve IPC Modal -->
+  <div id="ipcModal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="ipcTitle">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 id="ipcTitle"><i class="fas fa-file-signature"></i> اعتماد مستخلص مقاول باطن / مورد (IPC Approval)</h3>
+        <button class="modal-close" onclick="closeModal('ipcModal')"><i class="fas fa-times"></i></button>
+      </div>
+      <div class="modal-body">
+        <form id="ipcForm" onsubmit="handleIpcSubmit(event)">
+          <div class="form-group">
+            <label>المشروع المستهدف:</label>
+            <select class="form-control" required>
+              <option value="PRJ-001">برج العاصمة الإداري — الرياض (PRJ-2024-001)</option>
+              <option value="PRJ-003">مستشفى الدكتور سليمان الحبيب — جدة (PRJ-2024-003)</option>
+              <option value="PRJ-007">منتجع وفندق لاغونا — البحر الأحمر (PRJ-2024-007)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>رقم المستخلص التعاقدي (IPC No):</label>
+            <input type="text" class="form-control num" value="IPC-2026-0089" readonly>
+          </div>
+          <div class="form-group">
+            <label>المقاول / الشريك التجاري:</label>
+            <input type="text" class="form-control" value="شركة الفنار للمقاولات الكهروميكانيكية" readonly>
+          </div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+            <div class="form-group">
+              <label>صافي القيمة المستحقة (SAR):</label>
+              <input type="text" class="form-control num" value="4,820,500.00 ر.س" style="font-weight: 800; color: #10b981;" readonly>
+            </div>
+            <div class="form-group">
+              <label>نسبة الاستقطاع والضمان:</label>
+              <input type="text" class="form-control num" value="10% (482,050 ر.س)" readonly>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>ملاحظات وتوجيهات المدير التنفيذي:</label>
+            <textarea class="form-control" rows="3" placeholder="أدخل أي ملاحظات فنية أو شروط للصرف المالي..."></textarea>
+          </div>
+          <div class="modal-footer" style="padding: 12px 0 0; background: none; border: none;">
+            <button type="button" class="qa-btn" onclick="closeModal('ipcModal')">إلغاء الأمر</button>
+            <button type="submit" class="btn-exec-action" style="background: #10b981; color: white;">
+              <i class="fas fa-check-circle"></i> اعتماد الصرف الفوري
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 2: Review NCR Modal -->
+  <div id="ncrModal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="ncrTitle">
+    <div class="modal-box">
+      <div class="modal-header" style="background: #7f1d1d;">
+        <h3 id="ncrTitle"><i class="fas fa-triangle-exclamation"></i> مراجعة تقرير عدم مطابقة حرِج (Review NCR)</h3>
+        <button class="modal-close" onclick="closeModal('ncrModal')"><i class="fas fa-times"></i></button>
+      </div>
+      <div class="modal-body">
+        <form onsubmit="handleNcrSubmit(event)">
+          <div class="form-group">
+            <label>رقم تقرير عدم المطابقة (NCR ID):</label>
+            <input type="text" class="form-control num" value="NCR-QAQC-2026-042" readonly>
+          </div>
+          <div class="form-group">
+            <label>المشروع وموقع الخلل:</label>
+            <input type="text" class="form-control" value="فندق البحر الأحمر — أعمدة الدور الثالث بالبلوك C" readonly>
+          </div>
+          <div class="form-group">
+            <label>وصف المخالفة الفنية المرفوعة من استشاري المشروع:</label>
+            <div style="background: #fef2f2; border: 1px solid #fecaca; padding: 10px; border-radius: 6px; font-size: 12.5px; color: #991b1b;">
+              عدم مطابقة نتائج اختبار كسر المكعبات الخرسانية لعمر 28 يوماً مع رتبة الخرسانة التصميمية المحددة C40 (النتيجة الفعلية 34.2 MPa).
+            </div>
+          </div>
+          <div class="form-group">
+            <label>الإجراء التصحيحي المقترح (Corrective Action):</label>
+            <select class="form-control">
+              <option value="CORE_TEST">إجراء اختبار القلب الخرساني (Core Test) بواسطة مختبر معتمد محايد</option>
+              <option value="REPAIR">تدعيم إنشائي بواسطة ألياف الكربون المقواة (CFRP)</option>
+              <option value="DEMOLISH">إزالة العنصر وإعادة الصب بالكامل على نفقة المقاول</option>
+            </select>
+          </div>
+          <div class="modal-footer" style="padding: 12px 0 0; background: none; border: none;">
+            <button type="button" class="qa-btn" onclick="closeModal('ncrModal')">إغلاق</button>
+            <button type="submit" class="btn-exec-action" style="background: #dc2626; color: white;">
+              <i class="fas fa-gavel"></i> إصدار قرار الإدارة التنفيذية
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 3: Open RFI Modal -->
+  <div id="rfiModal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="rfiTitle">
+    <div class="modal-box">
+      <div class="modal-header" style="background: #1e3a8a;">
+        <h3 id="rfiTitle"><i class="fas fa-question-circle"></i> تصعيد استفسار فني عاجل (Urgent RFI Escalation)</h3>
+        <button class="modal-close" onclick="closeModal('rfiModal')"><i class="fas fa-times"></i></button>
+      </div>
+      <div class="modal-body">
+        <form onsubmit="handleRfiSubmit(event)">
+          <div class="form-group">
+            <label>المشروع المعني:</label>
+            <select class="form-control">
+              <option>برج العاصمة الإداري — الرياض</option>
+              <option>مستشفى الدكتور سليمان الحبيب — جدة</option>
+              <option>منتجع وفندق لاغونا — البحر الأحمر</option>
+              <option>تقاطع جسر مطار الملك خالد الدولي</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>موضوع الاستفسار الهندسي:</label>
+            <input type="text" class="form-control" placeholder="مثال: تعارض مسارات التكييف مع الجسور المعدنية بالطابق الخامس" required>
+          </div>
+          <div class="form-group">
+            <label>الاستشاري المصمم المسؤول:</label>
+            <input type="text" class="form-control" value="دار الهندسة للتصميم والاستشارات الفنية" readonly>
+          </div>
+          <div class="form-group">
+            <label>مستوى الأهمية والتأثير الزمني:</label>
+            <select class="form-control">
+              <option value="HIGH">حرِج جداً — يعطل مساراً حرجاً بالجدول الزمني (Critical Path)</option>
+              <option value="MED">متوسط — يتطلب رداً خلال 48 ساعة</option>
+              <option value="LOW">اعتيادي</option>
+            </select>
+          </div>
+          <div class="modal-footer" style="padding: 12px 0 0; background: none; border: none;">
+            <button type="button" class="qa-btn" onclick="closeModal('rfiModal')">إلغاء</button>
+            <button type="submit" class="btn-exec-action" style="background: #2563eb; color: white;">
+              <i class="fas fa-paper-plane"></i> إرسال الاستفسار فوراً
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Vanilla JavaScript Logic -->
+  <script>
+    // Live Clock Management
+    function updateLiveClock() {
+      const now = new Date();
+      const year = now.getFullYear();
+      const month = String(now.getMonth() + 1).padStart(2, '0');
+      const day = String(now.getDate()).padStart(2, '0');
+      const hours = String(now.getHours()).padStart(2, '0');
+      const minutes = String(now.getMinutes()).padStart(2, '0');
+      const seconds = String(now.getSeconds()).padStart(2, '0');
+      
+      const timeStr = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+      const elem = document.getElementById('liveTimestamp');
+      if (elem) {
+        elem.innerText = timeStr;
+      }
+    }
+    setInterval(updateLiveClock, 1000);
+    updateLiveClock();
+
+    // Modal Control
+    function openModal(modalId) {
+      const modal = document.getElementById(modalId);
+      if (modal) {
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+      }
+    }
+
+    function closeModal(modalId) {
+      const modal = document.getElementById(modalId);
+      if (modal) {
+        modal.classList.remove('active');
+        document.body.style.overflow = '';
+      }
+    }
+
+    // Close modal on ESC key
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        document.querySelectorAll('.modal-overlay.active').forEach(modal => {
+          modal.classList.remove('active');
+        });
+        document.body.style.overflow = '';
+      }
+    });
+
+    // Close on backdrop click
+    document.querySelectorAll('.modal-overlay').forEach(overlay => {
+      overlay.addEventListener('click', function(e) {
+        if (e.target === this) {
+          this.classList.remove('active');
+          document.body.style.overflow = '';
+        }
+      });
+    });
+
+    // Handlers
+    function handleIpcSubmit(e) {
+      e.preventDefault();
+      alert('تم اعتماد المستخلص المالي رقم IPC-2026-0089 بنجاح وتوجيهه إلى إدارة الحسابات للصرف.');
+      closeModal('ipcModal');
+    }
+
+    function handleNcrSubmit(e) {
+      e.preventDefault();
+      alert('تم توثيق قرار الإدارة التنفيذية بشأن تقرير عدم المطابقة وإرسال إشعار فوري لمدير المشروع والاستشاري.');
+      closeModal('ncrModal');
+    }
+
+    function handleRfiSubmit(e) {
+      e.preventDefault();
+      alert('تم تصعيد الاستفسار الهندسي العاجل وتخصيص تذكرة متابعة برقم RFI-EXEC-992.');
+      closeModal('rfiModal');
+    }
+
+    function exportExecutiveSummary() {
+      alert('جاري إعداد وتحميل موجز الأداء التنفيذي لمجلس الإدارة بصيغة PDF عالية الدقة...');
+    }
+
+    function refreshExecutiveData() {
+      const btn = event.currentTarget;
+      const icon = btn.querySelector('i');
+      if (icon) icon.classList.add('fa-spin');
+      setTimeout(() => {
+        if (icon) icon.classList.remove('fa-spin');
+        alert('تم تحديث كافة المؤشرات وبيانات المحفظة وربطها بقاعدة بيانات ERP اللحظية.');
+      }, 700);
+    }
+
+    // Portfolio Table Search & Filter
+    function filterProjectTable() {
+      const input = document.getElementById('projectSearchInput').value.toLowerCase();
+      const ragFilter = document.getElementById('projectRagFilter').value;
+      const rows = document.querySelectorAll('#portfolioTable tbody tr');
+
+      rows.forEach(row => {
+        const text = row.innerText.toLowerCase();
+        const rowRag = row.getAttribute('data-rag');
+        
+        const matchesText = text.includes(input);
+        const matchesRag = (ragFilter === 'ALL' || rowRag === ragFilter);
+
+        if (matchesText && matchesRag) {
+          row.style.display = '';
+        } else {
+          row.style.display = 'none';
+        }
+      });
+    }
+  </script>
+</body>
+</html>

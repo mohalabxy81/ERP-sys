@@ -1,0 +1,1473 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>نظام السلامة والصحة المهنية والبيئة (HSE) | مِعمار ERP</title>
+
+  <!-- Local Offline Fonts (Cairo + Tajawal) -->
+  <link rel="stylesheet" href="../../assets/css/google-fonts.css">
+  <!-- Local Offline FontAwesome 6.5.1 -->
+  <link rel="stylesheet" href="../../assets/css/font-awesome.min.css">
+
+  <!-- Enterprise Design System Core Stylesheets -->
+  <link rel="stylesheet" href="../../assets/css/design-tokens.css">
+  <link rel="stylesheet" href="../../assets/css/theme.css">
+  <link rel="stylesheet" href="../../assets/css/main.css">
+  <link rel="stylesheet" href="../../assets/css/dashboard.css">
+  <link rel="stylesheet" href="../../assets/css/modules.css">
+  <link rel="stylesheet" href="../../assets/css/forms.css">
+  <link rel="stylesheet" href="../../assets/css/reports.css">
+  <link rel="stylesheet" href="../../assets/css/modules-ext.css">
+
+  <style>
+    /* Custom Scoped Styles for HSE Safety Management Module */
+    :root {
+      --hse-primary: #059669;
+      --hse-primary-dark: #047857;
+      --hse-primary-light: #d1fae5;
+      --hse-danger: #dc2626;
+      --hse-warning: #f59e0b;
+      --hse-info: #0284c7;
+    }
+
+    body {
+      font-family: 'Tajawal', 'Cairo', sans-serif;
+      background-color: var(--canvas, #f8fafc);
+      color: var(--ink, #1e293b);
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+    }
+
+    .hse-header-banner {
+      background: linear-gradient(135deg, #0b192c 0%, #1e3e62 100%);
+      color: #ffffff;
+      padding: 24px 32px;
+      border-radius: var(--radius, 12px);
+      margin-bottom: 24px;
+      box-shadow: 0 4px 14px rgba(11, 25, 44, 0.15);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .hse-banner-title h1 {
+      font-size: 22px;
+      font-weight: 900;
+      margin: 0 0 6px 0;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .hse-banner-title p {
+      margin: 0;
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.75);
+    }
+
+    .hse-quick-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    /* Safety KPI Customizations */
+    .safety-kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .safety-card {
+      background: var(--card-bg, #ffffff);
+      border-radius: var(--radius, 12px);
+      padding: 20px;
+      border: 1px solid var(--line, #e2e8f0);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .safety-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+    }
+
+    .safety-card::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      right: 0;
+      left: 0;
+      height: 4px;
+    }
+
+    .safety-card.green::before { background: var(--color-success, #10b981); }
+    .safety-card.blue::before { background: var(--color-info, #3b82f6); }
+    .safety-card.amber::before { background: var(--color-warning, #f59e0b); }
+    .safety-card.red::before { background: var(--color-danger, #ef4444); }
+    .safety-card.purple::before { background: #8b5cf6; }
+
+    .safety-card-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+
+    .safety-card-label {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--muted, #64748b);
+    }
+
+    .safety-card-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+    }
+
+    .safety-card.green .safety-card-icon { background: #d1fae5; color: #059669; }
+    .safety-card.blue .safety-card-icon { background: #dbeafe; color: #2563eb; }
+    .safety-card.amber .safety-card-icon { background: #fef3c7; color: #d97706; }
+    .safety-card.red .safety-card-icon { background: #fee2e2; color: #dc2626; }
+    .safety-card.purple .safety-card-icon { background: #ede9fe; color: #7c3aed; }
+
+    .safety-card-value {
+      font-size: 28px;
+      font-weight: 900;
+      color: var(--navy, #0b192c);
+      font-family: 'Tajawal', sans-serif;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+    }
+
+    .safety-card-unit {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--muted, #64748b);
+    }
+
+    .safety-card-footer {
+      font-size: 12px;
+      color: var(--muted, #64748b);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* Grid Split for Charts and Matrix */
+    .hse-dashboard-split {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      margin-bottom: 24px;
+    }
+
+    @media (max-width: 1024px) {
+      .hse-dashboard-split {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Risk Matrix 5x5 Grid Styling */
+    .matrix-container {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .matrix-table-wrap {
+      overflow-x: auto;
+    }
+
+    .matrix-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 4px;
+      text-align: center;
+    }
+
+    .matrix-th-head {
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--navy2, #1e3e62);
+      padding: 6px 4px;
+      background: #f1f5f9;
+      border-radius: 4px;
+    }
+
+    .matrix-y-label {
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--navy2, #1e3e62);
+      background: #f1f5f9;
+      padding: 6px 8px;
+      border-radius: 4px;
+      white-space: nowrap;
+      text-align: right;
+    }
+
+    .matrix-cell {
+      padding: 8px 4px;
+      border-radius: 6px;
+      font-weight: 800;
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      position: relative;
+      user-select: none;
+      min-width: 48px;
+      height: 48px;
+      display: table-cell;
+      vertical-align: middle;
+    }
+
+    .matrix-cell:hover {
+      transform: scale(1.06);
+      z-index: 10;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    .matrix-cell .risk-num {
+      display: block;
+      font-size: 14px;
+      line-height: 1.1;
+    }
+
+    .matrix-cell .risk-badge-count {
+      display: inline-block;
+      background: rgba(0, 0, 0, 0.25);
+      color: #fff;
+      font-size: 10px;
+      padding: 1px 5px;
+      border-radius: 10px;
+      margin-top: 2px;
+    }
+
+    /* Heatmap Levels */
+    .risk-lvl-low {
+      background-color: #10b981;
+      color: #ffffff;
+    }
+    .risk-lvl-med {
+      background-color: #f59e0b;
+      color: #ffffff;
+    }
+    .risk-lvl-high {
+      background-color: #ea580c;
+      color: #ffffff;
+    }
+    .risk-lvl-crit {
+      background-color: #dc2626;
+      color: #ffffff;
+    }
+
+    .matrix-legend {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 14px;
+      background: #f8fafc;
+      border-radius: 8px;
+      border: 1px solid var(--line, #e2e8f0);
+      font-size: 12px;
+      font-weight: 700;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .legend-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 3px;
+    }
+
+    /* SVG Chart Styling */
+    .chart-container-box {
+      width: 100%;
+      height: 270px;
+      position: relative;
+    }
+
+    .svg-chart {
+      width: 100%;
+      height: 100%;
+      overflow: visible;
+    }
+
+    .svg-bar-incidents {
+      fill: #dc2626;
+      transition: opacity 0.2s;
+    }
+
+    .svg-bar-nearmiss {
+      fill: #f59e0b;
+      transition: opacity 0.2s;
+    }
+
+    .svg-bar-incidents:hover, .svg-bar-nearmiss:hover {
+      opacity: 0.8;
+      cursor: pointer;
+    }
+
+    .svg-line-hours {
+      fill: none;
+      stroke: #0284c7;
+      stroke-width: 2.5;
+      stroke-dasharray: 4 2;
+    }
+
+    .chart-tooltip {
+      position: absolute;
+      background: rgba(11, 25, 44, 0.95);
+      color: #fff;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 11px;
+      pointer-events: none;
+      display: none;
+      z-index: 50;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+
+    /* Tables & PTW Cards */
+    .ptw-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+      gap: 16px;
+      margin-top: 16px;
+    }
+
+    .ptw-card {
+      background: var(--card-bg, #ffffff);
+      border: 1px solid var(--line, #e2e8f0);
+      border-radius: 10px;
+      padding: 16px;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+      transition: border-color 0.2s;
+    }
+
+    .ptw-card:hover {
+      border-color: var(--teal, #008dda);
+    }
+
+    .ptw-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .ptw-code {
+      font-family: 'Tajawal', monospace;
+      font-weight: 800;
+      font-size: 14px;
+      color: var(--navy, #0b192c);
+    }
+
+    .ptw-detail-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 12px;
+      color: var(--muted, #64748b);
+    }
+
+    .ptw-detail-row strong {
+      color: var(--ink, #1e293b);
+    }
+
+    .ptw-footer {
+      border-top: 1px dashed var(--line, #e2e8f0);
+      padding-top: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    /* Toast Notification */
+    .toast-notify {
+      position: fixed;
+      bottom: 24px;
+      left: 24px;
+      background: #0f172a;
+      color: #ffffff;
+      padding: 14px 20px;
+      border-radius: 8px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 13px;
+      font-weight: 700;
+      z-index: 1000;
+      transform: translateY(100px);
+      opacity: 0;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .toast-notify.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    .toast-notify.toast-success {
+      border-right: 4px solid var(--color-success, #10b981);
+    }
+
+    /* Filter & Search Bar */
+    .filter-bar-flex {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+
+    .active-filter-badge {
+      background: var(--teal-light, #e0f4ff);
+      color: var(--teal-dark, #006094);
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top App Navigation Bar -->
+  <header class="topbar">
+    <div class="topbar-left">
+      <a href="../../index.html" class="btn btn-outline btn-sm" title="العودة للبوابة الرئيسية">
+        <i class="fas fa-arrow-right"></i>
+        <span>الرئيسية</span>
+      </a>
+      <div style="display:flex; align-items:center; gap:8px;">
+        <i class="fas fa-shield-heart" style="color:var(--hse-primary); font-size:20px;"></i>
+        <span style="font-weight:900; font-size:16px; color:var(--navy);">إدارة السلامة والصحة المهنية (HSE)</span>
+      </div>
+      <div class="context-switcher">
+        <i class="fas fa-building"></i>
+        <select class="context-select" id="projectSelector" onchange="onProjectChange()">
+          <option value="PRJ-VILLA-2A">مشروع فلل الغروب - فيلا 2A (الرياض)</option>
+          <option value="PRJ-TOWER-B">برج مِعمار التجاري - العُليا</option>
+          <option value="PRJ-DEPOT-WEST">مستودعات الإمداد المركزية - جدة</option>
+        </select>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <div class="role-badge" style="background:#e8f5e9; color:#2e7d32; border-color:#a5d6a7;">
+        <i class="fas fa-hard-hat"></i>
+        <span>م. فهد العتيبي (مدير HSE المعتمد)</span>
+      </div>
+      <button class="btn btn-primary btn-sm" onclick="openObservationModal()">
+        <i class="fas fa-plus-circle"></i>
+        <span>تسجيل ملاحظة سلامة</span>
+      </button>
+      <button class="btn btn-outline btn-sm" onclick="exportHSEReport()">
+        <i class="fas fa-file-pdf"></i>
+        <span>تقرير HSE شهري</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="page-container" style="max-width:1440px; margin:0 auto; padding:24px;">
+
+    <!-- Module Header Banner -->
+    <div class="hse-header-banner">
+      <div class="hse-banner-title">
+        <h1>
+          <i class="fas fa-heart-pulse" style="color:#34d399;"></i>
+          لوحة قيادة السلامة والوقاية المهنية (HSE Command Center)
+        </h1>
+        <p>نظام التتبع الحي لمؤشرات السلامة، الحوادث، تصاريح العمل (PTW)، وتقييم المخاطر وفق معايير OSHA و ISO 45001</p>
+      </div>
+      <div class="hse-quick-actions">
+        <button class="btn btn-success btn-sm" onclick="openNewPTWModal()">
+          <i class="fas fa-file-signature"></i>
+          <span>إصدار تصريح عمل (PTW)</span>
+        </button>
+        <button class="btn btn-amber btn-sm" onclick="openEmergencyPlan()">
+          <i class="fas fa-truck-medical"></i>
+          <span>خطة الطوارئ والإخلاء</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- 5 Safety KPI Cards -->
+    <section class="safety-kpi-grid">
+      <!-- KPI 1: LTI Frequency Rate -->
+      <div class="safety-card green">
+        <div class="safety-card-top">
+          <span class="safety-card-label">معدل تكرار الإصابات (LTIFR)</span>
+          <div class="safety-card-icon">
+            <i class="fas fa-chart-line-down"></i>
+          </div>
+        </div>
+        <div class="safety-card-value">
+          0.00
+          <span class="safety-card-unit">لكل مليون ساعة عمل</span>
+        </div>
+        <div class="safety-card-footer">
+          <i class="fas fa-arrow-down" style="color:var(--color-success);"></i>
+          <span style="color:var(--color-success); font-weight:700;">صفر إصابات مقعدة</span>
+          <span>(الهدف: &lt; 0.50)</span>
+        </div>
+      </div>
+
+      <!-- KPI 2: Days Without Incident -->
+      <div class="safety-card green">
+        <div class="safety-card-top">
+          <span class="safety-card-label">أيام عمل بدون حوادث مضيعة للوقت</span>
+          <div class="safety-card-icon">
+            <i class="fas fa-calendar-check"></i>
+          </div>
+        </div>
+        <div class="safety-card-value">
+          348
+          <span class="safety-card-unit">يوم متواصل</span>
+        </div>
+        <div class="safety-card-footer">
+          <i class="fas fa-award" style="color:#059669;"></i>
+          <span>إجمالي ساعات آمنة: <strong>1,245,600</strong> ساعة</span>
+        </div>
+      </div>
+
+      <!-- KPI 3: Near Miss Count -->
+      <div class="safety-card amber">
+        <div class="safety-card-top">
+          <span class="safety-card-label">شبه الحوادث المسجلة (Near Miss)</span>
+          <div class="safety-card-icon">
+            <i class="fas fa-triangle-exclamation"></i>
+          </div>
+        </div>
+        <div class="safety-card-value">
+          14
+          <span class="safety-card-unit">حالة هذا الشهر</span>
+        </div>
+        <div class="safety-card-footer">
+          <span class="badge badge-green">12 حالة مغلقة</span>
+          <span class="badge badge-amber">2 قيد الإجراء التصحيحي</span>
+        </div>
+      </div>
+
+      <!-- KPI 4: Open PTWs -->
+      <div class="safety-card blue">
+        <div class="safety-card-top">
+          <span class="safety-card-label">تصاريح العمل النشطة (Active PTWs)</span>
+          <div class="safety-card-icon">
+            <i class="fas fa-clipboard-check"></i>
+          </div>
+        </div>
+        <div class="safety-card-value">
+          8
+          <span class="safety-card-unit">تصاريح سارية اليوم</span>
+        </div>
+        <div class="safety-card-footer">
+          <span>3 أعمال ساخنة | 2 مرتفعات | 3 أخرى</span>
+        </div>
+      </div>
+
+      <!-- KPI 5: Toolbox Talks This Week -->
+      <div class="safety-card purple">
+        <div class="safety-card-top">
+          <span class="safety-card-label">لقاءات السلامة الميدانية (TBT)</span>
+          <div class="safety-card-icon">
+            <i class="fas fa-users-gear"></i>
+          </div>
+        </div>
+        <div class="safety-card-value">
+          26
+          <span class="safety-card-unit">جلسة توعية أسبوعية</span>
+        </div>
+        <div class="safety-card-footer">
+          <i class="fas fa-check-double" style="color:#7c3aed;"></i>
+          <span>حضور <strong>485 عاملاً</strong> (نسبة الالتزام 100%)</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Split Section: 12-Month Incident Trend Chart & 5x5 Risk Matrix -->
+    <div class="hse-dashboard-split">
+
+      <!-- Incident Trend 12 Months SVG Chart -->
+      <div class="card">
+        <div class="card-header">
+          <h3>
+            <i class="fas fa-chart-area" style="color:var(--teal);"></i>
+            <span>منحنى اتجاهات الحوادث وساعات العمل الآمنة (12 شهراً)</span>
+          </h3>
+          <div style="display:flex; gap:10px; align-items:center; font-size:12px;">
+            <span style="display:flex; align-items:center; gap:4px;">
+              <span style="width:10px; height:10px; background:#dc2626; border-radius:2px;"></span> حوادث إصابة
+            </span>
+            <span style="display:flex; align-items:center; gap:4px;">
+              <span style="width:10px; height:10px; background:#f59e0b; border-radius:2px;"></span> شبه حوادث
+            </span>
+            <span style="display:flex; align-items:center; gap:4px;">
+              <span style="width:10px; height:2px; background:#0284c7; border-top:1px dashed #0284c7;"></span> ساعات عمل (×10k)
+            </span>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="chart-container-box" id="chartBox">
+            <div id="chartTooltip" class="chart-tooltip"></div>
+            <!-- Interactive Standalone SVG Chart -->
+            <svg class="svg-chart" viewBox="0 0 620 230" preserveAspectRatio="none">
+              <defs>
+                <linearGradient id="hoursGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stop-color="#0284c7" stop-opacity="0.25"/>
+                  <stop offset="100%" stop-color="#0284c7" stop-opacity="0.0"/>
+                </linearGradient>
+              </defs>
+
+              <!-- Gridlines -->
+              <line x1="40" y1="30" x2="600" y2="30" stroke="#f1f5f9" stroke-width="1"/>
+              <line x1="40" y1="75" x2="600" y2="75" stroke="#f1f5f9" stroke-width="1"/>
+              <line x1="40" y1="120" x2="600" y2="120" stroke="#f1f5f9" stroke-width="1"/>
+              <line x1="40" y1="165" x2="600" y2="165" stroke="#f1f5f9" stroke-width="1"/>
+              <line x1="40" y1="200" x2="600" y2="200" stroke="#cbd5e1" stroke-width="1.5"/>
+
+              <!-- Y-Axis Labels -->
+              <text x="32" y="34" font-size="10" fill="#94a3b8" text-anchor="end">20</text>
+              <text x="32" y="79" font-size="10" fill="#94a3b8" text-anchor="end">15</text>
+              <text x="32" y="124" font-size="10" fill="#94a3b8" text-anchor="end">10</text>
+              <text x="32" y="169" font-size="10" fill="#94a3b8" text-anchor="end">5</text>
+              <text x="32" y="204" font-size="10" fill="#94a3b8" text-anchor="end">0</text>
+
+              <!-- Man-Hours Area & Line (Polygon) -->
+              <polygon points="
+                60,150 106,140 152,130 198,125 244,115 290,110 336,105 382,95 428,90 474,80 520,70 566,60
+                566,200 60,200"
+                fill="url(#hoursGrad)" />
+
+              <polyline points="
+                60,150 106,140 152,130 198,125 244,115 290,110 336,105 382,95 428,90 474,80 520,70 566,60"
+                class="svg-line-hours" />
+
+              <!-- 12 Months: Jan to Dec Bars (Incidents & Near Misses) -->
+              <!-- Month 1: Jan -->
+              <rect x="52" y="192" width="7" height="8" rx="2" class="svg-bar-incidents" onmousemove="showTooltip(evt, 'يناير', 1, 4, '65,000 ساعة')" onmouseout="hideTooltip()"/>
+              <rect x="61" y="168" width="7" height="32" rx="2" class="svg-bar-nearmiss" onmousemove="showTooltip(evt, 'يناير', 1, 4, '65,000 ساعة')" onmouseout="hideTooltip()"/>
+              <text x="60" y="216" font-size="9" fill="#64748b" text-anchor="middle">يناير</text>
+
+              <!-- Month 2: Feb -->
+              <rect x="98" y="200" width="7" height="0" rx="2" class="svg-bar-incidents" onmousemove="showTooltip(evt, 'فبراير', 0, 5, '72,000 ساعة')" onmouseout="hideTooltip()"/>
+              <rect x="107" y="160" width="7" height="40" rx="2" class="svg-bar-nearmiss" onmousemove="showTooltip(evt, 'فبراير', 0, 5, '72,000 ساعة')" onmouseout="hideTooltip()"/>
+              <text x="106" y="216" font-size="9" fill="#64748b" text-anchor="middle">فبراير</text>
+
+              <!-- Month 3: Mar -->
+              <rect x="144" y="200" width="7" height="0" rx="2" class="svg-bar-incidents" onmousemove="showTooltip(evt, 'مارس', 0, 3, '81,000 ساعة')" onmouseout="hideTooltip()"/>
+              <rect x="153" y="176" width="7" height="24" rx="2" class="svg-bar-nearmiss" onmousemove="showTooltip(evt, 'مارس', 0, 3, '81,000 ساعة')" onmouseout="hideTooltip()"/>
+              <text x="152" y="216" font-size="9" fill="#64748b" text-anchor="middle">مارس</text>
+
+              <!-- Month 4: Apr -->
+              <rect x="190" y="192" width="7" height="8" rx="2" class="svg-bar-incidents" onmousemove="showTooltip(evt, 'أبريل', 1, 7, '88,000 ساعة')" onmouseout="hideTooltip()"/>
+              <rect x="199" y="144" width="7" height="56" rx="2" class="svg-bar-nearmiss" onmousemove="showTooltip(evt, 'أبريل', 1, 7, '88,000 ساعة')" onmouseout="hideTooltip()"/>
+              <text x="198" y="216" font-size="9" fill="#64748b" text-anchor="middle">أبريل</text>
+
+              <!-- Month 5: May -->
+              <rect x="236" y="200" width="7" height="0" rx="2" class="svg-bar-incidents" onmousemove="showTooltip(evt, 'مايو', 0, 6, '95,000 ساعة')" onmouseout="hideTooltip()"/>
+              <rect x="245" y="152" width="7" height="48" rx="2" class="svg-bar-nearmiss" onmousemove="showTooltip(evt, 'مايو', 0, 6, '95,000 ساعة')" onmouseout="hideTooltip()"/>
+              <text x="244" y="216" font-size="9" fill="#64748b" text-anchor="middle">مايو</text>
+
+              <!-- Month 6: Jun -->
+              <rect x="282" y="200" width="7" height="0" rx="2" class="svg-bar-incidents" onmousemove="showTooltip(evt, 'يونيو', 0, 8, '102,000 ساعة')" onmouseout="hideTooltip()"/>
+              <rect x="291" y="136" width="7" height="64" rx="2" class="svg-bar-nearmiss" onmousemove="showTooltip(evt, 'يونيو', 0, 8, '102,000 ساعة')" onmouseout="hideTooltip()"/>
+              <text x="290" y="216" font-size="9" fill="#64748b" text-anchor="middle">يونيو</text>
+
+              <!-- Month 7: Jul -->
+              <rect x="328" y="200" width="7" height="0" rx="2" class="svg-bar-incidents" onmousemove="showTooltip(evt, 'يوليو', 0, 9, '110,000 ساعة')" onmouseout="hideTooltip()"/>
+              <rect x="337" y="128" width="7" height="72" rx="2" class="svg-bar-nearmiss" onmousemove="showTooltip(evt, 'يوليو', 0, 9, '110,000 ساعة')" onmouseout="hideTooltip()"/>
+              <text x="336" y="216" font-size="9" fill="#64748b" text-anchor="middle">يوليو</text>
+
+              <!-- Month 8: Aug -->
+              <rect x="374" y="200" width="7" height="0" rx="2" class="svg-bar-incidents" onmousemove="showTooltip(evt, 'أغسطس', 0, 11, '120,000 ساعة')" onmouseout="hideTooltip()"/>
+              <rect x="383" y="112" width="7" height="88" rx="2" class="svg-bar-nearmiss" onmousemove="showTooltip(evt, 'أغسطس', 0, 11, '120,000 ساعة')" onmouseout="hideTooltip()"/>
+              <text x="382" y="216" font-size="9" fill="#64748b" text-anchor="middle">أغسطس</text>
+
+              <!-- Month 9: Sep -->
+              <rect x="420" y="200" width="7" height="0" rx="2" class="svg-bar-incidents" onmousemove="showTooltip(evt, 'سبتمبر', 0, 10, '126,000 ساعة')" onmouseout="hideTooltip()"/>
+              <rect x="429" y="120" width="7" height="80" rx="2" class="svg-bar-nearmiss" onmousemove="showTooltip(evt, 'سبتمبر', 0, 10, '126,000 ساعة')" onmouseout="hideTooltip()"/>
+              <text x="428" y="216" font-size="9" fill="#64748b" text-anchor="middle">سبتمبر</text>
+
+              <!-- Month 10: Oct -->
+              <rect x="466" y="200" width="7" height="0" rx="2" class="svg-bar-incidents" onmousemove="showTooltip(evt, 'أكتوبر', 0, 12, '134,000 ساعة')" onmouseout="hideTooltip()"/>
+              <rect x="475" y="104" width="7" height="96" rx="2" class="svg-bar-nearmiss" onmousemove="showTooltip(evt, 'أكتوبر', 0, 12, '134,000 ساعة')" onmouseout="hideTooltip()"/>
+              <text x="474" y="216" font-size="9" fill="#64748b" text-anchor="middle">أكتوبر</text>
+
+              <!-- Month 11: Nov -->
+              <rect x="512" y="200" width="7" height="0" rx="2" class="svg-bar-incidents" onmousemove="showTooltip(evt, 'نوفمبر', 0, 14, '142,000 ساعة')" onmouseout="hideTooltip()"/>
+              <rect x="521" y="88" width="7" height="112" rx="2" class="svg-bar-nearmiss" onmousemove="showTooltip(evt, 'نوفمبر', 0, 14, '142,000 ساعة')" onmouseout="hideTooltip()"/>
+              <text x="520" y="216" font-size="9" fill="#64748b" text-anchor="middle">نوفمبر</text>
+
+              <!-- Month 12: Dec (Current) -->
+              <rect x="558" y="200" width="7" height="0" rx="2" class="svg-bar-incidents" onmousemove="showTooltip(evt, 'ديسمبر', 0, 14, '150,000 ساعة')" onmouseout="hideTooltip()"/>
+              <rect x="567" y="88" width="7" height="112" rx="2" class="svg-bar-nearmiss" onmousemove="showTooltip(evt, 'ديسمبر', 0, 14, '150,000 ساعة')" onmouseout="hideTooltip()"/>
+              <text x="566" y="216" font-size="9" fill="#64748b" text-anchor="middle">ديسمبر</text>
+            </svg>
+          </div>
+          <div style="font-size:12px; color:var(--muted); text-align:center; margin-top:8px;">
+            <i class="fas fa-info-circle"></i> ارتفاع عدد بلاغات "شبه الحوادث" يعكس نضج ثقافة الإبلاغ الوقائي المبكر في المشروع وتجنب الحوادث الفعلية.
+          </div>
+        </div>
+      </div>
+
+      <!-- 5x5 Risk Matrix Heat Map (Likelihood vs Consequence) -->
+      <div class="card">
+        <div class="card-header">
+          <h3>
+            <i class="fas fa-border-all" style="color:var(--color-warning);"></i>
+            <span>مصفوفة تقييم المخاطر 5×5 (الاحتمالية × الشدة)</span>
+          </h3>
+          <span class="badge badge-blue" id="matrixTotalCount">36 خطراً مسجلاً</span>
+        </div>
+        <div class="card-body">
+          <div class="matrix-container">
+            <div class="matrix-table-wrap">
+              <table class="matrix-table">
+                <thead>
+                  <tr>
+                    <th style="width:100px; background:transparent;"></th>
+                    <th class="matrix-th-head">1: ضئيل</th>
+                    <th class="matrix-th-head">2: طفيف</th>
+                    <th class="matrix-th-head">3: متوسط</th>
+                    <th class="matrix-th-head">4: جسيم</th>
+                    <th class="matrix-th-head">5: كارثي</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <!-- Likelihood 5: شبه مؤكد -->
+                  <tr>
+                    <td class="matrix-y-label">5: شبه مؤكد</td>
+                    <td class="matrix-cell risk-lvl-med" onclick="filterRiskLevel('M', 5, 1, 0)"><span class="risk-num">5</span></td>
+                    <td class="matrix-cell risk-lvl-high" onclick="filterRiskLevel('H', 5, 2, 1)"><span class="risk-num">10</span><span class="risk-badge-count">1</span></td>
+                    <td class="matrix-cell risk-lvl-crit" onclick="filterRiskLevel('C', 5, 3, 2)"><span class="risk-num">15</span><span class="risk-badge-count">2</span></td>
+                    <td class="matrix-cell risk-lvl-crit" onclick="filterRiskLevel('C', 5, 4, 0)"><span class="risk-num">20</span></td>
+                    <td class="matrix-cell risk-lvl-crit" onclick="filterRiskLevel('C', 5, 5, 0)"><span class="risk-num">25</span></td>
+                  </tr>
+                  <!-- Likelihood 4: محتمل -->
+                  <tr>
+                    <td class="matrix-y-label">4: محتمل</td>
+                    <td class="matrix-cell risk-lvl-low" onclick="filterRiskLevel('L', 4, 1, 1)"><span class="risk-num">4</span><span class="risk-badge-count">1</span></td>
+                    <td class="matrix-cell risk-lvl-med" onclick="filterRiskLevel('M', 4, 2, 3)"><span class="risk-num">8</span><span class="risk-badge-count">3</span></td>
+                    <td class="matrix-cell risk-lvl-high" onclick="filterRiskLevel('H', 4, 3, 2)"><span class="risk-num">12</span><span class="risk-badge-count">2</span></td>
+                    <td class="matrix-cell risk-lvl-crit" onclick="filterRiskLevel('C', 4, 4, 1)"><span class="risk-num">16</span><span class="risk-badge-count">1</span></td>
+                    <td class="matrix-cell risk-lvl-crit" onclick="filterRiskLevel('C', 4, 5, 0)"><span class="risk-num">20</span></td>
+                  </tr>
+                  <!-- Likelihood 3: ممكن -->
+                  <tr>
+                    <td class="matrix-y-label">3: ممكن</td>
+                    <td class="matrix-cell risk-lvl-low" onclick="filterRiskLevel('L', 3, 1, 4)"><span class="risk-num">3</span><span class="risk-badge-count">4</span></td>
+                    <td class="matrix-cell risk-lvl-med" onclick="filterRiskLevel('M', 3, 2, 4)"><span class="risk-num">6</span><span class="risk-badge-count">4</span></td>
+                    <td class="matrix-cell risk-lvl-med" onclick="filterRiskLevel('M', 3, 3, 3)"><span class="risk-num">9</span><span class="risk-badge-count">3</span></td>
+                    <td class="matrix-cell risk-lvl-high" onclick="filterRiskLevel('H', 3, 4, 2)"><span class="risk-num">12</span><span class="risk-badge-count">2</span></td>
+                    <td class="matrix-cell risk-lvl-crit" onclick="filterRiskLevel('C', 3, 5, 0)"><span class="risk-num">15</span></td>
+                  </tr>
+                  <!-- Likelihood 2: غير محتمل -->
+                  <tr>
+                    <td class="matrix-y-label">2: غير محتمل</td>
+                    <td class="matrix-cell risk-lvl-low" onclick="filterRiskLevel('L', 2, 1, 5)"><span class="risk-num">2</span><span class="risk-badge-count">5</span></td>
+                    <td class="matrix-cell risk-lvl-low" onclick="filterRiskLevel('L', 2, 2, 3)"><span class="risk-num">4</span><span class="risk-badge-count">3</span></td>
+                    <td class="matrix-cell risk-lvl-med" onclick="filterRiskLevel('M', 2, 3, 2)"><span class="risk-num">6</span><span class="risk-badge-count">2</span></td>
+                    <td class="matrix-cell risk-lvl-med" onclick="filterRiskLevel('M', 2, 4, 1)"><span class="risk-num">8</span><span class="risk-badge-count">1</span></td>
+                    <td class="matrix-cell risk-lvl-high" onclick="filterRiskLevel('H', 2, 5, 0)"><span class="risk-num">10</span></td>
+                  </tr>
+                  <!-- Likelihood 1: نادر -->
+                  <tr>
+                    <td class="matrix-y-label">1: نادر</td>
+                    <td class="matrix-cell risk-lvl-low" onclick="filterRiskLevel('L', 1, 1, 2)"><span class="risk-num">1</span><span class="risk-badge-count">2</span></td>
+                    <td class="matrix-cell risk-lvl-low" onclick="filterRiskLevel('L', 1, 2, 0)"><span class="risk-num">2</span></td>
+                    <td class="matrix-cell risk-lvl-low" onclick="filterRiskLevel('L', 1, 3, 0)"><span class="risk-num">3</span></td>
+                    <td class="matrix-cell risk-lvl-low" onclick="filterRiskLevel('L', 1, 4, 0)"><span class="risk-num">4</span></td>
+                    <td class="matrix-cell risk-lvl-med" onclick="filterRiskLevel('M', 1, 5, 0)"><span class="risk-num">5</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Risk Matrix Legend -->
+            <div class="matrix-legend">
+              <div class="legend-item">
+                <span class="legend-dot" style="background:#10b981;"></span>
+                <span>منخفض (1-4): <strong>15</strong></span>
+              </div>
+              <div class="legend-item">
+                <span class="legend-dot" style="background:#f59e0b;"></span>
+                <span>متوسط (5-9): <strong>13</strong></span>
+              </div>
+              <div class="legend-item">
+                <span class="legend-dot" style="background:#ea580c;"></span>
+                <span>مرتفع (10-14): <strong>5</strong></span>
+              </div>
+              <div class="legend-item">
+                <span class="legend-dot" style="background:#dc2626;"></span>
+                <span>حرج (15-25): <strong>3</strong></span>
+              </div>
+              <button class="btn btn-outline btn-sm" onclick="resetMatrixFilter()" style="padding:2px 8px; font-size:11px;">
+                عرض الكل
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Section 3: Open Incidents & Safety Observations Register -->
+    <div class="card">
+      <div class="card-header">
+        <h3>
+          <i class="fas fa-clipboard-list" style="color:var(--red);"></i>
+          <span>سجل الحوادث والملاحظات المفتوحة (Incident & Observation Register)</span>
+        </h3>
+        <div style="display:flex; gap:8px;">
+          <button class="btn btn-outline btn-sm" onclick="exportIncidentsCSV()">
+            <i class="fas fa-file-excel"></i>
+            <span>تصدير Excel</span>
+          </button>
+          <button class="btn btn-primary btn-sm" onclick="openObservationModal()">
+            <i class="fas fa-plus"></i>
+            <span>تسجيل بلاغ جديد</span>
+          </button>
+        </div>
+      </div>
+      <div class="card-body">
+
+        <!-- Toolbar & Filter -->
+        <div class="filter-bar-flex">
+          <input type="text" id="incidentSearchInput" class="search-input" placeholder="بحث برقم البلاغ، الموقع، التصنيف، أو المسؤول..." onkeyup="filterIncidentsTable()">
+          <select id="severitySelect" class="filter-dropdown" onchange="filterIncidentsTable()">
+            <option value="">جميع درجات الخطورة</option>
+            <option value="حرج">حرج (Critical)</option>
+            <option value="مرتفع">مرتفع (High)</option>
+            <option value="متوسط">متوسط (Medium)</option>
+            <option value="منخفض">منخفض (Low)</option>
+          </select>
+          <select id="statusSelect" class="filter-dropdown" onchange="filterIncidentsTable()">
+            <option value="">جميع الحالات</option>
+            <option value="قيد التحقيق">قيد التحقيق</option>
+            <option value="مطلوب إجراء تصحيحي (CAPA)">مطلوب إجراء تصحيحي (CAPA)</option>
+            <option value="قيد المراجعة والإغلاق">قيد المراجعة والإغلاق</option>
+            <option value="مغلق">مغلق وموثق</option>
+          </select>
+          <div id="filterCountBadge" class="active-filter-badge" style="display:none;">
+            <span>تم التصفية</span>
+            <i class="fas fa-times" style="cursor:pointer;" onclick="resetIncidentsFilters()"></i>
+          </div>
+        </div>
+
+        <!-- Incidents Table -->
+        <div class="table-wrapper">
+          <table id="incidentsTable">
+            <thead>
+              <tr>
+                <th>رقم البلاغ</th>
+                <th>التاريخ والوقت</th>
+                <th>الموقع / المنطقة</th>
+                <th>نوع التصنيف</th>
+                <th>وصف الحادثة / الملاحظة</th>
+                <th>درجة الخطورة</th>
+                <th>الحالة الإجرائية</th>
+                <th>مسؤول المتابعة</th>
+                <th>الإجراء</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Row 1: Critical -->
+              <tr>
+                <td class="text-num" style="font-weight:800; color:var(--navy);">INC-2026-042</td>
+                <td>2026/11/19 14:15</td>
+                <td>فيلا 2A - السقف الخرساني (منطقة الشدات)</td>
+                <td><i class="fas fa-person-falling" style="color:#dc2626;"></i> شبه سقوط (ارتفاع 4م)</td>
+                <td>عدم ربط حزام الأمان المزدوج أثناء فك ألواح الخشب على طرف الواجهة الشمالية</td>
+                <td><span class="badge badge-red"><i class="fas fa-radiation"></i> حرج</span></td>
+                <td><span class="badge badge-amber">مطلوب إجراء تصحيحي (CAPA)</span></td>
+                <td>م. فهد العتيبي</td>
+                <td>
+                  <button class="btn btn-outline btn-sm" onclick="viewIncidentDetail('INC-2026-042')">عرض</button>
+                </td>
+              </tr>
+
+              <!-- Row 2: High -->
+              <tr>
+                <td class="text-num" style="font-weight:800; color:var(--navy);">INC-2026-039</td>
+                <td>2026/11/18 10:30</td>
+                <td>منطقة الأعمال الكهروميكانيكية - الطابق الأرضي</td>
+                <td><i class="fas fa-bolt" style="color:#ea580c;"></i> عزل طاقة مفقود (LOTO)</td>
+                <td>لوحة توزيع كهربائية مؤقتة مفتوحة والأسلاك غير معزولة قرب مصدر مياه</td>
+                <td><span class="badge badge-red" style="background:#ffedd5; color:#c2410c;">مرتفع</span></td>
+                <td><span class="badge badge-blue">قيد التحقيق</span></td>
+                <td>م. سالم الغامدي</td>
+                <td>
+                  <button class="btn btn-outline btn-sm" onclick="viewIncidentDetail('INC-2026-039')">عرض</button>
+                </td>
+              </tr>
+
+              <!-- Row 3: Medium -->
+              <tr>
+                <td class="text-num" style="font-weight:800; color:var(--navy);">INC-2026-037</td>
+                <td>2026/11/17 16:45</td>
+                <td>الساحة الخارجية - منطقة تفريغ الشاحنات</td>
+                <td><i class="fas fa-truck-ramp-box" style="color:#d97706;"></i> مسار رافعات ومعدات</td>
+                <td>تخزين حديد التسليح في مسار حركة المشاة دون وضع شريط تحذيري أو حواجز</td>
+                <td><span class="badge badge-amber">متوسط</span></td>
+                <td><span class="badge badge-amber">مطلوب إجراء تصحيحي (CAPA)</span></td>
+                <td>م. فيصل الدوسري</td>
+                <td>
+                  <button class="btn btn-outline btn-sm" onclick="viewIncidentDetail('INC-2026-037')">عرض</button>
+                </td>
+              </tr>
+
+              <!-- Row 4: Low -->
+              <tr>
+                <td class="text-num" style="font-weight:800; color:var(--navy);">INC-2026-035</td>
+                <td>2026/11/15 08:20</td>
+                <td>محيط السور الشرقي - البوابة 2</td>
+                <td><i class="fas fa-glasses" style="color:#059669;"></i> مهمات وقاية (PPE)</td>
+                <td>دخول 3 عمال من مقاول الباطن بدون نظارات حماية وسترات عاكسة للضوء</td>
+                <td><span class="badge badge-green">منخفض</span></td>
+                <td><span class="badge badge-green"><i class="fas fa-check"></i> مغلق وموثق</span></td>
+                <td>م. فهد العتيبي</td>
+                <td>
+                  <button class="btn btn-outline btn-sm" onclick="viewIncidentDetail('INC-2026-035')">عرض</button>
+                </td>
+              </tr>
+
+              <!-- Row 5: Medium -->
+              <tr>
+                <td class="text-num" style="font-weight:800; color:var(--navy);">INC-2026-033</td>
+                <td>2026/11/14 11:10</td>
+                <td>منطقة اللحام - ورشة الحدادة الميدانية</td>
+                <td><i class="fas fa-fire-burner" style="color:#ea580c;"></i> سلامة الحرائق واللحام</td>
+                <td>أسطوانات الأكسجين والأسيتيلين غير مثبتة بسلاسل أمان وبدون صمام منع الارتداد</td>
+                <td><span class="badge badge-amber">متوسط</span></td>
+                <td><span class="badge badge-green"><i class="fas fa-check"></i> مغلق وموثق</span></td>
+                <td>م. سالم الغامدي</td>
+                <td>
+                  <button class="btn btn-outline btn-sm" onclick="viewIncidentDetail('INC-2026-033')">عرض</button>
+                </td>
+              </tr>
+
+              <!-- Row 6: High -->
+              <tr>
+                <td class="text-num" style="font-weight:800; color:var(--navy);">INC-2026-030</td>
+                <td>2026/11/12 13:50</td>
+                <td>غرفة المضخات والخزان الأرضي</td>
+                <td><i class="fas fa-lungs" style="color:#dc2626;"></i> مساحات محصورة (Confined)</td>
+                <td>بدء أعمال العزل المائي داخل خزان المياه دون قياس نسبة الغازات ودون جهاز تهوية</td>
+                <td><span class="badge badge-red" style="background:#ffedd5; color:#c2410c;">مرتفع</span></td>
+                <td><span class="badge badge-green"><i class="fas fa-check"></i> مغلق وموثق</span></td>
+                <td>م. فهد العتيبي</td>
+                <td>
+                  <button class="btn btn-outline btn-sm" onclick="viewIncidentDetail('INC-2026-030')">عرض</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 4: PTW (Permit to Work) Active Registry -->
+    <div class="card">
+      <div class="card-header">
+        <h3>
+          <i class="fas fa-fire-flame-curved" style="color:var(--amber);"></i>
+          <span>سجل تصاريح العمل النشطة في الموقع (Active Permit to Work - PTW)</span>
+        </h3>
+        <div style="display:flex; gap:8px;">
+          <span class="badge badge-green"><i class="fas fa-circle-dot"></i> 8 تصاريح سارية</span>
+          <span class="badge badge-purple"><i class="fas fa-clock"></i> تنتهي خلال 6 ساعات</span>
+        </div>
+      </div>
+      <div class="card-body">
+        <p style="font-size:13px; color:var(--muted); margin-bottom:16px;">
+          كافة التصاريح الصادرة تتطلب مطابقة مسبقة لقوائم فحص السلامة (Checklist)، فحص الغازات، وتوقيع ضابط السلامة الميداني قبل بدء أي عمل عالي الخطورة.
+        </p>
+
+        <div class="ptw-grid">
+
+          <!-- Permit 1: Hot Work -->
+          <div class="ptw-card">
+            <div class="ptw-top">
+              <span class="ptw-code">PTW-HW-2026-088</span>
+              <span class="badge badge-red"><i class="fas fa-fire"></i> أعمال ساخنة ولحام</span>
+            </div>
+            <div class="ptw-detail-row">
+              <span>الموقع:</span>
+              <strong>فيلا 2A - تسليح الميدة والمظلات</strong>
+            </div>
+            <div class="ptw-detail-row">
+              <span>المقاول:</span>
+              <strong>شركة أوتاد للإنشاءات المعدنية</strong>
+            </div>
+            <div class="ptw-detail-row">
+              <span>صلاحية التصريح:</span>
+              <span class="text-num">08:00 ص - 04:30 م</span>
+            </div>
+            <div class="ptw-detail-row">
+              <span>فحص الغازات والمطافئ:</span>
+              <span style="color:#059669; font-weight:700;"><i class="fas fa-check-circle"></i> مؤكد وجاهز</span>
+            </div>
+            <div class="ptw-footer">
+              <span class="badge badge-green">ساري ومصرح</span>
+              <button class="btn btn-outline btn-sm" onclick="auditPTW('PTW-HW-2026-088')">تفتيش موقعي</button>
+            </div>
+          </div>
+
+          <!-- Permit 2: Working at Height -->
+          <div class="ptw-card">
+            <div class="ptw-top">
+              <span class="ptw-code">PTW-WH-2026-064</span>
+              <span class="badge badge-purple"><i class="fas fa-arrows-up-to-line"></i> عمل على ارتفاعات</span>
+            </div>
+            <div class="ptw-detail-row">
+              <span>الموقع:</span>
+              <strong>الواجهات الخارجية - تركيب السقالات</strong>
+            </div>
+            <div class="ptw-detail-row">
+              <span>المقاول:</span>
+              <strong>مؤسسة البرج الحديث للسقالات</strong>
+            </div>
+            <div class="ptw-detail-row">
+              <span>صلاحية التصريح:</span>
+              <span class="text-num">07:00 ص - 05:00 م</span>
+            </div>
+            <div class="ptw-detail-row">
+              <span>فحص السقالة (Green Tag):</span>
+              <span style="color:#059669; font-weight:700;"><i class="fas fa-tag"></i> صالحة ومعتمدة</span>
+            </div>
+            <div class="ptw-footer">
+              <span class="badge badge-green">ساري ومصرح</span>
+              <button class="btn btn-outline btn-sm" onclick="auditPTW('PTW-WH-2026-064')">تفتيش موقعي</button>
+            </div>
+          </div>
+
+          <!-- Permit 3: Confined Space -->
+          <div class="ptw-card">
+            <div class="ptw-top">
+              <span class="ptw-code">PTW-CS-2026-029</span>
+              <span class="badge badge-amber"><i class="fas fa-dungeon"></i> مكان محصور ومغلق</span>
+            </div>
+            <div class="ptw-detail-row">
+              <span>الموقع:</span>
+              <strong>خزان الصرف والبيارة المركزية</strong>
+            </div>
+            <div class="ptw-detail-row">
+              <span>المقاول:</span>
+              <strong>فريق العزل والسباكة الداخلي</strong>
+            </div>
+            <div class="ptw-detail-row">
+              <span>صلاحية التصريح:</span>
+              <span class="text-num">09:00 ص - 02:00 م</span>
+            </div>
+            <div class="ptw-detail-row">
+              <span>مراقب خارجي (Standby):</span>
+              <span style="color:#059669; font-weight:700;"><i class="fas fa-user-shield"></i> متواجد على المدخل</span>
+            </div>
+            <div class="ptw-footer">
+              <span class="badge badge-green">ساري ومصرح</span>
+              <button class="btn btn-outline btn-sm" onclick="auditPTW('PTW-CS-2026-029')">تفتيش موقعي</button>
+            </div>
+          </div>
+
+          <!-- Permit 4: Electrical LOTO -->
+          <div class="ptw-card">
+            <div class="ptw-top">
+              <span class="ptw-code">PTW-EL-2026-017</span>
+              <span class="badge badge-blue"><i class="fas fa-plug-circle-bolt"></i> عزل طاقة كهربائية</span>
+            </div>
+            <div class="ptw-detail-row">
+              <span>الموقع:</span>
+              <strong>غرفة المحولات والقواطع الرئيسية</strong>
+            </div>
+            <div class="ptw-detail-row">
+              <span>المقاول:</span>
+              <strong>شركة تكنولوجيا الطاقة للكهرباء</strong>
+            </div>
+            <div class="ptw-detail-row">
+              <span>صلاحية التصريح:</span>
+              <span class="text-num">10:00 ص - 03:00 م</span>
+            </div>
+            <div class="ptw-detail-row">
+              <span>أقفال العزل (LOTO Locks):</span>
+              <span style="color:#059669; font-weight:700;"><i class="fas fa-lock"></i> 4 أقفال مفعلة</span>
+            </div>
+            <div class="ptw-footer">
+              <span class="badge badge-green">ساري ومصرح</span>
+              <button class="btn btn-outline btn-sm" onclick="auditPTW('PTW-EL-2026-017')">تفتيش موقعي</button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Modal 1: New HSE Observation / Near Miss Modal -->
+  <div class="modal-overlay" id="observationModal" role="dialog" aria-modal="true" aria-labelledby="obsModalTitle">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 id="obsModalTitle" style="color:var(--navy);">
+          <i class="fas fa-shield-virus" style="color:var(--teal);"></i>
+          تسجيل ملاحظة سلامة ومخاطر ميدانية (Safety Observation)
+        </h3>
+        <button class="btn-outline" style="border:none; font-size:18px; cursor:pointer;" onclick="closeObservationModal()" aria-label="إغلاق">&times;</button>
+      </div>
+      <form id="obsForm" onsubmit="handleObservationSubmit(event)">
+        <div style="padding:24px; display:flex; flex-direction:column; gap:16px;">
+          
+          <div style="display:grid; grid-template-columns: 1fr 1fr; gap:16px;">
+            <div>
+              <label style="display:block; font-size:12px; font-weight:700; margin-bottom:6px;">نوع الملاحظة <span style="color:red;">*</span></label>
+              <select id="obsType" class="filter-dropdown" style="width:100%;" required>
+                <option value="تصرف غير آمن (Unsafe Act)">تصرف غير آمن (Unsafe Act)</option>
+                <option value="حالة وبيئة غير آمنة (Unsafe Condition)">حالة وبيئة غير آمنة (Unsafe Condition)</option>
+                <option value="شبه حادث (Near Miss)">شبه حادث (Near Miss)</option>
+                <option value="سلوك آمن ومثالي (Positive Behavior)">سلوك آمن ومثالي (Positive Behavior)</option>
+              </select>
+            </div>
+            <div>
+              <label style="display:block; font-size:12px; font-weight:700; margin-bottom:6px;">درجة الخطورة المحتملة <span style="color:red;">*</span></label>
+              <select id="obsSeverity" class="filter-dropdown" style="width:100%;" required>
+                <option value="حرج">حرج (Critical)</option>
+                <option value="مرتفع">مرتفع (High)</option>
+                <option value="متوسط" selected>متوسط (Medium)</option>
+                <option value="منخفض">منخفض (Low)</option>
+              </select>
+            </div>
+          </div>
+
+          <div style="display:grid; grid-template-columns: 1fr 1fr; gap:16px;">
+            <div>
+              <label style="display:block; font-size:12px; font-weight:700; margin-bottom:6px;">المشروع والموقع التفصيلي <span style="color:red;">*</span></label>
+              <input type="text" id="obsLocation" class="search-input" style="width:100%;" placeholder="مثال: فيلا 2A - السطح العلوي" required>
+            </div>
+            <div>
+              <label style="display:block; font-size:12px; font-weight:700; margin-bottom:6px;">تاريخ ووقت الملاحظة <span style="color:red;">*</span></label>
+              <input type="datetime-local" id="obsDateTime" class="search-input" style="width:100%;" required>
+            </div>
+          </div>
+
+          <div>
+            <label style="display:block; font-size:12px; font-weight:700; margin-bottom:6px;">وصف الملاحظة أو الخطر <span style="color:red;">*</span></label>
+            <textarea id="obsDescription" class="search-input" style="width:100%; height:80px; resize:vertical;" placeholder="اذكر بالتفصيل ما تم رصده في الميدان..." required></textarea>
+          </div>
+
+          <div>
+            <label style="display:block; font-size:12px; font-weight:700; margin-bottom:6px;">الإجراء الفوري المتخذ (Immediate Action)</label>
+            <input type="text" id="obsImmediateAction" class="search-input" style="width:100%;" placeholder="مثال: إيقاف الأعمال وتأمين المنطقة بحبل تحذيري">
+          </div>
+
+          <div style="display:grid; grid-template-columns: 1fr 1fr; gap:16px;">
+            <div>
+              <label style="display:block; font-size:12px; font-weight:700; margin-bottom:6px;">المسؤول عن الإجراء التصحيحي (CAPA Owner)</label>
+              <input type="text" id="obsOwner" class="search-input" style="width:100%;" placeholder="اسم المهندس أو المقاول المسؤول">
+            </div>
+            <div>
+              <label style="display:block; font-size:12px; font-weight:700; margin-bottom:6px;">تاريخ الاستحقاق للإغلاق</label>
+              <input type="date" id="obsDueDate" class="search-input" style="width:100%;">
+            </div>
+          </div>
+
+          <div style="border:2px dashed var(--line); border-radius:8px; padding:16px; text-align:center; background:#fafafa;">
+            <i class="fas fa-camera" style="font-size:24px; color:var(--muted); margin-bottom:6px;"></i>
+            <div style="font-size:12px; font-weight:700; color:var(--ink);">إرفاق صور الموقع الميداني</div>
+            <div style="font-size:11px; color:var(--muted);">اسحب الصور وأفلتها هنا أو انقر للاختيار من الجهاز</div>
+          </div>
+
+        </div>
+        <div style="padding:16px 24px; background:#f8fafc; border-top:1px solid var(--line); display:flex; justify-content:flex-end; gap:10px;">
+          <button type="button" class="btn btn-outline" onclick="closeObservationModal()">إلغاء</button>
+          <button type="submit" class="btn btn-primary">
+            <i class="fas fa-paper-plane"></i>
+            <span>حفظ واعتماد البلاغ</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal 2: Risk Details Modal -->
+  <div class="modal-overlay" id="riskDetailModal" role="dialog" aria-modal="true">
+    <div class="modal-card" style="max-width:560px;">
+      <div class="modal-header">
+        <h3 id="riskModalTitle">تفاصيل المخاطر المصفاة</h3>
+        <button class="btn-outline" style="border:none; font-size:18px; cursor:pointer;" onclick="closeRiskModal()">&times;</button>
+      </div>
+      <div style="padding:20px;" id="riskModalBody">
+        <!-- Injected via JS -->
+      </div>
+      <div style="padding:12px 20px; background:#f8fafc; border-top:1px solid var(--line); text-align:left;">
+        <button class="btn btn-outline btn-sm" onclick="closeRiskModal()">إغلاق</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Floating Toast Notification -->
+  <div id="toastNotification" class="toast-notify toast-success">
+    <i class="fas fa-check-circle" style="color:var(--color-success); font-size:18px;"></i>
+    <span id="toastMessage">تم تنفيذ الإجراء بنجاح</span>
+  </div>
+
+  <!-- JavaScript Interactions -->
+  <script>
+    // Set current datetime default for modal
+    document.addEventListener('DOMContentLoaded', function() {
+      const now = new Date();
+      now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+      const dateInput = document.getElementById('obsDateTime');
+      if (dateInput) {
+        dateInput.value = now.toISOString().slice(0, 16);
+      }
+    });
+
+    // Chart Tooltip handling
+    function showTooltip(evt, month, inc, near, hours) {
+      const tooltip = document.getElementById('chartTooltip');
+      const box = document.getElementById('chartBox').getBoundingClientRect();
+      tooltip.style.display = 'block';
+      tooltip.innerHTML = `
+        <div style="font-weight:800; border-bottom:1px solid rgba(255,255,255,0.2); padding-bottom:3px; margin-bottom:3px;">
+          شهر ${month}
+        </div>
+        <div>حوادث إصابة: <strong>${inc}</strong></div>
+        <div>شبه حوادث: <strong>${near}</strong></div>
+        <div style="color:#7dd3fc;">ساعات آمنة: <strong>${hours}</strong></div>
+      `;
+      const x = evt.clientX - box.left + 10;
+      const y = evt.clientY - box.top - 50;
+      tooltip.style.left = x + 'px';
+      tooltip.style.top = y + 'px';
+    }
+
+    function hideTooltip() {
+      const tooltip = document.getElementById('chartTooltip');
+      if (tooltip) tooltip.style.display = 'none';
+    }
+
+    // Modal Control: Observations
+    function openObservationModal() {
+      const modal = document.getElementById('observationModal');
+      modal.classList.add('show');
+      document.body.style.overflow = 'hidden';
+      // Focus trap setup
+      const firstInput = document.getElementById('obsType');
+      if (firstInput) firstInput.focus();
+    }
+
+    function closeObservationModal() {
+      const modal = document.getElementById('observationModal');
+      modal.classList.remove('show');
+      document.body.style.overflow = '';
+    }
+
+    // Form Submission
+    function handleObservationSubmit(event) {
+      event.preventDefault();
+      const type = document.getElementById('obsType').value;
+      const sev = document.getElementById('obsSeverity').value;
+      const loc = document.getElementById('obsLocation').value;
+      const desc = document.getElementById('obsDescription').value;
+      const owner = document.getElementById('obsOwner').value || 'م. فهد العتيبي';
+
+      // Generate random incident id
+      const newId = 'INC-2026-0' + Math.floor(Math.random() * 89 + 10);
+      const dateStr = new Date().toISOString().slice(0, 10).replace(/-/g, '/');
+
+      // Append row to Incidents table
+      const table = document.getElementById('incidentsTable').getElementsByTagName('tbody')[0];
+      const newRow = table.insertRow(0);
+
+      let sevBadge = '<span class="badge badge-amber">متوسط</span>';
+      if (sev === 'حرج') sevBadge = '<span class="badge badge-red"><i class="fas fa-radiation"></i> حرج</span>';
+      else if (sev === 'مرتفع') sevBadge = '<span class="badge badge-red" style="background:#ffedd5; color:#c2410c;">مرتفع</span>';
+      else if (sev === 'منخفض') sevBadge = '<span class="badge badge-green">منخفض</span>';
+
+      newRow.innerHTML = `
+        <td class="text-num" style="font-weight:800; color:var(--navy);">${newId}</td>
+        <td>${dateStr} حديث</td>
+        <td>${loc}</td>
+        <td><i class="fas fa-triangle-exclamation"></i> ${type}</td>
+        <td>${desc}</td>
+        <td>${sevBadge}</td>
+        <td><span class="badge badge-blue">قيد المراجعة</span></td>
+        <td>${owner}</td>
+        <td><button class="btn btn-outline btn-sm" onclick="viewIncidentDetail('${newId}')">عرض</button></td>
+      `;
+
+      closeObservationModal();
+      document.getElementById('obsForm').reset();
+      showToast(`تم تسجيل البلاغ ${newId} بنجاح وإرسال إشعار للمشرف`);
+    }
+
+    // Keyboard ESC listener
+    window.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        closeObservationModal();
+        closeRiskModal();
+      }
+    });
+
+    // Toast Notification helper
+    function showToast(message) {
+      const toast = document.getElementById('toastNotification');
+      const toastMsg = document.getElementById('toastMessage');
+      toastMsg.textContent = message;
+      toast.classList.add('show');
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 4000);
+    }
+
+    // Filter Incidents Table
+    function filterIncidentsTable() {
+      const searchVal = document.getElementById('incidentSearchInput').value.toLowerCase();
+      const sevVal = document.getElementById('severitySelect').value;
+      const statusVal = document.getElementById('statusSelect').value;
+      const filterBadge = document.getElementById('filterCountBadge');
+
+      const rows = document.getElementById('incidentsTable').querySelectorAll('tbody tr');
+      let visibleCount = 0;
+
+      rows.forEach(row => {
+        const text = row.innerText.toLowerCase();
+        const matchesSearch = !searchVal || text.includes(searchVal);
+        const matchesSev = !sevVal || text.includes(sevVal);
+        const matchesStatus = !statusVal || text.includes(statusVal);
+
+        if (matchesSearch && matchesSev && matchesStatus) {
+          row.style.display = '';
+          visibleCount++;
+        } else {
+          row.style.display = 'none';
+        }
+      });
+
+      if (searchVal || sevVal || statusVal) {
+        filterBadge.style.display = 'inline-flex';
+        filterBadge.querySelector('span').textContent = `النتائج: ${visibleCount}`;
+      } else {
+        filterBadge.style.display = 'none';
+      }
+    }
+
+    function resetIncidentsFilters() {
+      document.getElementById('incidentSearchInput').value = '';
+      document.getElementById('severitySelect').value = '';
+      document.getElementById('statusSelect').value = '';
+      filterIncidentsTable();
+    }
+
+    // Risk Matrix Cell Interaction
+    function filterRiskLevel(lvlCode, lVal, cVal, count) {
+      const modal = document.getElementById('riskDetailModal');
+      const body = document.getElementById('riskModalBody');
+      const title = document.getElementById('riskModalTitle');
+
+      const lvlNames = {
+        'L': 'مخاطر منخفضة (Low Risk)',
+        'M': 'مخاطر متوسطة (Medium Risk)',
+        'H': 'مخاطر مرتفعة (High Risk)',
+        'C': 'مخاطر حرجة (Critical / Extreme)'
+      };
+
+      title.innerHTML = `<i class="fas fa-layer-group"></i> مستوى الخطر: ${lvlNames[lvlCode]} (${lVal * cVal})`;
+
+      if (count === 0) {
+        body.innerHTML = `
+          <div style="text-align:center; padding:20px; color:var(--muted);">
+            <i class="fas fa-clipboard-check" style="font-size:32px; color:var(--color-success); margin-bottom:10px;"></i>
+            <p>لا توجد مخاطر نشطة مسجلة في هذه الخلية المحددة (احتمالية: ${lVal} × شدة: ${cVal})</p>
+          </div>
+        `;
+      } else {
+        body.innerHTML = `
+          <div style="margin-bottom:12px; font-size:13px;">
+            تم العثور على <strong>${count} مخاطر</strong> في تقييم (احتمالية ${lVal} × شدة ${cVal}):
+          </div>
+          <ul style="padding-right:20px; font-size:13px; line-height:1.8;">
+            <li><strong>خطر السقوط من حواف غير محمية:</strong> مطلوب حواجز درابزين مزدوجة مع لوح قدم (Toe Board).</li>
+            <li><strong>خطر تماس لوحات الكهرباء بالمياه:</strong> رفع الكابلات على حوامل وتأمين قواطع ELCB 30mA.</li>
+            <li><strong>إجهاد حراري في فترات الظهيرة:</strong> توفير نقاط ترطيب واستراحات مظللة وفق تعليمات وزارة الموارد البشرية.</li>
+          </ul>
+        `;
+      }
+
+      modal.classList.add('show');
+    }
+
+    function closeRiskModal() {
+      document.getElementById('riskDetailModal').classList.remove('show');
+    }
+
+    function resetMatrixFilter() {
+      showToast('عرض جميع تصنيفات مصفوفة المخاطر');
+    }
+
+    // Incident Details action
+    function viewIncidentDetail(id) {
+      showToast(`جاري فتح ملف البلاغ ${id} وسجل التحقيق الميداني...`);
+    }
+
+    // PTW Actions
+    function auditPTW(code) {
+      showToast(`بدء التدقيق الموقعي لتصريح العمل ${code}`);
+    }
+
+    function openNewPTWModal() {
+      showToast('فتح نموذج إصدار تصريح عمل جديد (PTW Issue Workflow)...');
+    }
+
+    function openEmergencyPlan() {
+      showToast('فتح خريطة مسارات الإخلاء ونقاط التجمع والمستشفيات القريبة');
+    }
+
+    function exportHSEReport() {
+      showToast('جاري تصدير التقرير الشهري المعتمد للسلامة بصيغة PDF...');
+    }
+
+    function exportIncidentsCSV() {
+      showToast('تم تصدير سجل الحوادث والملاحظات إلى ملف Excel (CSV)');
+    }
+
+    function onProjectChange() {
+      const proj = document.getElementById('projectSelector').value;
+      showToast(`تم تبديل سياق العمليات إلى: ${proj}`);
+    }
+  </script>
+
+</body>
+</html>

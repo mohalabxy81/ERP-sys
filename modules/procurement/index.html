@@ -1,0 +1,1607 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>مِعمار ERP | إدارة المشتريات وسلاسل الإمداد (Procurement & Supply Chain)</title>
+  <!-- Local Offline Fonts & Icons -->
+  <link rel="stylesheet" href="../../assets/css/google-fonts.css">
+  <link rel="stylesheet" href="../../assets/css/font-awesome.min.css">
+  
+  <!-- Core Design Tokens & Styles -->
+  <link rel="stylesheet" href="../../assets/css/design-tokens.css">
+  <link rel="stylesheet" href="../../assets/css/theme.css">
+  <link rel="stylesheet" href="../../assets/css/main.css">
+  <link rel="stylesheet" href="../../assets/css/dashboard.css">
+  <link rel="stylesheet" href="../../assets/css/modules.css">
+  <link rel="stylesheet" href="../../assets/css/forms.css">
+  <link rel="stylesheet" href="../../assets/css/reports.css">
+
+  <style>
+    :root {
+      --primary-procure: #008DDA;
+      --navy-deep: #0B192C;
+      --pipeline-active: #059669;
+    }
+    body {
+      background: var(--canvas);
+      font-family: 'Cairo', var(--font-main);
+      color: var(--ink);
+      padding: 0;
+      margin: 0;
+      font-size: 13.5px;
+    }
+    .procure-container {
+      max-width: 1720px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+
+    /* Top Module Header */
+    .module-header {
+      background: #FFFFFF;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--line);
+      padding: 18px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 22px;
+      flex-wrap: wrap;
+    }
+    .module-brand {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .module-logo {
+      width: 46px;
+      height: 46px;
+      background: linear-gradient(135deg, #059669, #10B981);
+      color: #fff;
+      font-weight: 900;
+      font-size: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(5, 150, 105, 0.3);
+    }
+    .module-titles h1 {
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--navy);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 0 0 4px 0;
+    }
+    .module-titles .sub-text {
+      color: var(--muted);
+      font-size: 12.5px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .module-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 13px;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: var(--transition);
+      text-decoration: none;
+    }
+    .btn-primary { background: var(--teal); color: #FFFFFF; }
+    .btn-primary:hover { background: var(--teal-dark); }
+    .btn-success { background: var(--green); color: #FFFFFF; }
+    .btn-success:hover { background: #047857; }
+    .btn-outline { background: #FFFFFF; border-color: var(--line); color: var(--navy2); }
+    .btn-outline:hover { background: #F1F5F9; }
+    .btn-danger { background: var(--red); color: white; }
+
+    /* Top KPI Statistics */
+    .kpi-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(215px, 1fr));
+      gap: 16px;
+      margin-bottom: 22px;
+    }
+    .kpi-stat-card {
+      background: #FFFFFF;
+      border-radius: var(--radius);
+      border: 1px solid var(--line);
+      padding: 16px;
+      box-shadow: var(--shadow-sm);
+      position: relative;
+      overflow: hidden;
+    }
+    .kpi-stat-card::after {
+      content: '';
+      position: absolute;
+      top: 0; right: 0; left: 0;
+      height: 4px;
+      background: var(--teal);
+    }
+    .kpi-stat-card.green::after { background: var(--green); }
+    .kpi-stat-card.amber::after { background: var(--amber); }
+    .kpi-stat-card.red::after { background: var(--red); }
+    .kpi-stat-card.purple::after { background: var(--purple); }
+
+    .kpi-stat-card .header-sub {
+      display: flex;
+      justify-content: space-between;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+    .kpi-stat-card .val {
+      font-size: 23px;
+      font-weight: 900;
+      color: var(--navy);
+      font-family: 'Tajawal', var(--font-num);
+      display: flex;
+      align-items: baseline;
+      gap: 5px;
+    }
+    .kpi-stat-card .sub-info {
+      font-size: 11.5px;
+      color: var(--muted);
+      margin-top: 6px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* Workflow Pipeline Visualization */
+    .pipeline-section {
+      background: #FFFFFF;
+      border-radius: var(--radius);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow-sm);
+      padding: 20px;
+      margin-bottom: 22px;
+    }
+    .section-title {
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--navy);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+    .pipeline-stepper {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 10px;
+      position: relative;
+    }
+    @media (max-width: 1050px) {
+      .pipeline-stepper {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+    @media (max-width: 600px) {
+      .pipeline-stepper {
+        grid-template-columns: 1fr;
+      }
+    }
+    .pipe-step {
+      background: #F8FAFC;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 12px 14px;
+      position: relative;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .pipe-step:hover {
+      background: #FFFFFF;
+      border-color: var(--teal);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.06);
+    }
+    .pipe-step.active {
+      background: #F0FDF4;
+      border-color: #10B981;
+      box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
+    }
+    .pipe-num {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: #E2E8F0;
+      color: #475569;
+      font-family: 'Tajawal', monospace;
+      font-weight: 800;
+      font-size: 11px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .pipe-step.active .pipe-num {
+      background: #10B981;
+      color: white;
+    }
+    .pipe-name {
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--navy);
+    }
+    .pipe-name-en {
+      font-size: 10.5px;
+      color: var(--muted);
+      font-weight: 600;
+    }
+    .pipe-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-top: 4px;
+      padding-top: 6px;
+      border-top: 1px dashed var(--line);
+    }
+    .pipe-count {
+      font-family: 'Tajawal', monospace;
+      font-weight: 800;
+      font-size: 13px;
+      color: var(--teal);
+    }
+    .pipe-val {
+      font-family: 'Tajawal', monospace;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--muted);
+    }
+
+    /* Grid Layout for Charts & Matrix */
+    .grid-2col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 22px;
+      margin-bottom: 22px;
+    }
+    @media (max-width: 1100px) {
+      .grid-2col {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Card Box */
+    .data-card {
+      background: #FFFFFF;
+      border-radius: var(--radius);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+      margin-bottom: 22px;
+    }
+    .data-card-header {
+      padding: 14px 20px;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #FFFFFF;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .data-card-header h3 {
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--navy);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 0;
+    }
+    .data-card-body {
+      padding: 18px 20px;
+    }
+
+    /* Tables */
+    .table-responsive {
+      overflow-x: auto;
+      width: 100%;
+    }
+    .custom-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12.5px;
+      text-align: right;
+    }
+    .custom-table th {
+      background: #F8FAFC;
+      padding: 10px 14px;
+      font-weight: 800;
+      color: var(--navy2);
+      border-bottom: 2px solid var(--line);
+      white-space: nowrap;
+    }
+    .custom-table td {
+      padding: 10px 14px;
+      border-bottom: 1px solid #E2E8F0;
+      vertical-align: middle;
+    }
+    .custom-table tr:hover td {
+      background: #F8FAFC;
+    }
+
+    /* Comparison Matrix */
+    .matrix-table th {
+      text-align: center;
+      vertical-align: middle;
+    }
+    .matrix-table td {
+      text-align: center;
+      vertical-align: middle;
+    }
+    .vendor-head-cell {
+      padding: 12px;
+      border-radius: 8px;
+    }
+    .vendor-win {
+      background: rgba(16, 185, 129, 0.08) !important;
+      border: 2px solid #10B981 !important;
+      position: relative;
+    }
+    .winner-badge {
+      position: absolute;
+      top: -8px;
+      right: 12px;
+      background: #10B981;
+      color: white;
+      font-size: 9.5px;
+      padding: 2px 7px;
+      border-radius: 4px;
+      font-weight: 800;
+    }
+
+    /* Spending Chart Area */
+    .chart-box {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      flex-wrap: wrap;
+    }
+    #spendChartCanvas {
+      width: 220px;
+      height: 220px;
+      flex-shrink: 0;
+    }
+    .chart-legend-list {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      min-width: 240px;
+    }
+    .legend-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 12px;
+      padding: 6px 10px;
+      border-radius: 6px;
+      background: #F8FAFC;
+      border: 1px solid #E2E8F0;
+    }
+    .legend-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 700;
+    }
+    .color-swatch {
+      width: 12px;
+      height: 12px;
+      border-radius: 3px;
+    }
+
+    /* Vendor Evaluation Cards Grid */
+    .vendor-eval-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+      gap: 16px;
+    }
+    .vendor-score-card {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 16px;
+      background: #FFFFFF;
+      transition: var(--transition);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .vendor-score-card:hover {
+      box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+      border-color: #CBD5E1;
+    }
+    .vcard-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .vcard-title h4 {
+      margin: 0 0 2px 0;
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--navy);
+    }
+    .vcard-title span {
+      font-size: 11px;
+      color: var(--muted);
+    }
+    .vcard-score-pill {
+      font-family: 'Tajawal', monospace;
+      font-size: 16px;
+      font-weight: 900;
+      padding: 4px 10px;
+      border-radius: 8px;
+    }
+    .score-a { background: #D1FAE5; color: #047857; }
+    .score-b { background: #FEF3C7; color: #B45309; }
+
+    .rating-bars {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .rbar-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 11.5px;
+    }
+    .rbar-track {
+      width: 110px;
+      height: 6px;
+      background: #E2E8F0;
+      border-radius: 3px;
+      overflow: hidden;
+    }
+    .rbar-fill {
+      height: 100%;
+      background: var(--teal);
+    }
+
+    /* Badges */
+    .badge {
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .badge-green { background: #D1FAE5; color: #047857; }
+    .badge-amber { background: #FEF3C7; color: #B45309; }
+    .badge-red { background: #FFE4E6; color: #BE123C; }
+    .badge-blue { background: #DBEAFE; color: #1D4ED8; }
+    .badge-purple { background: #EDE9FE; color: #6D28D9; }
+
+    /* Modals */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(11, 25, 44, 0.55);
+      backdrop-filter: blur(3px);
+      z-index: 1000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+    .modal-backdrop.open { display: flex; }
+    .modal-window {
+      background: #FFFFFF;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-lg);
+      width: 100%;
+      max-width: 620px;
+      overflow: hidden;
+      animation: modalSlide 0.2s ease-out;
+    }
+    @keyframes modalSlide {
+      from { transform: translateY(20px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    .modal-header {
+      padding: 16px 20px;
+      background: var(--navy);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .modal-header h3 {
+      font-size: 16px;
+      font-weight: 800;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .modal-body {
+      padding: 20px;
+      max-height: 75vh;
+      overflow-y: auto;
+    }
+    .modal-footer {
+      padding: 14px 20px;
+      background: #F8FAFC;
+      border-top: 1px solid var(--line);
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+    .close-btn {
+      background: transparent;
+      border: none;
+      color: white;
+      font-size: 18px;
+      cursor: pointer;
+    }
+
+    /* Print */
+    @media print {
+      body { background: white; }
+      .module-actions, .btn, .modal-backdrop { display: none !important; }
+      .procure-container { max-width: 100%; padding: 0; }
+      .data-card { box-shadow: none; border: 1px solid #ccc; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="procure-container">
+  <!-- Module Header -->
+  <header class="module-header">
+    <div class="module-brand">
+      <div class="module-logo">
+        <i class="fas fa-shopping-cart"></i>
+      </div>
+      <div class="module-titles">
+        <h1>
+          <span>إدارة المشتريات وسلاسل الإمداد والتوريدات</span>
+          <span class="role-badge"><i class="fas fa-check-circle"></i> ZATCA & FIDIC Compliant</span>
+        </h1>
+        <div class="sub-text">
+          <span><i class="fas fa-building"></i> مشروع: <strong>برج مِعمار الفاخر - العليا، الرياض (PRJ-2026-08)</strong></span>
+          <span><i class="fas fa-file-contract"></i> سياسة الشراء: <strong>نظام المنافسات والعقود المعتمد v4.2</strong></span>
+          <span><i class="fas fa-coins"></i> العملة: <strong>ريال سعودي (SAR)</strong></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="module-actions">
+      <a href="../../index.html" class="btn btn-outline" title="العودة للنظام الرئيسي">
+        <i class="fas fa-arrow-right"></i> <span>الرئيسية</span>
+      </a>
+      <button class="btn btn-primary" onclick="openNewPRModal()">
+        <i class="fas fa-plus"></i> <span>طلب شراء جديد (PR)</span>
+      </button>
+      <button class="btn btn-success" onclick="openNewRFQModal()">
+        <i class="fas fa-file-invoice"></i> <span>استدراج عروض (RFQ)</span>
+      </button>
+      <button class="btn btn-outline" onclick="window.print()">
+        <i class="fas fa-print"></i> <span>طباعة التقرير</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Executive Procurement KPIs -->
+  <div class="kpi-row">
+    <div class="kpi-stat-card">
+      <div class="header-sub">
+        <span>ميزانية التوريدات المعتمدة</span>
+        <i class="fas fa-wallet text-muted"></i>
+      </div>
+      <div class="val">
+        <span>24,850,000</span> <span style="font-size: 13px; font-weight: normal; color: var(--muted)">SAR</span>
+      </div>
+      <div class="sub-info">
+        <i class="fas fa-check-double text-success"></i> الملتزم به: 18,420,000 SAR (74.1%)
+      </div>
+    </div>
+
+    <div class="kpi-stat-card amber">
+      <div class="header-sub">
+        <span>طلبات شراء قيد الاعتماد (Open PRs)</span>
+        <i class="fas fa-file-signature text-warning"></i>
+      </div>
+      <div class="val">
+        <span style="color: #D97706;">5</span>
+        <span style="font-size: 13px; font-weight: normal; color: var(--muted)">بقيمة 1,840,000 SAR</span>
+      </div>
+      <div class="sub-info">
+        <i class="fas fa-hourglass-start"></i> بانتظار موافقة مدير المشروع والمدير المالي
+      </div>
+    </div>
+
+    <div class="kpi-stat-card purple">
+      <div class="header-sub">
+        <span>عروض قيد التقييم الفني والمالي (RFQ)</span>
+        <i class="fas fa-balance-scale text-purple"></i>
+      </div>
+      <div class="val">
+        <span style="color: var(--purple);">3</span>
+        <span style="font-size: 13px; font-weight: normal; color: var(--muted)">منافسات نشطة</span>
+      </div>
+      <div class="sub-info">
+        <i class="fas fa-building"></i> بمشاركة 9 موردين مؤهلين
+      </div>
+    </div>
+
+    <div class="kpi-stat-card green">
+      <div class="header-sub">
+        <span>أوامر شراء صادرة ونشطة (Active POs)</span>
+        <i class="fas fa-truck-loading text-success"></i>
+      </div>
+      <div class="val">
+        <span style="color: var(--green);">14</span>
+        <span style="font-size: 13px; font-weight: normal; color: var(--muted)">أمر شراء جاري</span>
+      </div>
+      <div class="sub-info">
+        <i class="fas fa-check-circle text-success"></i> نسبة التوريد في الوقت المحدد: 93.8%
+      </div>
+    </div>
+
+    <div class="kpi-stat-card">
+      <div class="header-sub">
+        <span>متوسط تقييم الموردين (Vendor Rating)</span>
+        <i class="fas fa-star text-warning"></i>
+      </div>
+      <div class="val">
+        <span style="color: #0284C7;">91.4%</span>
+        <span style="font-size: 13px; font-weight: normal; color: var(--muted)">فئة أ (ممتاز)</span>
+      </div>
+      <div class="sub-info">
+        <i class="fas fa-certificate text-teal"></i> بناءً على جودة التوريد والمطابقة لـ SASO
+      </div>
+    </div>
+  </div>
+
+  <!-- Procurement Pipeline Stepper Visualization -->
+  <section class="pipeline-section">
+    <div class="section-title">
+      <span>
+        <i class="fas fa-project-diagram" style="color: var(--teal);"></i>
+        <span>مسار دورة المشتريات والتوريدات (PR → RFQ → PO → Delivery Workflow)</span>
+      </span>
+      <span style="font-size: 12px; color: var(--muted); font-weight: normal;">
+        انقر على أي مرحلة لتصفية العمليات المرتبطة
+      </span>
+    </div>
+    <div class="pipeline-stepper" id="pipelineStepper">
+      <!-- Step 1 -->
+      <div class="pipe-step" onclick="filterByPipelineStage('pr_open', this)">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <span class="pipe-num">1</span>
+          <span class="badge badge-amber"><i class="fas fa-clock"></i> 5 نشطة</span>
+        </div>
+        <div class="pipe-name">طلب الشراء (PR)</div>
+        <div class="pipe-name-en">Requisition Form</div>
+        <div class="pipe-meta">
+          <span class="pipe-count">5 طلبات</span>
+          <span class="pipe-val">1.84M SAR</span>
+        </div>
+      </div>
+
+      <!-- Step 2 -->
+      <div class="pipe-step" onclick="filterByPipelineStage('pr_approved', this)">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <span class="pipe-num">2</span>
+          <span class="badge badge-blue"><i class="fas fa-check"></i> معتمد</span>
+        </div>
+        <div class="pipe-name">التدقيق والاعتماد</div>
+        <div class="pipe-name-en">Budget & Approval</div>
+        <div class="pipe-meta">
+          <span class="pipe-count">8 معتمد</span>
+          <span class="pipe-val">3.20M SAR</span>
+        </div>
+      </div>
+
+      <!-- Step 3 -->
+      <div class="pipe-step active" onclick="filterByPipelineStage('rfq', this)">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <span class="pipe-num">3</span>
+          <span class="badge badge-green"><i class="fas fa-paper-plane"></i> استدراج</span>
+        </div>
+        <div class="pipe-name">طرح المنافسة (RFQ)</div>
+        <div class="pipe-name-en">Bidding & Quotations</div>
+        <div class="pipe-meta">
+          <span class="pipe-count">3 منافسات</span>
+          <span class="pipe-val">4.50M SAR</span>
+        </div>
+      </div>
+
+      <!-- Step 4 -->
+      <div class="pipe-step" onclick="filterByPipelineStage('matrix', this)">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <span class="pipe-num">4</span>
+          <span class="badge badge-purple"><i class="fas fa-columns"></i> مقارنة</span>
+        </div>
+        <div class="pipe-name">التقييم الفني والمالي</div>
+        <div class="pipe-name-en">Vendor Comparison Matrix</div>
+        <div class="pipe-meta">
+          <span class="pipe-count">2 جاهزة للترسية</span>
+          <span class="pipe-val">2.85M SAR</span>
+        </div>
+      </div>
+
+      <!-- Step 5 -->
+      <div class="pipe-step" onclick="filterByPipelineStage('po_active', this)">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <span class="pipe-num">5</span>
+          <span class="badge badge-blue"><i class="fas fa-file-invoice-dollar"></i> أوامر شراء</span>
+        </div>
+        <div class="pipe-name">إصدار أمر الشراء (PO)</div>
+        <div class="pipe-name-en">Purchase Order Award</div>
+        <div class="pipe-meta">
+          <span class="pipe-count">14 أمر شراء</span>
+          <span class="pipe-val">12.4M SAR</span>
+        </div>
+      </div>
+
+      <!-- Step 6 -->
+      <div class="pipe-step" onclick="filterByPipelineStage('delivery', this)">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <span class="pipe-num">6</span>
+          <span class="badge badge-green"><i class="fas fa-warehouse"></i> فحص واستلام</span>
+        </div>
+        <div class="pipe-name">التوريد للموقع والمطابقة</div>
+        <div class="pipe-name-en">GRN & Quality Check</div>
+        <div class="pipe-meta">
+          <span class="pipe-count">9 توريدات منجزة</span>
+          <span class="pipe-val">9.10M SAR</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Open PRs (Purchase Requisitions) Table -->
+  <div class="data-card" id="openPRSection">
+    <div class="data-card-header">
+      <h3>
+        <i class="fas fa-inbox text-teal"></i>
+        <span>طلبات الشراء المفتوحة وبانتظار الاعتماد (Open Purchase Requisitions)</span>
+      </h3>
+      <div style="display: flex; gap: 8px; align-items: center;">
+        <span class="badge badge-amber" id="prCountBadge">5 طلبات بانتظار الإجراء</span>
+        <input type="text" id="prSearchInput" placeholder="بحث برقم الطلب أو المادة..." onkeyup="filterPRTable(this.value)" style="padding: 5px 10px; font-size: 12px; border: 1px solid var(--line); border-radius: 6px;">
+      </div>
+    </div>
+    <div class="table-responsive">
+      <table class="custom-table" id="prTable">
+        <thead>
+          <tr>
+            <th style="width: 100px;">رقم الطلب</th>
+            <th>تاريخ الطلب</th>
+            <th>المشروع / القسم</th>
+            <th>وصف المواد المطلوبة والكمية</th>
+            <th>التصنيف</th>
+            <th class="text-num">القيمة التقديرية</th>
+            <th>الأولوية</th>
+            <th>مقدّم الطلب</th>
+            <th>الحالة</th>
+            <th style="width: 150px; text-align: center;">إجراءات الاعتماد</th>
+          </tr>
+        </thead>
+        <tbody id="prTableBody">
+          <!-- Dynamically populated via JS -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Vendor Comparison Matrix (3 Vendors x Items) -->
+  <div class="data-card" id="vendorMatrixSection">
+    <div class="data-card-header">
+      <div>
+        <h3>
+          <i class="fas fa-balance-scale-right" style="color: var(--purple);"></i>
+          <span>مصفوفة مقارنة عروض الأسعار والموردين (Vendor Comparison Matrix)</span>
+        </h3>
+        <div style="font-size: 12px; color: var(--muted); margin-top: 3px;">
+          المنافسة رقم: <strong>RFQ-2026-042</strong> — حزمة توريد <strong>450 طن حديد تسليح عالي المقاومة ومثبتات (SASO ASTM A615)</strong>
+        </div>
+      </div>
+      <div>
+        <span class="badge badge-green" style="font-size: 12px; padding: 5px 10px;">
+          <i class="fas fa-trophy"></i> العرض الموصى بترسيته: <strong>شركة حديد سابك (HADEED SABIC)</strong>
+        </span>
+      </div>
+    </div>
+    <div class="table-responsive">
+      <table class="custom-table matrix-table" id="matrixTable">
+        <thead>
+          <tr>
+            <th style="width: 20%; text-align: right; background: #F1F5F9;">عناصر المقارنة والتقييم</th>
+            <th style="width: 26%;" class="vendor-win">
+              <span class="winner-badge"><i class="fas fa-check"></i> الموصى بالترسية</span>
+              <div style="font-size: 14px; font-weight: 800; color: #065F46;">المورد 1: شركة حديد سابك (HADEED)</div>
+              <div style="font-size: 11px; color: #047857;">مورد معتمد فئة A (CR: 1010008422)</div>
+            </th>
+            <th style="width: 26%;">
+              <div style="font-size: 14px; font-weight: 800; color: var(--navy);">المورد 2: شركة حديد الراجحي</div>
+              <div style="font-size: 11px; color: var(--muted);">مورد معتمد فئة A (CR: 1010182743)</div>
+            </th>
+            <th style="width: 26%;">
+              <div style="font-size: 14px; font-weight: 800; color: var(--navy);">المورد 3: شركة حديد الاتفاق للصناعات</div>
+              <div style="font-size: 11px; color: var(--muted);">مورد معتمد فئة B (CR: 2050024419)</div>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="font-weight: 800; text-align: right; background: #F8FAFC;">سعر الطن التنافسي (سعر الوحدة)</td>
+            <td class="vendor-win"><strong class="text-num" style="color: #047857; font-size: 14px;">2,820 SAR</strong> / طن</td>
+            <td><span class="text-num" style="font-size: 14px;">2,875 SAR</span> / طن</td>
+            <td><span class="text-num" style="font-size: 14px;">2,790 SAR</span> / طن (الأقل سعراً)</td>
+          </tr>
+          <tr>
+            <td style="font-weight: 800; text-align: right; background: #F8FAFC;">إجمالي القيمة التجارية (450 طن) شامل الضريبة 15%</td>
+            <td class="vendor-win"><strong class="text-num" style="font-size: 15px; color: #047857;">1,459,350 SAR</strong></td>
+            <td><span class="text-num" style="font-size: 15px;">1,487,812 SAR</span></td>
+            <td><span class="text-num" style="font-size: 15px;">1,443,825 SAR</span></td>
+          </tr>
+          <tr>
+            <td style="font-weight: 800; text-align: right; background: #F8FAFC;">مدة وجدولة التوريد للموقع (Lead Time)</td>
+            <td class="vendor-win"><strong>7 أيام عمل</strong> (توريد فوري على 3 دفعات)</td>
+            <td>10 أيام عمل (دفعتان)</td>
+            <td>16 يوم عمل (غير ملائم للجدول الحرج)</td>
+          </tr>
+          <tr>
+            <td style="font-weight: 800; text-align: right; background: #F8FAFC;">المطابقة الفنية وشهادات الجودة (SASO / ISO)</td>
+            <td class="vendor-win"><span class="badge badge-green"><i class="fas fa-check-circle"></i> مطابقة تامة 100% مع شهادات Mill Test</span></td>
+            <td><span class="badge badge-green"><i class="fas fa-check-circle"></i> مطابقة تامة 100%</span></td>
+            <td><span class="badge badge-amber"><i class="fas fa-exclamation-circle"></i> مطابقة مع تحفظ على التثقيب</span></td>
+          </tr>
+          <tr>
+            <td style="font-weight: 800; text-align: right; background: #F8FAFC;">شروط الدفع والتسهيلات الائتمانية</td>
+            <td class="vendor-win"><strong>أجل 60 يوماً</strong> بعد الاستلام والفحص الموقعي</td>
+            <td>أجل 45 يوماً مع دفعة مقدمة 10%</td>
+            <td>دفع عند الاستلام مع خطاب ضمان بنكي</td>
+          </tr>
+          <tr>
+            <td style="font-weight: 800; text-align: right; background: #F8FAFC;">درجة التقييم الفني والمالي الإجمالية</td>
+            <td class="vendor-win">
+              <div style="font-family: 'Tajawal'; font-size: 18px; font-weight: 900; color: #047857;">96.5%</div>
+              <div style="font-size: 10.5px; color: #059669;">الأعلى جدارة وكفاءة تشغيلية</div>
+            </td>
+            <td>
+              <div style="font-family: 'Tajawal'; font-size: 17px; font-weight: 900; color: var(--navy);">91.8%</div>
+              <div style="font-size: 10.5px; color: var(--muted);">مناسب فنياً ومالياً</div>
+            </td>
+            <td>
+              <div style="font-family: 'Tajawal'; font-size: 17px; font-weight: 900; color: var(--muted);">83.2%</div>
+              <div style="font-size: 10.5px; color: #B45309;">تأخر التوريد يُهدد المسار الحرج</div>
+            </td>
+          </tr>
+          <tr>
+            <td style="font-weight: 800; text-align: right; background: #F8FAFC;">قرار الترسية النهائي</td>
+            <td class="vendor-win">
+              <button class="btn btn-success" style="font-size: 12px; padding: 6px 14px;" onclick="awardContract('سابك')">
+                <i class="fas fa-check-double"></i> اعتماد الترسية وإصدار PO
+              </button>
+            </td>
+            <td>
+              <button class="btn btn-outline" style="font-size: 12px; padding: 6px 12px;" onclick="awardContract('الراجحي')">
+                ترسية كبديل أول
+              </button>
+            </td>
+            <td>
+              <span class="badge badge-red" style="padding: 5px 8px;">مستبعد لتجاوز مدة التوريد</span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- PO Tracker with Delivery Status Table -->
+  <div class="data-card" id="poTrackerSection">
+    <div class="data-card-header">
+      <h3>
+        <i class="fas fa-shipping-fast text-teal"></i>
+        <span>سجل متابعة أوامر الشراء وحالة التوريد الفعلي (PO Tracker & Site Delivery Status)</span>
+      </h3>
+      <div style="display: flex; gap: 8px;">
+        <button class="btn btn-outline" style="padding: 5px 12px; font-size: 12px;" onclick="filterPOs('all')">الكل</button>
+        <button class="btn btn-outline" style="padding: 5px 12px; font-size: 12px;" onclick="filterPOs('in_transit')">قيد التوريد</button>
+        <button class="btn btn-outline" style="padding: 5px 12px; font-size: 12px;" onclick="filterPOs('delayed')">المتأخرة</button>
+      </div>
+    </div>
+    <div class="table-responsive">
+      <table class="custom-table" id="poTable">
+        <thead>
+          <tr>
+            <th style="width: 110px;">رقم أمر الشراء</th>
+            <th>اسم المورد المعتمد</th>
+            <th>رقم طلب الشراء</th>
+            <th class="text-num">قيمة العقد (SAR)</th>
+            <th>تاريخ الإصدار</th>
+            <th>موعد التوريد الملتزم</th>
+            <th>نسبة التوريد للموقع (GRN)</th>
+            <th>حالة التوريد والشحن</th>
+            <th style="text-align: center; width: 90px;">الإجراء</th>
+          </tr>
+        </thead>
+        <tbody id="poTableBody">
+          <!-- Dynamically populated via JS -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- 2-Column: Spending by Category Chart + Vendor Evaluation Scores -->
+  <div class="grid-2col">
+    <!-- Left: Spending by Category Chart -->
+    <div class="data-card" style="margin-bottom: 0;">
+      <div class="data-card-header">
+        <h3>
+          <i class="fas fa-chart-pie" style="color: var(--teal);"></i>
+          <span>تحليل الإنفاق حسب تصنيف المواد (Spending by Category)</span>
+        </h3>
+        <span style="font-size: 11.5px; color: var(--muted);">إجمالي المصروف: <strong>18.42M SAR</strong></span>
+      </div>
+      <div class="data-card-body">
+        <div class="chart-box">
+          <canvas id="spendChartCanvas" width="220" height="220"></canvas>
+          <div class="chart-legend-list" id="chartLegendList">
+            <!-- Populated via JS -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: Vendor Evaluation Scores & Performance -->
+    <div class="data-card" style="margin-bottom: 0;">
+      <div class="data-card-header">
+        <h3>
+          <i class="fas fa-award" style="color: #D97706;"></i>
+          <span>لوحة تقييم واعتماد الموردين (Vendor Evaluation Scorecards)</span>
+        </h3>
+        <span class="badge badge-green">9 موردين معتمدين</span>
+      </div>
+      <div class="data-card-body">
+        <div class="vendor-eval-grid" id="vendorEvalContainer">
+          <!-- Vendor 1 -->
+          <div class="vendor-score-card">
+            <div class="vcard-top">
+              <div class="vcard-title">
+                <h4>شركة حديد سابك</h4>
+                <span>توريد حديد التسليح والمقاطع الفولاذية</span>
+              </div>
+              <div class="vcard-score-pill score-a">96.5%</div>
+            </div>
+            <div class="rating-bars">
+              <div class="rbar-item">
+                <span>جودة المواد والمطابقة للمواصفات:</span>
+                <div class="rbar-track"><div class="rbar-fill" style="width: 98%;"></div></div>
+                <strong class="text-num">98%</strong>
+              </div>
+              <div class="rbar-item">
+                <span>الالتزام بمواعيد التوريد (On-Time):</span>
+                <div class="rbar-track"><div class="rbar-fill" style="width: 95%;"></div></div>
+                <strong class="text-num">95%</strong>
+              </div>
+              <div class="rbar-item">
+                <span>التنافسية السعرية وشروط الدفع:</span>
+                <div class="rbar-track"><div class="rbar-fill" style="width: 94%;"></div></div>
+                <strong class="text-num">94%</strong>
+              </div>
+            </div>
+            <div style="display: flex; justify-content: space-between; font-size: 11px; color: var(--muted); border-top: 1px solid #F1F5F9; padding-top: 6px;">
+              <span>الأوامر المكتملة: 12 أمر</span>
+              <span class="badge badge-green">فئة أ (ذهبي)</span>
+            </div>
+          </div>
+
+          <!-- Vendor 2 -->
+          <div class="vendor-score-card">
+            <div class="vcard-top">
+              <div class="vcard-title">
+                <h4>شركة الخرسانة الجاهزة السعودية</h4>
+                <span>توريد خرسانة مقاومة للكبريتات وعالية الإجهاد</span>
+              </div>
+              <div class="vcard-score-pill score-a">93.0%</div>
+            </div>
+            <div class="rating-bars">
+              <div class="rbar-item">
+                <span>جودة المواد واختبارات الكسر:</span>
+                <div class="rbar-track"><div class="rbar-fill" style="width: 96%;"></div></div>
+                <strong class="text-num">96%</strong>
+              </div>
+              <div class="rbar-item">
+                <span>الالتزام بسرعة وصول المضخات:</span>
+                <div class="rbar-track"><div class="rbar-fill" style="width: 90%;"></div></div>
+                <strong class="text-num">90%</strong>
+              </div>
+              <div class="rbar-item">
+                <span>التنافسية السعرية:</span>
+                <div class="rbar-track"><div class="rbar-fill" style="width: 92%;"></div></div>
+                <strong class="text-num">92%</strong>
+              </div>
+            </div>
+            <div style="display: flex; justify-content: space-between; font-size: 11px; color: var(--muted); border-top: 1px solid #F1F5F9; padding-top: 6px;">
+              <span>الأوامر المكتملة: 28 صبة</span>
+              <span class="badge badge-green">فئة أ (ذهبي)</span>
+            </div>
+          </div>
+
+          <!-- Vendor 3 -->
+          <div class="vendor-score-card">
+            <div class="vcard-top">
+              <div class="vcard-title">
+                <h4>شركة حلول العزل المتطورة</h4>
+                <span>لفائف بيتومين وعوازل مائية وحرارية</span>
+              </div>
+              <div class="vcard-score-pill score-b">86.4%</div>
+            </div>
+            <div class="rating-bars">
+              <div class="rbar-item">
+                <span>جودة المواد واعتماد المهندس:</span>
+                <div class="rbar-track"><div class="rbar-fill" style="width: 92%;"></div></div>
+                <strong class="text-num">92%</strong>
+              </div>
+              <div class="rbar-item">
+                <span>الالتزام بمواعيد الشحن:</span>
+                <div class="rbar-track"><div class="rbar-fill" style="width: 82%;"></div></div>
+                <strong class="text-num">82%</strong>
+              </div>
+              <div class="rbar-item">
+                <span>الدعم الفني وشهادات الضمان:</span>
+                <div class="rbar-track"><div class="rbar-fill" style="width: 85%;"></div></div>
+                <strong class="text-num">85%</strong>
+              </div>
+            </div>
+            <div style="display: flex; justify-content: space-between; font-size: 11px; color: var(--muted); border-top: 1px solid #F1F5F9; padding-top: 6px;">
+              <span>الأوامر المكتملة: 5 أوامر</span>
+              <span class="badge badge-amber">فئة ب (فضي)</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Approve / Reject PR -->
+<div class="modal-backdrop" id="prActionModal" role="dialog" aria-modal="true">
+  <div class="modal-window">
+    <div class="modal-header">
+      <h3 id="prModalTitle"><i class="fas fa-check-circle"></i> مراجعة واعتماد طلب الشراء</h3>
+      <button class="close-btn" onclick="closePRModal()"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="modal-body">
+      <div id="prModalDetails" style="background: #F8FAFC; padding: 14px; border-radius: 8px; margin-bottom: 16px; border: 1px solid var(--line); font-size: 13px;">
+        <!-- Filled via JS -->
+      </div>
+      <div class="form-group" style="margin-bottom: 14px;">
+        <label style="font-weight: 700; color: var(--navy2); display: block; margin-bottom: 6px;">ملاحظات المعتمد والتوجيه المالي:</label>
+        <textarea id="prApprovalNotes" rows="3" style="width: 100%; padding: 8px 12px; border: 1px solid var(--line); border-radius: 6px; box-sizing: border-box; font-family: inherit;" placeholder="أدخل أي ملاحظات بخصوص بنود الميزانية أو اشتراطات الموردين..."></textarea>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" onclick="closePRModal()">إلغاء</button>
+        <button class="btn btn-danger" onclick="submitPRDecision('rejected')"><i class="fas fa-times"></i> رفض الطلب</button>
+        <button class="btn btn-success" onclick="submitPRDecision('approved')"><i class="fas fa-check"></i> اعتماد الطلب وطرح المنافسة</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Create New PR -->
+<div class="modal-backdrop" id="newPRModal" role="dialog" aria-modal="true">
+  <div class="modal-window">
+    <div class="modal-header">
+      <h3><i class="fas fa-file-invoice"></i> إنشاء طلب شراء جديد (Purchase Requisition)</h3>
+      <button class="close-btn" onclick="closeNewPRModal()"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="modal-body">
+      <form id="newPRForm" onsubmit="saveNewPR(event)">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+          <div class="form-group">
+            <label style="font-weight: 700; font-size: 12px;">المشروع:</label>
+            <input type="text" value="برج مِعمار الفاخر (PRJ-2026-08)" readonly style="background: #F1F5F9;">
+          </div>
+          <div class="form-group">
+            <label style="font-weight: 700; font-size: 12px;">القسم الطالب:</label>
+            <select id="newPRDept">
+              <option>الهندسة المدنية والخرسانات</option>
+              <option>الهندسة الكهروميكانيكية MEP</option>
+              <option>التشطيبات المعمارية</option>
+              <option>السلامة والصحة المهنية HSE</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group" style="margin-bottom: 12px;">
+          <label style="font-weight: 700; font-size: 12px;">وصف المواد والمواصفات المطلوبة:</label>
+          <input type="text" id="newPRDesc" required placeholder="مثال: توريد كابلات نحاسية معزولة مقاس 4x16 ملم">
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+          <div class="form-group">
+            <label style="font-weight: 700; font-size: 12px;">التصنيف:</label>
+            <select id="newPRCategory">
+              <option value="حديد وهياكل">حديد تسليح وهياكل معدنية</option>
+              <option value="خرسانة">خرسانة جاهزة وإسمنت</option>
+              <option value="كهروميكانيك MEP">كهروميكانيك MEP</option>
+              <option value="تشطيبات وعوازل">تشطيبات معمارية وعوازل</option>
+              <option value="معدات">معدات ثقيلة ورافعات</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label style="font-weight: 700; font-size: 12px;">القيمة التقديرية (SAR):</label>
+            <input type="number" id="newPRValue" required min="1000" placeholder="مثال: 120000">
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+          <div class="form-group">
+            <label style="font-weight: 700; font-size: 12px;">درجة الأولوية:</label>
+            <select id="newPRPriority">
+              <option value="عادي">عادي (Normal - 14 يوم)</option>
+              <option value="عاجل">عاجل (Urgent - 5 أيام)</option>
+              <option value="طارئ">طارئ (Critical Path - 48 ساعة)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label style="font-weight: 700; font-size: 12px;">تاريخ الاحتياج بالموقع:</label>
+            <input type="date" id="newPRDate" required>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline" onclick="closeNewPRModal()">إلغاء</button>
+          <button type="submit" class="btn btn-primary"><i class="fas fa-paper-plane"></i> إرسال الطلب للاعتماد</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+/**
+ * MimarERP Procurement Dashboard Interactive Engine
+ * Handles PR Approvals, Workflow Stepper Filtering, PO Tracking,
+ * Category Spending Chart Rendering, and Vendor Scoring.
+ */
+
+// Data Collections
+let purchaseRequests = [
+  {
+    id: 'PR-2026-0104',
+    date: '2026-03-18',
+    dept: 'الخرسانات والأساسات',
+    desc: 'توريد 450 طن حديد تسليح عالي المقاومة ومثبتات سابك',
+    category: 'حديد وهياكل',
+    val: 1459350,
+    priority: 'طارئ',
+    requester: 'م. فهد القحطاني (مدير الموقع)',
+    status: 'pending'
+  },
+  {
+    id: 'PR-2026-0105',
+    date: '2026-03-19',
+    dept: 'كهروميكانيك MEP',
+    desc: 'توريد محولات توزيع كهربائية 1500kVA مع لوحات تحكم',
+    category: 'كهروميكانيك MEP',
+    val: 320000,
+    priority: 'عاجل',
+    requester: 'م. أحمد الشريف (مهندس كهروميكانيك)',
+    status: 'pending'
+  },
+  {
+    id: 'PR-2026-0106',
+    date: '2026-03-19',
+    dept: 'العزل والتشطيبات',
+    desc: 'توريد 1800 م² لفائف عزل مائي وحراري للأسطح واللبشة',
+    category: 'تشطيبات وعوازل',
+    val: 185000,
+    priority: 'عادي',
+    requester: 'م. عبد العزيز الدوسري',
+    status: 'pending'
+  },
+  {
+    id: 'PR-2026-0107',
+    date: '2026-03-20',
+    dept: 'السلامة والصحة المهنية',
+    desc: 'معدات وقاية شخصية PPE وأجهزة كشف غازات وسقالات ألومنيوم',
+    category: 'مستلزمات سلامة',
+    val: 45000,
+    priority: 'عادي',
+    requester: 'م. خالد المنصور (مسؤول السلامة)',
+    status: 'pending'
+  },
+  {
+    id: 'PR-2026-0108',
+    date: '2026-03-20',
+    dept: 'الهيكل الإنشائي',
+    desc: 'تأجير رافعة برجية 50 متر وحفار هيدروليكي مدة شهرين',
+    category: 'معدات',
+    val: 120000,
+    priority: 'عاجل',
+    requester: 'م. طارق العتيبي (مدير المشاريع)',
+    status: 'pending'
+  }
+];
+
+let purchaseOrders = [
+  {
+    poNo: 'PO-2026-0081',
+    vendor: 'شركة حديد سابك (HADEED)',
+    prRef: 'PR-2026-0092',
+    val: 2850000,
+    issueDate: '2026-02-15',
+    promisedDate: '2026-03-25',
+    receivedPercent: 100,
+    grnCount: 8,
+    status: 'completed',
+    statusText: 'تم التوريد بالكامل (100%)'
+  },
+  {
+    poNo: 'PO-2026-0084',
+    vendor: 'شركة الخرسانة الجاهزة السعودية',
+    prRef: 'PR-2026-0095',
+    val: 1420000,
+    issueDate: '2026-03-01',
+    promisedDate: '2026-03-30',
+    receivedPercent: 75,
+    grnCount: 16,
+    status: 'in_transit',
+    statusText: 'توريد جزئي بالموقع (75%)'
+  },
+  {
+    poNo: 'PO-2026-0087',
+    vendor: 'مؤسسة الرياض لتمديدات الأنابيب',
+    prRef: 'PR-2026-0098',
+    val: 480000,
+    issueDate: '2026-03-05',
+    promisedDate: '2026-03-22',
+    receivedPercent: 40,
+    grnCount: 3,
+    status: 'in_transit',
+    statusText: 'قيد الشحن والتوريد'
+  },
+  {
+    poNo: 'PO-2026-0090',
+    vendor: 'شركة أجهزة الإنذار ومكافحة الحريق',
+    prRef: 'PR-2026-0101',
+    val: 680000,
+    issueDate: '2026-03-08',
+    promisedDate: '2026-03-18',
+    receivedPercent: 20,
+    grnCount: 1,
+    status: 'delayed',
+    statusText: 'متأخر 3 أيام عن الموعد'
+  },
+  {
+    poNo: 'PO-2026-0092',
+    vendor: 'شركة دهانات الجزيرة',
+    prRef: 'PR-2026-0102',
+    val: 215000,
+    issueDate: '2026-03-12',
+    promisedDate: '2026-04-05',
+    receivedPercent: 0,
+    grnCount: 0,
+    status: 'in_transit',
+    statusText: 'قيد التجهيز بالمصنع'
+  }
+];
+
+const categorySpendData = [
+  { name: 'حديد تسليح وهياكل معدنية', amount: 6450000, percent: 35, color: '#2563EB' },
+  { name: 'خرسانة جاهزة وإسمنت', amount: 4605000, percent: 25, color: '#059669' },
+  { name: 'أعمال وتجهيزات كهروميكانيكية MEP', amount: 3315000, percent: 18, color: '#7C3AED' },
+  { name: 'تشطيبات معمارية وعوازل', amount: 2210000, percent: 12, color: '#FF6500' },
+  { name: 'معدات ثقيلة ورافعات برجية', amount: 1105000, percent: 6, color: '#0284C7' },
+  { name: 'مستلزمات سلامة ومواد عامة', amount: 735000, percent: 4, color: '#E11D48' }
+];
+
+let selectedPRForAction = null;
+
+// Initialization
+document.addEventListener('DOMContentLoaded', () => {
+  renderPRTable();
+  renderPOTable();
+  renderSpendingChart();
+  renderChartLegend();
+});
+
+// Render Open PR Table
+function renderPRTable(filterKeyword = '') {
+  const tbody = document.getElementById('prTableBody');
+  tbody.innerHTML = '';
+
+  const activePRs = purchaseRequests.filter(pr => {
+    if (filterKeyword) {
+      const q = filterKeyword.toLowerCase();
+      return pr.id.toLowerCase().includes(q) || pr.desc.toLowerCase().includes(q) || pr.dept.toLowerCase().includes(q);
+    }
+    return true;
+  });
+
+  document.getElementById('prCountBadge').innerText = `${activePRs.length} طلبات متاحة`;
+
+  activePRs.forEach(pr => {
+    const tr = document.createElement('tr');
+    
+    let prioBadge = 'badge-blue';
+    if (pr.priority === 'عاجل') prioBadge = 'badge-amber';
+    if (pr.priority === 'طارئ') prioBadge = 'badge-red';
+
+    let statusBadge = '<span class="badge badge-amber"><i class="fas fa-clock"></i> بانتظار الاعتماد</span>';
+    if (pr.status === 'approved') statusBadge = '<span class="badge badge-green"><i class="fas fa-check"></i> معتمد وموجّه للمنافسة</span>';
+    if (pr.status === 'rejected') statusBadge = '<span class="badge badge-red"><i class="fas fa-times"></i> مرفوض</span>';
+
+    tr.innerHTML = `
+      <td><strong style="color: var(--teal); font-family: 'Tajawal'; font-size: 13px;">${pr.id}</strong></td>
+      <td style="font-size: 11.5px; color: var(--muted);">${pr.date}</td>
+      <td style="font-weight: 700; color: var(--navy2);">${pr.dept}</td>
+      <td>
+        <div style="font-weight: 700; color: var(--navy);">${pr.desc}</div>
+      </td>
+      <td><span class="badge badge-purple">${pr.category}</span></td>
+      <td class="text-num"><strong style="font-size: 13.5px; color: var(--navy);">${pr.val.toLocaleString('en-US')}</strong> <span style="font-size: 10.5px; color: var(--muted);">SAR</span></td>
+      <td><span class="badge ${prioBadge}">${pr.priority}</span></td>
+      <td style="font-size: 11.5px; color: #475569;">${pr.requester}</td>
+      <td>${statusBadge}</td>
+      <td style="text-align: center;">
+        ${pr.status === 'pending' ? `
+          <button class="btn btn-outline" style="padding: 4px 8px; font-size: 11px;" onclick="openPRAction('${pr.id}')" title="مراجعة واعتماد">
+            <i class="fas fa-tasks"></i> مراجعة
+          </button>
+        ` : `
+          <span style="font-size: 11px; color: var(--muted);"><i class="fas fa-check-double"></i> مكتمل</span>
+        `}
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+function filterPRTable(kw) {
+  renderPRTable(kw);
+}
+
+// PR Action Modal (Approve / Reject)
+function openPRAction(prId) {
+  selectedPRForAction = purchaseRequests.find(p => p.id === prId);
+  if (!selectedPRForAction) return;
+
+  const detailBox = document.getElementById('prModalDetails');
+  detailBox.innerHTML = `
+    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+      <strong>رقم الطلب: ${selectedPRForAction.id}</strong>
+      <span class="badge badge-amber">الأولوية: ${selectedPRForAction.priority}</span>
+    </div>
+    <div style="margin-bottom: 4px;"><strong>البيان:</strong> ${selectedPRForAction.desc}</div>
+    <div style="margin-bottom: 4px;"><strong>القسم الطالب:</strong> ${selectedPRForAction.dept} — ${selectedPRForAction.requester}</div>
+    <div style="margin-bottom: 4px;"><strong>القيمة التقديرية:</strong> <span class="text-num" style="font-size: 14px; font-weight: 800; color: var(--teal);">${selectedPRForAction.val.toLocaleString('en-US')} SAR</span></div>
+  `;
+
+  document.getElementById('prApprovalNotes').value = '';
+  document.getElementById('prActionModal').classList.add('open');
+}
+
+function closePRModal() {
+  document.getElementById('prActionModal').classList.remove('open');
+}
+
+function submitPRDecision(decision) {
+  if (!selectedPRForAction) return;
+  const notes = document.getElementById('prApprovalNotes').value;
+
+  if (decision === 'approved') {
+    selectedPRForAction.status = 'approved';
+    alert(`تم اعتماد طلب الشراء ${selectedPRForAction.id} بنجاح!\nسيتم توجيهه لقسم المشتريات لطرح منافسة استدراج عروض (RFQ).`);
+  } else {
+    selectedPRForAction.status = 'rejected';
+    alert(`تم رفض طلب الشراء ${selectedPRForAction.id}.\nتم إشعار المهندس الطالب مع الملاحظات: ${notes || 'لا توجد ملاحظات'}`);
+  }
+
+  closePRModal();
+  renderPRTable();
+}
+
+// New PR Modal
+function openNewPRModal() {
+  document.getElementById('newPRDate').value = '2026-04-10';
+  document.getElementById('newPRModal').classList.add('open');
+}
+function closeNewPRModal() {
+  document.getElementById('newPRModal').classList.remove('open');
+}
+function saveNewPR(e) {
+  e.preventDefault();
+  const newNum = 'PR-2026-01' + (purchaseRequests.length + 5);
+  const newPR = {
+    id: newNum,
+    date: new Date().toISOString().split('T')[0],
+    dept: document.getElementById('newPRDept').value,
+    desc: document.getElementById('newPRDesc').value,
+    category: document.getElementById('newPRCategory').value,
+    val: parseFloat(document.getElementById('newPRValue').value),
+    priority: document.getElementById('newPRPriority').value,
+    requester: 'م. سامي الحربي (مهندس الموقع)',
+    status: 'pending'
+  };
+  purchaseRequests.unshift(newPR);
+  closeNewPRModal();
+  renderPRTable();
+  alert(`تم إنشاء طلب الشراء رقم ${newNum} بنجاح وتم إدراجه في قائمة الاعتمادات!`);
+}
+
+function openNewRFQModal() {
+  alert('تم فتح نافذة إعداد منافسة واستدراج عروض أسعار (RFQ) جديدة.\nسيتم ربط الموردين وتوليد مستندات الشروط والمواصفات تلقائياً.');
+}
+
+// Render PO Table
+function renderPOTable(filter = 'all') {
+  const tbody = document.getElementById('poTableBody');
+  tbody.innerHTML = '';
+
+  const list = purchaseOrders.filter(po => {
+    if (filter === 'in_transit') return po.status === 'in_transit';
+    if (filter === 'delayed') return po.status === 'delayed';
+    return true;
+  });
+
+  list.forEach(po => {
+    const tr = document.createElement('tr');
+    
+    let statusClass = 'badge-blue';
+    if (po.status === 'completed') statusClass = 'badge-green';
+    if (po.status === 'delayed') statusClass = 'badge-red';
+
+    const progColor = po.receivedPercent === 100 ? 'var(--green)' : (po.status === 'delayed' ? 'var(--red)' : 'var(--teal)');
+
+    tr.innerHTML = `
+      <td><strong style="color: var(--navy); font-family: 'Tajawal'; font-size: 13px;">${po.poNo}</strong></td>
+      <td>
+        <div style="font-weight: 800; color: var(--navy);">${po.vendor}</div>
+      </td>
+      <td><span class="badge badge-purple" style="font-family: 'Tajawal';">${po.prRef}</span></td>
+      <td class="text-num"><strong style="font-size: 13px;">${po.val.toLocaleString('en-US')}</strong></td>
+      <td style="font-size: 11.5px; color: var(--muted);">${po.issueDate}</td>
+      <td style="font-size: 11.5px; font-weight: 700; color: ${po.status === 'delayed' ? 'var(--red)' : 'var(--navy)'};">${po.promisedDate}</td>
+      <td>
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <div style="flex: 1; height: 7px; background: #E2E8F0; border-radius: 4px; overflow: hidden; min-width: 70px;">
+            <div style="width: ${po.receivedPercent}%; height: 100%; background: ${progColor};"></div>
+          </div>
+          <span style="font-family: 'Tajawal'; font-size: 11.5px; font-weight: 800;">${po.receivedPercent}%</span>
+          <span style="font-size: 10px; color: var(--muted);">(${po.grnCount} GRN)</span>
+        </div>
+      </td>
+      <td><span class="badge ${statusClass}">${po.statusText}</span></td>
+      <td style="text-align: center;">
+        <button class="btn btn-outline" style="padding: 3px 8px; font-size: 11px;" onclick="viewPODetails('${po.poNo}')" title="عرض تفاصيل أمر الشراء وسند الاستلام">
+          <i class="fas fa-eye"></i> تفاصيل
+        </button>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+function filterPOs(f) {
+  renderPOTable(f);
+}
+
+function viewPODetails(poNo) {
+  alert(`عرض تفاصيل أمر الشراء ${poNo}:\n- شهادة الاستلام المخزني (GRN)\n- الفحص الفني لجودة العينات\n- المطابقة مع الفاتورة الضريبية ZATCA`);
+}
+
+// Award Contract function
+function awardContract(vendorName) {
+  if (confirm(`هل أنت متأكد من اعتماد الترسية على (${vendorName}) وإصدار أمر الشراء الرسمي (PO)؟`)) {
+    alert(`تهانينا! تم اعتماد الترسية على (${vendorName}) بنجاح.\nتم توليد أمر الشراء الإلكتروني وإشعار الإدارة المالية والمستودعات.`);
+  }
+}
+
+// Workflow Pipeline Stepper Filter
+function filterByPipelineStage(stage, stepEl) {
+  document.querySelectorAll('.pipe-step').forEach(s => s.classList.remove('active'));
+  stepEl.classList.add('active');
+
+  if (stage === 'pr_open') {
+    document.getElementById('openPRSection').scrollIntoView({ behavior: 'smooth' });
+    renderPRTable();
+  } else if (stage === 'matrix') {
+    document.getElementById('vendorMatrixSection').scrollIntoView({ behavior: 'smooth' });
+  } else if (stage === 'po_active' || stage === 'delivery') {
+    document.getElementById('poTrackerSection').scrollIntoView({ behavior: 'smooth' });
+  }
+}
+
+// Spending Chart Rendering (Donut Chart)
+function renderSpendingChart() {
+  const canvas = document.getElementById('spendChartCanvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const dpr = window.devicePixelRatio || 1;
+  canvas.width = 220 * dpr;
+  canvas.height = 220 * dpr;
+  ctx.scale(dpr, dpr);
+
+  const centerX = 110;
+  const centerY = 110;
+  const radius = 90;
+  const innerRadius = 55;
+
+  let currentAngle = -0.5 * Math.PI;
+
+  categorySpendData.forEach(cat => {
+    const sliceAngle = (cat.percent / 100) * 2 * Math.PI;
+
+    ctx.beginPath();
+    ctx.arc(centerX, centerY, radius, currentAngle, currentAngle + sliceAngle, false);
+    ctx.arc(centerX, centerY, innerRadius, currentAngle + sliceAngle, currentAngle, true);
+    ctx.closePath();
+    ctx.fillStyle = cat.color;
+    ctx.fill();
+    ctx.strokeStyle = '#FFFFFF';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    currentAngle += sliceAngle;
+  });
+
+  // Center Text inside Donut
+  ctx.fillStyle = '#0B192C';
+  ctx.font = 'bold 15px Tajawal, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('18.42M', centerX, centerY - 8);
+
+  ctx.fillStyle = '#64748B';
+  ctx.font = '10px Cairo, sans-serif';
+  ctx.fillText('SAR إجمالي', centerX, centerY + 12);
+}
+
+function renderChartLegend() {
+  const legendBox = document.getElementById('chartLegendList');
+  legendBox.innerHTML = '';
+
+  categorySpendData.forEach(cat => {
+    const row = document.createElement('div');
+    row.className = 'legend-row';
+    row.innerHTML = `
+      <div class="legend-title">
+        <div class="color-swatch" style="background: ${cat.color};"></div>
+        <span>${cat.name}</span>
+      </div>
+      <div style="display: flex; gap: 8px; align-items: center;">
+        <span class="text-num" style="font-weight: 800; font-size: 12px; color: var(--navy);">${cat.amount.toLocaleString('en-US')} SAR</span>
+        <span class="badge" style="background: #E2E8F0; color: #334155; font-size: 10.5px; font-weight: 800; padding: 2px 6px;">${cat.percent}%</span>
+      </div>
+    `;
+    legendBox.appendChild(row);
+  });
+}
+</script>
+</body>
+</html>

@@ -294,7 +294,7 @@
 
   <div class="sidebar-footer">
     <div class="sidebar-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></div>
-    <span class="version-label">v4.2.0 Modular SaaS</span>
+    <span class="version-label">v7.0.0 Enterprise SaaS</span>
   </div>
 </aside>
 
@@ -340,6 +340,60 @@
         </select>
       </div>
 
+      <!-- Enterprise Suites v7 Dropdown Launcher -->
+      <div class="dropdown-wrapper">
+        <button class="btn btn-outline btn-sm" onclick="toggleModulesMenu(event)" id="btn-enterprise-modules" style="background:rgba(201,168,76,0.12); border-color:var(--gold); color:var(--gold); font-weight:700;" title="فتح المنظومات التخصصية الموسعة v7">
+          <i class="fas fa-cubes"></i> <span>المنظومات التخصصية v7</span> <i class="fas fa-chevron-down" style="font-size:10px; margin-right:4px;"></i>
+        </button>
+        <div id="dropdown-enterprise-modules" class="dropdown-menu-custom">
+          <div style="padding:8px 16px; font-size:11px; font-weight:800; color:var(--color-neutral-500); border-bottom:1px solid var(--color-neutral-200); background:var(--color-neutral-50);">
+            <i class="fas fa-star" style="color:var(--gold)"></i> المنظومات التخصصية المستقلة (Enterprise Suites)
+          </div>
+          <a href="modules/executive-dashboard/index.html" target="_blank" class="module-dropdown-item">
+            <i class="fas fa-gauge-high" style="color:var(--gold)"></i>
+            <div>
+              <strong>لوحة القيادة التنفيذية</strong>
+              <small>Executive Cockpit 360°</small>
+            </div>
+          </a>
+          <a href="modules/cost-control/index.html" target="_blank" class="module-dropdown-item">
+            <i class="fas fa-chart-line" style="color:var(--blue)"></i>
+            <div>
+              <strong>منظومة ضبط التكاليف EVM</strong>
+              <small>Earned Value Management Studio</small>
+            </div>
+          </a>
+          <a href="modules/planning/index.html" target="_blank" class="module-dropdown-item">
+            <i class="fas fa-calendar-alt" style="color:var(--teal)"></i>
+            <div>
+              <strong>استوديو التخطيط والجدولة</strong>
+              <small>Primavera-grade Gantt Studio</small>
+            </div>
+          </a>
+          <a href="modules/procurement/index.html" target="_blank" class="module-dropdown-item">
+            <i class="fas fa-shopping-cart" style="color:var(--green)"></i>
+            <div>
+              <strong>بوابة المشتريات والتوريد</strong>
+              <small>P2P Supply Chain Hub</small>
+            </div>
+          </a>
+          <a href="modules/hse/index.html" target="_blank" class="module-dropdown-item">
+            <i class="fas fa-shield-alt" style="color:var(--red)"></i>
+            <div>
+              <strong>بوابة السلامة والصحة المهنية</strong>
+              <small>HSE & Environmental Portal</small>
+            </div>
+          </a>
+          <a href="modules/document-control/index.html" target="_blank" class="module-dropdown-item">
+            <i class="fas fa-folder-open" style="color:var(--purple)"></i>
+            <div>
+              <strong>نظام إدارة ومراقبة الوثائق</strong>
+              <small>Aconex-grade CDE & EDMS</small>
+            </div>
+          </a>
+        </div>
+      </div>
+
       <!-- AI Cost Matcher Button -->
       <button class="btn btn-outline btn-sm" onclick="openAICostModal()" id="btn-ai-cost" title="المساعد الذكي لتسعير البنود والمطابقة التلقائية مع معايير CSI/DIN">
         <i class="fas fa-brain" style="color:var(--purple)"></i> <span>مساعد التسعير AI</span>
@@ -376,7 +430,8 @@
           <h2 style="font-size:20px; font-weight:800; color:var(--navy);" id="dash-project-title">لوحة القيادة والمتابعة</h2>
           <p style="color:var(--muted); font-size:12px;" id="dash-project-subtitle">مؤشرات الأداء المالي والزمني وفق معايير إدارة القيمة المكتسبة (EVM)</p>
         </div>
-        <div style="display:flex; gap:8px;">
+        <div style="display:flex; gap:8px; align-items:center;">
+          <a href="modules/executive-dashboard/index.html" target="_blank" class="btn btn-primary btn-sm" style="background:var(--navy); border-color:var(--gold); color:#fff;"><i class="fas fa-expand-alt"></i> لوحة القيادة الموسعة (Cockpit)</a>
           <span class="badge badge-blue" id="dash-client-badge">العميل: جارٍ التحميل...</span>
           <span class="badge badge-green" id="dash-status-badge">نشط</span>
         </div>
@@ -1149,7 +1204,8 @@
           <h2 style="font-size:20px; font-weight:800; color:var(--navy);">مراقبة التكاليف | Cost Control</h2>
           <p style="color:var(--muted); font-size:12px;">إدارة القيمة المكتسبة (EVM) وفق معايير AACE International · تحليل الانحرافات على مستوى حزم WBS</p>
         </div>
-        <div style="display:flex; gap:8px;">
+        <div style="display:flex; gap:8px; align-items:center;">
+          <a href="modules/cost-control/index.html" target="_blank" class="btn btn-outline btn-sm" style="border-color:var(--gold); color:var(--gold); font-weight:700;"><i class="fas fa-chart-line"></i> استوديو ضبط التكاليف (EVM Studio)</a>
           <span class="badge badge-blue">AACE RP-10S-90</span>
           <span class="badge badge-purple">EVM Class 1</span>
           <button class="btn btn-primary btn-sm" onclick="openAddCostControlModal()"><i class="fas fa-plus"></i> إضافة بند رقابة تكاليف</button>
@@ -1386,7 +1442,10 @@
         <div class="card">
           <div class="card-header">
             <h3><i class="fas fa-cart-shopping" style="color:var(--amber)"></i> أوامر الشراء الصادرة للمشروع</h3>
-            <button class="btn btn-primary btn-sm" onclick="openAddPOModal()"><i class="fas fa-plus"></i> إصدار أمر شراء جديد</button>
+            <div style="display:flex; gap:8px; align-items:center;">
+              <a href="modules/procurement/index.html" target="_blank" class="btn btn-outline btn-sm" style="border-color:var(--gold); color:var(--gold); font-weight:700;"><i class="fas fa-shopping-cart"></i> بوابة المشتريات والتوريد (P2P Hub)</a>
+              <button class="btn btn-primary btn-sm" onclick="openAddPOModal()"><i class="fas fa-plus"></i> إصدار أمر شراء جديد</button>
+            </div>
           </div>
           <div class="card-body" style="padding:0;">
             <div class="table-wrapper">
@@ -1757,6 +1816,7 @@
     <!-- VIEW 11: SCHEDULING & CPM -->
     <section class="page-view" id="view-scheduling">
       <div class="toolbar">
+        <a href="modules/planning/index.html" target="_blank" class="btn btn-outline btn-sm" style="border-color:var(--gold); color:var(--gold); font-weight:700;"><i class="fas fa-calendar-alt"></i> استوديو التخطيط وجانت (Gantt Studio)</a>
         <button class="btn btn-primary btn-sm" onclick="openAddScheduleModal()"><i class="fas fa-plus"></i> إضافة نشاط زمني جديد</button>
         <button class="btn btn-primary btn-sm" onclick="exportPrimaveraXER()"><i class="fas fa-download"></i> تصدير ملف Primavera P6 (.XER)</button>
         <button class="btn btn-outline btn-sm" onclick="calculateCPM()"><i class="fas fa-network-wired"></i> حساب المسار الحرج (CPM Forward/Backward)</button>
@@ -1839,6 +1899,7 @@
         <div class="card-header">
           <h3><i class="fas fa-folder-tree" style="color:var(--navy)"></i> سجل المخططات والوثائق الهندسية (Master Document Register - MDR)</h3>
           <div style="display:flex; gap:8px; align-items:center;">
+            <a href="modules/document-control/index.html" target="_blank" class="btn btn-outline btn-sm" style="border-color:var(--gold); color:var(--gold); font-weight:700;"><i class="fas fa-folder-open"></i> بوابة إدارة الوثائق والمراسلات (CDE Hub)</a>
             <span class="badge badge-purple">معايير الآيزو ISO 19650 (IFR / IFA / IFC / As-Built)</span>
             <button class="btn btn-primary btn-sm" onclick="openAddDrawingModal()"><i class="fas fa-plus"></i> تسجيل مخطط جديد</button>
           </div>
@@ -2160,7 +2221,8 @@
           <h2 style="font-size:20px;font-weight:800;color:var(--navy);">إدارة السلامة والصحة المهنية | HSE Management</h2>
           <p style="color:var(--muted);font-size:12px;">Health, Safety & Environment — سجلات الحوادث والمفتشيات والتدريبات وفق OHSAS 18001 / ISO 45001 ومعايير وزارة الموارد البشرية السعودية</p>
         </div>
-        <div style="display:flex;gap:8px;">
+        <div style="display:flex;gap:8px;align-items:center;">
+          <a href="modules/hse/index.html" target="_blank" class="btn btn-outline btn-sm" style="border-color:var(--gold); color:var(--gold); font-weight:700;"><i class="fas fa-shield-alt"></i> بوابة السلامة والصحة المهنية (HSE Portal)</a>
           <span class="badge badge-green">ISO 45001</span>
           <span class="badge badge-amber">OHSAS 18001</span>
           <button class="btn btn-primary btn-sm" onclick="openAddSafetyModal()"><i class="fas fa-plus"></i> تسجيل حادثة / ملاحظة</button>
