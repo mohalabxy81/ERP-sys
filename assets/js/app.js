@@ -1002,24 +1002,48 @@ function renderSubcontractsTable() {
 function renderScheduleTable() {
   const tbody = document.querySelector("#tbl-schedule tbody");
   if (!tbody) return;
-  tbody.innerHTML = `
-    <tr>
-      <td class="text-num"><strong>ACT-101</strong></td><td>WBS-09.1</td>
-      <td>أعمال لياسة الحوائط الداخلية</td><td class="text-center">30</td>
-      <td class="text-num">2026-02-01</td><td class="text-num">2026-03-02</td>
-      <td class="text-center">-</td><td class="text-center">20.5%</td>
-      <td class="text-center"><strong style="color:var(--green)">100%</strong></td>
-      <td><span class="badge badge-green">مكتمل</span></td>
-    </tr>
-    <tr>
-      <td class="text-num"><strong>ACT-102</strong></td><td>WBS-09.2</td>
-      <td>أعمال تركيب السيراميك والبورسلان</td><td class="text-center">25</td>
-      <td class="text-num">2026-03-05</td><td class="text-num">2026-03-30</td>
-      <td class="text-center">ACT-101 (FS)</td><td class="text-center">24.2%</td>
-      <td class="text-center"><strong style="color:var(--blue)">75%</strong></td>
-      <td><span class="badge badge-blue">جاري العمل</span></td>
-    </tr>
-  `;
+  tbody.innerHTML = "";
+
+  const prj = getActiveProject();
+  const rawActs = (MimarERP.scheduleMaster || []).filter(a => !prj || a.project_id === prj.project_id);
+  const activities = rawActs.length > 0 ? rawActs : (MimarERP.scheduleMaster || []).slice(0, 6);
+
+  const cpmRes = (window.CpmEngine && window.CpmEngine.computeCPM)
+    ? window.CpmEngine.computeCPM(activities)
+    : { activities, criticalPath: [] };
+
+  cpmRes.activities.forEach(a => {
+    const tr = document.createElement("tr");
+    if (a.isCritical) tr.style.background = "rgba(225, 29, 72, 0.05)";
+
+    const predText = (a.predecessors && a.predecessors.length > 0)
+      ? `${a.predecessors.join(', ')} (${a.relation_type || 'FS'})`
+      : '-';
+
+    const critBadge = a.isCritical
+      ? `<span class="badge badge-red" title="المسار الحرج (Total Float = 0)"><i class="fas fa-fire"></i> مسار حرج CPM</span>`
+      : `<span class="badge badge-blue" title="سماحية زمنية">${a.TF || 0} يوم مرونة</span>`;
+
+    const statusBadge = a.status === 'مكتمل'
+      ? `<span class="badge badge-green">مكتمل</span>`
+      : a.status === 'جاري العمل'
+      ? `<span class="badge badge-blue">جاري العمل</span>`
+      : `<span class="badge badge-amber">مخطط</span>`;
+
+    tr.innerHTML = `
+      <td class="text-num"><strong>${a.activity_id}</strong></td>
+      <td><span class="badge badge-teal">${a.wbs_code || 'WBS-01'}</span></td>
+      <td><strong>${a.activity_name}</strong> ${critBadge}</td>
+      <td class="text-center font-bold">${a.duration_days || a.duration || 1} يوم</td>
+      <td class="text-num">${a.planned_start}</td>
+      <td class="text-num">${a.planned_finish}</td>
+      <td class="text-center">${predText}</td>
+      <td class="text-center">${a.weight_pct || 10}%</td>
+      <td class="text-center"><strong style="color:${(a.actual_progress_pct >= 100 ? 'var(--green)' : 'var(--blue)')}">${a.actual_progress_pct || 0}%</strong></td>
+      <td>${statusBadge}</td>
+    `;
+    tbody.appendChild(tr);
+  });
 }
 
 function renderBillingTable() {
@@ -1513,11 +1537,43 @@ function switchProcTab(btn, tabId) {
 }
 
 function exportPrimaveraXER() {
-  showToast("تم توليد وتصدير ملف الجدول الزمني بصيغة Primavera P6 XER بنجاح.");
+  const prj = getActiveProject();
+  const rawActs = (MimarERP.scheduleMaster || []).filter(a => !prj || a.project_id === prj.project_id);
+  const activities = rawActs.length > 0 ? rawActs : (MimarERP.scheduleMaster || []).slice(0, 6);
+
+  if (!window.CpmEngine || !window.CpmEngine.generateXER) {
+    showToast("تعذر تصدير ملف Primavera XER: المحرك غير متوفر.");
+    return;
+  }
+
+  const xerText = window.CpmEngine.generateXER(prj, activities);
+  const blob = new Blob([xerText], { type: 'text/plain;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `${prj.project_code || 'PRJ'}_Primavera_P6.xer`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+
+  showToast(`تم توليد وتنزيل ملف Primavera P6 (.XER) بنجاح: ${prj.project_code}_Primavera_P6.xer`);
 }
 
 function calculateCPM() {
-  showToast("تم إجراء تحليل المسار الحرج (CPM): المسار الحرج يمر عبر بند لياسة الحوائط والدهانات.");
+  const prj = getActiveProject();
+  const rawActs = (MimarERP.scheduleMaster || []).filter(a => !prj || a.project_id === prj.project_id);
+  const activities = rawActs.length > 0 ? rawActs : (MimarERP.scheduleMaster || []).slice(0, 6);
+
+  if (!window.CpmEngine || !window.CpmEngine.computeCPM) {
+    showToast("محرك CPM غير متوفر حالياً.");
+    return;
+  }
+
+  const res = window.CpmEngine.computeCPM(activities);
+  renderScheduleTable();
+  const critList = res.criticalPath.join(' ➔ ');
+  showToast(`تم حساب المسار الحرج (CPM)! مدة المشروع: ${res.projectDuration} يوم. الأنشطة الحرجة: [${critList}]`);
 }
 
 async function connectExcel() {
@@ -3746,6 +3802,193 @@ function renderEVMDashboard() {
 
   tbody.innerHTML = rows.length ? rows.join('') : '<tr><td colspan="9" style="text-align:center;color:var(--muted);">لا توجد بيانات WBS / BOQ للمشروع المحدد</td></tr>';
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   AI COPILOT HUB — 8 Specialized Construction AI Agents
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+const AI_AGENTS = {
+  fidic: {
+    title: 'مستشار العقود ومطالبات فيديك (FIDIC Red Book 2017)',
+    prompts: [
+      'حلل التزام المقاول بالبند 20.1 لمطالبة تمديد الوقت EOT',
+      'ما هي الإجراءات التعاقدية الصحيحة للتعامل مع أمر التغيير المقترح؟',
+      'هل هذه المطالبة مؤهلة كحدث تعويض قابل للتعويض؟'
+    ]
+  },
+  evm: {
+    title: 'محلل الانحرافات والتكلفة المتوقعة (EVM Intelligence)',
+    prompts: [
+      'ما هي التكلفة المتوقعة عند الانتهاء (EAC) ولماذا تجاوزت الميزانية؟',
+      'حلل أسباب انخفاض CPI وقترح خطة إصلاحية',
+      'هل يمكن استدراك الجدول الزمني مع السيطرة على التكاليف؟'
+    ]
+  },
+  cpm: {
+    title: 'محلل الجدول الزمني والمسار الحرج (CPM Scheduler AI)',
+    prompts: [
+      'ما الأنشطة الحرجة التي إذا تأخرت ستؤخر المشروع كله؟',
+      'اقترح خطة استدراك (Recovery Plan) لتقليل التأخير بأسبوعين',
+      'هل لدينا سماحية زمنية كافية لإعادة جدولة أعمال التشطيبات؟'
+    ]
+  },
+  procurement: {
+    title: 'مدقق عروض الأسعار والمشتريات (Procurement Audit AI)',
+    prompts: [
+      'قارن أسعار الموردين وحدد العرض الأمثل بشرط التزام المواصفات',
+      'هل هناك مورد ذو مخاطرة عالية يجب تقييمه قبل إصدار أمر الشراء؟',
+      'ما نسبة التوفير الممكن تحقيقها عبر توحيد قوائم الكميات؟'
+    ]
+  },
+  qaqc: {
+    title: 'مساعد الجودة ومراجعة الملاحظات (QA/QC Copilot)',
+    prompts: [
+      'ما ملاحظات Punch List الحرجة التي تمنع التسليم الأولي؟',
+      'حلل جذر سبب NCR رقم 3 وهل تكرر؟',
+      'هل تخطة فحص الخرسانة (ITP) متوافقة مع مواصفات SBC 304؟'
+    ]
+  },
+  hse: {
+    title: 'مستشار السلامة والبيئة (HSE ISO 45001 Advisor)',
+    prompts: [
+      'راجع خطة السلامة وحدد الثغرات وفق متطلبات ISO 45001',
+      'ما الإجراءات الاحترازية اللازمة لأعمال الحفر بجانب المباني القائمة؟',
+      'كيف نحسن مؤشر تكرار الحوادث TRIR وفق معايير OSHA؟'
+    ]
+  },
+  boq: {
+    title: 'مدقق الكميات والتسعير التنافسي (QS Intelligence AI)',
+    prompts: [
+      'راجع بنود BOQ وحدد البنود التي تحتاج تعديل كميات بعد التنفيذ',
+      'قارن الأسعار التحليلية مع أسعار السوق السعودي الحالية',
+      'هل هناك بنود تم قياسها مرتين (Double Counting) في الكشوفات؟'
+    ]
+  },
+  cashflow: {
+    title: 'محلل السيولة والتدفق النقدي (Cash Flow Forecasting AI)',
+    prompts: [
+      'متى سيكون هناك عجز نقدي ويجب ترتيب تمويل بنكي؟',
+      'حلل فجوة التدفق النقدي بين الفواتير المقدمة والمبالغ المحصلة',
+      'ما السيناريو المالي الأفضل لتسريع تحصيل المستخلصات؟'
+    ]
+  }
+};
+
+let currentCopilotAgent = 'fidic';
+
+function openAiCopilotModal(agentKey) {
+  currentCopilotAgent = agentKey && AI_AGENTS[agentKey] ? agentKey : 'fidic';
+  const modal = document.getElementById('modal-ai-copilot');
+  if (!modal) return;
+  modal.style.display = 'flex';
+  loadCopilotAgent(currentCopilotAgent);
+}
+
+function closeAiCopilotModal() {
+  const modal = document.getElementById('modal-ai-copilot');
+  if (modal) modal.style.display = 'none';
+}
+
+function switchCopilotTab(agentKey, btn) {
+  currentCopilotAgent = agentKey;
+  document.querySelectorAll('.modal-body .btn').forEach(b => b.classList.remove('btn-primary'));
+  document.querySelectorAll('.modal-body .btn').forEach(b => { if (!b.classList.contains('btn-xs')) return; b.classList.remove('btn-primary'); b.classList.add('btn-outline'); });
+  if (btn) { btn.classList.remove('btn-outline'); btn.classList.add('btn-primary'); }
+  loadCopilotAgent(agentKey);
+}
+
+function loadCopilotAgent(agentKey) {
+  const agent = AI_AGENTS[agentKey];
+  if (!agent) return;
+  const titleEl = document.getElementById('ai-agent-title');
+  if (titleEl) titleEl.innerHTML = `<strong>الوكيل النشط:</strong> ${agent.title}`;
+
+  const prj = getActiveProject();
+  const tagEl = document.getElementById('ai-project-tag');
+  if (tagEl) tagEl.textContent = prj ? `المشروع: ${prj.project_code}` : 'جميع المشاريع';
+
+  const suggestEl = document.getElementById('ai-prompt-suggestions');
+  if (suggestEl) {
+    suggestEl.innerHTML = agent.prompts.map(p =>
+      `<button type="button" class="btn btn-outline btn-xs" onclick="useAiPrompt(this.textContent)">${p}</button>`
+    ).join('');
+  }
+
+  const responseBox = document.getElementById('ai-response-box');
+  if (responseBox) responseBox.style.display = 'none';
+}
+
+function useAiPrompt(promptText) {
+  const input = document.getElementById('ai-prompt-input');
+  if (input) input.value = promptText;
+}
+
+function runAiCopilotAnalysis() {
+  const input = document.getElementById('ai-prompt-input');
+  const responseBox = document.getElementById('ai-response-box');
+  const responseContent = document.getElementById('ai-response-content');
+  const btn = document.getElementById('btn-run-ai');
+
+  if (!input || !input.value.trim()) {
+    showToast('الرجاء إدخال استفسار لتشغيل التحليل الذكي.');
+    return;
+  }
+
+  if (btn) btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري التحليل...';
+
+  setTimeout(() => {
+    const prj = getActiveProject();
+    const agent = AI_AGENTS[currentCopilotAgent] || AI_AGENTS.fidic;
+    const prompt = input.value.trim();
+    const bac = prj ? Number(prj.direct_cost_budget).toLocaleString('ar-SA', {maximumFractionDigits: 0}) : 'N/A';
+    const progress = prj ? prj.physical_progress_pct + '%' : 'N/A';
+    const projectCode = prj ? prj.project_code : 'N/A';
+
+    const contextResponses = {
+      fidic: `
+        <strong>🏛️ تحليل فيديك التعاقدي — ${projectCode}</strong><br><br>
+        بناءً على مراجعة بيانات المشروع وقراءة الاستفسار: "<em>${prompt}</em>"<br><br>
+        <strong>التحليل:</strong> وفق البند 20.1 من FIDIC Red Book 2017 (Notice of Claim)، يجب على المقاول إرسال إشعار أولي خلال <strong>28 يوماً</strong> من تاريخ وقوع الحدث أو من تاريخ علمه به. يستوجب الإشعار توثيق الحدث المُسبِّب للتأخير أو التكلفة الإضافية مع الإشارة للأحكام التعاقدية الداعمة.<br><br>
+        <strong>التوصيات:</strong><br>
+        • الرجوع للبند 1.9 (أخطاء في وثائق العقد) أو البند 2.1 (حق الوصول للموقع) كمستند داعم<br>
+        • رفع تقرير التأثير على الجدول الزمني (Delay Analysis) بأسلوب Time Impact Analysis (TIA)<br>
+        • توثيق كل التكاليف الإضافية ضمن سجل الوقائع اليومية (Contemporary Records)
+      `,
+      evm: `
+        <strong>📊 تحليل أداء التكاليف — ${projectCode}</strong><br><br>
+        بناءً على مؤشرات المشروع: BAC = <strong>${bac} ر.س</strong>، الإنجاز = <strong>${progress}</strong><br><br>
+        <strong>التحليل:</strong> ${prompt}<br><br>
+        <strong>مؤشرات الأداء الحالية:</strong><br>
+        • CPI < 1.0 يشير إلى تجاوز في التكاليف الفعلية مقارنة بالقيمة المكتسبة<br>
+        • EAC = BAC / CPI → التكلفة المتوقعة عند الانتهاء أعلى من الميزانية المعتمدة<br><br>
+        <strong>التوصيات الفورية:</strong><br>
+        • مراجعة أسعار الوحدة للبنود ذات الاستهلاك الأعلى<br>
+        • تقييم كفاءة اليد العاملة ومستوى الإنتاجية اليومية<br>
+        • تفعيل نظام تحذيرات الانحراف المبكر (Early Warning System)
+      `
+    };
+
+    const responseHtml = contextResponses[currentCopilotAgent] || `
+      <strong>🤖 تحليل الوكيل الذكي — ${agent.title}</strong><br><br>
+      بناءً على استفسارك: "<em>${prompt}</em>"<br>
+      وبيانات المشروع: <strong>${projectCode}</strong>، إنجاز <strong>${progress}</strong><br><br>
+      <strong>التحليل الأولي:</strong><br>
+      تم استقراء بيانات المشروع ومراجعة الوثائق المتاحة. يُوصى بمراجعة البيانات التفصيلية في الشاشات المتخصصة ذات الصلة والتنسيق مع المهندس المختص للتحقق من النتائج قبل اتخاذ القرارات التعاقدية.
+    `;
+
+    if (responseBox) responseBox.style.display = 'block';
+    if (responseContent) responseContent.innerHTML = responseHtml;
+    if (btn) btn.innerHTML = '<i class="fas fa-wand-magic-sparkles"></i> تشغيل التحليل الذكي';
+
+    showToast(`تم إجراء التحليل الذكي بواسطة وكيل: ${agent.title.split(' (')[0]}`);
+  }, 1800);
+}
+
+window.openAiCopilotModal = openAiCopilotModal;
+window.closeAiCopilotModal = closeAiCopilotModal;
+window.switchCopilotTab = switchCopilotTab;
+window.useAiPrompt = useAiPrompt;
+window.runAiCopilotAnalysis = runAiCopilotAnalysis;
 
 /* ═══════════════════════════════════════════════════════════════════════════
    ENTERPRISE MODULES LAUNCHER (v7.0)

@@ -561,6 +561,192 @@
   };
 
   // =========================================================================
+  // 7. PRIMAVERA P6-GRADE CPM NETWORK TRAVERSAL & XER EXPORT ENGINE
+  // =========================================================================
+
+  /**
+   * Two-pass Topological Traversal Critical Path Method (CPM)
+   * Calculates Early Start, Early Finish, Late Start, Late Finish,
+   * Total Float (TF), Free Float (FF), and Critical Path flags.
+   */
+  function computeCPM(activities) {
+    if (!activities || !Array.isArray(activities) || activities.length === 0) {
+      return { activities: [], projectDuration: 0, criticalPath: [] };
+    }
+
+    // 1. Map activities by ID
+    const actMap = {};
+    const adj = {}; // successors
+    const inDeg = {};
+
+    activities.forEach(a => {
+      const id = a.activity_id;
+      actMap[id] = {
+        ...a,
+        duration: Number(a.duration_days) || 1,
+        predecessors: Array.isArray(a.predecessors) ? [...a.predecessors] : [],
+        successors: [],
+        ES: 0,
+        EF: 0,
+        LS: 0,
+        LF: 0,
+        TF: 0,
+        FF: 0,
+        isCritical: false
+      };
+      adj[id] = [];
+      inDeg[id] = 0;
+    });
+
+    // 2. Build graph and calculate in-degree
+    Object.keys(actMap).forEach(id => {
+      const a = actMap[id];
+      a.predecessors.forEach(predId => {
+        if (actMap[predId]) {
+          adj[predId].push(id);
+          inDeg[id]++;
+        }
+      });
+    });
+
+    // 3. Topological Sort (Kahn's Algorithm)
+    const queue = [];
+    Object.keys(inDeg).forEach(id => {
+      if (inDeg[id] === 0) queue.push(id);
+    });
+
+    const topoOrder = [];
+    while (queue.length > 0) {
+      const u = queue.shift();
+      topoOrder.push(u);
+      adj[u].forEach(v => {
+        inDeg[v]--;
+        if (inDeg[v] === 0) queue.push(v);
+      });
+    }
+
+    // Fallback if cycle exists or incomplete
+    if (topoOrder.length < Object.keys(actMap).length) {
+      Object.keys(actMap).forEach(id => {
+        if (!topoOrder.includes(id)) topoOrder.push(id);
+      });
+    }
+
+    // Populate successors
+    Object.keys(adj).forEach(id => {
+      actMap[id].successors = adj[id];
+    });
+
+    // 4. Forward Pass (Early Start & Early Finish)
+    let projectDuration = 0;
+    topoOrder.forEach(id => {
+      const a = actMap[id];
+      let maxPredEF = 0;
+      a.predecessors.forEach(predId => {
+        if (actMap[predId] && actMap[predId].EF > maxPredEF) {
+          maxPredEF = actMap[predId].EF;
+        }
+      });
+      a.ES = maxPredEF;
+      a.EF = a.ES + a.duration;
+      if (a.EF > projectDuration) {
+        projectDuration = a.EF;
+      }
+    });
+
+    // 5. Backward Pass (Late Finish & Late Start)
+    for (let i = topoOrder.length - 1; i >= 0; i--) {
+      const id = topoOrder[i];
+      const a = actMap[id];
+      if (a.successors.length === 0) {
+        a.LF = projectDuration;
+      } else {
+        let minSuccLS = Infinity;
+        a.successors.forEach(succId => {
+          if (actMap[succId] && actMap[succId].LS < minSuccLS) {
+            minSuccLS = actMap[succId].LS;
+          }
+        });
+        a.LF = minSuccLS === Infinity ? projectDuration : minSuccLS;
+      }
+      a.LS = a.LF - a.duration;
+
+      // 6. Float Calculation
+      a.TF = a.LS - a.ES;
+      
+      // Free Float: min(ES of successors) - EF
+      if (a.successors.length === 0) {
+        a.FF = a.TF;
+      } else {
+        let minSuccES = Infinity;
+        a.successors.forEach(succId => {
+          if (actMap[succId] && actMap[succId].ES < minSuccES) {
+            minSuccES = actMap[succId].ES;
+          }
+        });
+        a.FF = Math.max(0, minSuccES - a.EF);
+      }
+
+      a.isCritical = a.TF <= 0;
+    }
+
+    const resultList = topoOrder.map(id => actMap[id]);
+    const criticalPath = resultList.filter(a => a.isCritical).map(a => a.activity_id);
+
+    return {
+      activities: resultList,
+      projectDuration,
+      criticalPath
+    };
+  }
+
+  /**
+   * Generates a standard Primavera P6 .XER text file
+   */
+  function generateXER(project, activities) {
+    const prjCode = project.project_code || 'PRJ-2026';
+    const prjName = project.project_name_ar || 'Construction Project';
+    const today = new Date().toISOString().slice(0, 10);
+
+    let xer = `ERMHDR\t19.12\t${today}\tXER\tPrimavera P6 Enterprise Project Portfolio Management\n`;
+    xer += `%T\tPROJECT\n`;
+    xer += `%F\tproj_id\tproj_short_name\tclndr_id\tplan_start_date\tplan_end_date\tstatus_code\n`;
+    xer += `%R\t1\t${prjCode}\t1\t${project.start_date || '2026-01-01'}\t${project.handover_date || '2026-12-31'}\tPS_Active\n`;
+
+    xer += `%T\tPROJWBS\n`;
+    xer += `%F\twbs_id\tproj_id\twbs_short_name\twbs_name\n`;
+    xer += `%R\t1\t1\tWBS-01\t${prjName}\n`;
+
+    xer += `%T\tTASK\n`;
+    xer += `%F\ttask_id\tproj_id\twbs_id\ttask_code\ttask_name\ttarget_durn_hr_cnt\tearly_start_date\tearly_end_date\tlate_start_date\tlate_end_date\ttotal_float_hr_cnt\tfree_float_hr_cnt\tstatus_code\n`;
+
+    const cpmRes = computeCPM(activities);
+    cpmRes.activities.forEach((a, idx) => {
+      const taskId = idx + 101;
+      const durnHours = a.duration * 8;
+      const tfHours = a.TF * 8;
+      const ffHours = a.FF * 8;
+      xer += `%R\t${taskId}\t1\t1\t${a.activity_id}\t${a.activity_name}\t${durnHours}\t${a.planned_start}\t${a.planned_finish}\t${a.planned_start}\t${a.planned_finish}\t${tfHours}\t${ffHours}\tTK_Active\n`;
+    });
+
+    xer += `%T\tTASKPRED\n`;
+    xer += `%F\ttask_pred_id\ttask_id\tpred_task_id\tpred_type\n`;
+    let predIdx = 1;
+    cpmRes.activities.forEach((a, aIdx) => {
+      const taskId = aIdx + 101;
+      a.predecessors.forEach(predCode => {
+        const pIdx = cpmRes.activities.findIndex(x => x.activity_id === predCode);
+        if (pIdx >= 0) {
+          xer += `%R\t${predIdx++}\t${taskId}\t${pIdx + 101}\tPR_FS\n`;
+        }
+      });
+    });
+
+    xer += `%E\n`;
+    return xer;
+  }
+
+  // =========================================================================
   // EXPORT TO GLOBAL WINDOW
   // =========================================================================
   window.ZatcaEngine = {
@@ -591,6 +777,11 @@
 
   window.SubcontractTenderEngine = SubcontractTenderEngine;
   window.SubcontractProtectionRules = SubcontractProtectionRules;
+
+  window.CpmEngine = {
+    computeCPM,
+    generateXER
+  };
 
   window.showZatcaModal = showZatcaModal;
 

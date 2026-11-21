@@ -52,35 +52,17 @@
       </button>
     </div>
 
-    <!-- GROUP 1: لوحات القيادة والمتابعة -->
+    <!-- =========================================================================
+         ERP-SYS V8 ENTERPRISE CONSTRUCTION OPERATING SYSTEM (ECOS)
+         26-Discipline Expandable Tree Navigation
+         ========================================================================= -->
+
+    <!-- DISCIPLINE 1: لوحات القيادة والمتابعة -->
     <div class="nav-group" id="nav-grp-dashboard">
       <div class="nav-group-header" onclick="toggleNavGroup(this)">
         <div class="nav-group-title">
           <i class="fas fa-gauge-high nav-group-icon"></i>
-          <span>لوحات القيادة والمتابعة</span>
-        </div>
-        <div class="nav-group-meta">
-          <span class="nav-group-count">2</span>
-          <i class="fas fa-chevron-down nav-group-chevron"></i>
-        </div>
-      </div>
-      <div class="nav-group-items">
-        <a class="nav-item active" onclick="switchView('dashboard')">
-          <i class="fas fa-gauge-high"></i><span class="nav-text">لوحة التحكم التنفيذية</span>
-        </a>
-        <a class="nav-item" onclick="switchView('cost-control')">
-          <i class="fas fa-chart-line"></i><span class="nav-text">ضبط التكاليف (EVM)</span>
-          <span class="badge-pill" style="background:rgba(0,141,218,0.3)">AACE</span>
-        </a>
-      </div>
-    </div>
-
-    <!-- GROUP 2: البيانات الأساسية -->
-    <div class="nav-group" id="nav-grp-master">
-      <div class="nav-group-header" onclick="toggleNavGroup(this)">
-        <div class="nav-group-title">
-          <i class="fas fa-database nav-group-icon"></i>
-          <span>البيانات الأساسية (Master Data)</span>
+          <span>لوحات القيادة (Dashboard Center)</span>
         </div>
         <div class="nav-group-meta">
           <span class="nav-group-count">3</span>
@@ -88,65 +70,73 @@
         </div>
       </div>
       <div class="nav-group-items">
-        <a class="nav-item" onclick="switchView('companies')">
-          <i class="fas fa-building-user"></i><span class="nav-text">الشركات والفروع</span>
+        <a class="nav-item active" onclick="switchView('dashboard')">
+          <i class="fas fa-gauge-high"></i><span class="nav-text">لوحة التحكم التنفيذية الموحدة</span>
         </a>
-        <a class="nav-item" onclick="switchView('partners')">
-          <i class="fas fa-handshake-simple"></i><span class="nav-text">الشركاء التجاريون (BP 360°)</span>
+        <a class="nav-item" onclick="switchView('cost-control')">
+          <i class="fas fa-chart-line"></i><span class="nav-text">ضبط التكاليف (EVM)</span>
+          <span class="badge-pill" style="background:rgba(0,141,218,0.3)">AACE</span>
         </a>
-        <a class="nav-item" onclick="switchView('projects')">
-          <i class="fas fa-diagram-project"></i><span class="nav-text">محفظة المشاريع والعقود</span>
+        <a class="nav-item" onclick="switchView('evm')">
+          <i class="fas fa-chart-gantt"></i><span class="nav-text">مرصد القيمة المكتسبة المتكامل</span>
         </a>
       </div>
     </div>
 
-    <!-- GROUP 3: المكتب الفني والحصر والتسعير -->
-    <div class="nav-group" id="nav-grp-engineering">
+    <!-- DISCIPLINE 2: المشاريع والمحفظة -->
+    <div class="nav-group collapsed" id="nav-grp-projects">
       <div class="nav-group-header" onclick="toggleNavGroup(this)">
         <div class="nav-group-title">
-          <i class="fas fa-drafting-compass nav-group-icon"></i>
-          <span>المكتب الفني والحصر والتسعير</span>
+          <i class="fas fa-diagram-project nav-group-icon"></i>
+          <span>المشاريع (Projects Center)</span>
         </div>
         <div class="nav-group-meta">
-          <span class="nav-group-count">7</span>
+          <span class="nav-group-count">3</span>
           <i class="fas fa-chevron-down nav-group-chevron"></i>
         </div>
       </div>
       <div class="nav-group-items">
-        <a class="nav-item" onclick="switchView('wbs-boq')">
-          <i class="fas fa-sitemap"></i><span class="nav-text">جدول الكميات (WBS / BOQ)</span>
+        <a class="nav-item" onclick="switchView('projects')">
+          <i class="fas fa-list-check"></i><span class="nav-text">محفظة المشاريع والعقود</span>
         </a>
-        <a class="nav-item" onclick="switchView('takeoff')">
-          <i class="fas fa-ruler-combined"></i><span class="nav-text">دفتر الحصر الهندسي (QTO)</span>
+        <a class="nav-item" onclick="switchView('companies')">
+          <i class="fas fa-building-user"></i><span class="nav-text">الشركات القابضة والفروع</span>
         </a>
-        <a class="nav-item" onclick="switchView('rate-analysis')">
-          <i class="fas fa-calculator"></i><span class="nav-text">التحليل السعري للبنود</span>
-        </a>
-        <a class="nav-item" onclick="switchView('bim-viewer')">
-          <i class="fas fa-cubes" style="color:var(--purple)"></i><span class="nav-text">نمذجة البناء 3D / 4D BIM</span>
-          <span class="badge-pill" style="background:rgba(124,58,237,0.3)">IFC/QTO</span>
-        </a>
-        <a class="nav-item" onclick="switchView('clash')">
-          <i class="fas fa-arrows-to-dot" style="color:var(--red)"></i><span class="nav-text">فحص التعارضات (BIM Clash)</span>
-          <span class="badge-pill" style="background:rgba(225,29,72,0.25)">BCF</span>
-        </a>
-        <a class="nav-item" onclick="switchView('submittals')">
-          <i class="fas fa-file-circle-check" style="color:var(--teal)"></i><span class="nav-text">اعتمادات المخططات والمواد</span>
-          <span class="badge-pill" style="background:rgba(13,148,136,0.3)">Codes A-D</span>
-        </a>
-        <a class="nav-item" onclick="switchView('rebar')">
-          <i class="fas fa-bars-staggered" style="color:var(--blue)"></i><span class="nav-text">تفريد حديد التسليح (BBS)</span>
-          <span class="badge-pill" style="background:rgba(0,141,218,0.3)">D²/162</span>
+        <a class="nav-item" onclick="switchView('partners')">
+          <i class="fas fa-handshake-simple"></i><span class="nav-text">الشركاء والعملاء (BP 360°)</span>
         </a>
       </div>
     </div>
 
-    <!-- GROUP 4: سلسلة الإمداد والمستودعات -->
-    <div class="nav-group" id="nav-grp-supply">
+    <!-- DISCIPLINE 3: التخطيط والجدولة الزمنية -->
+    <div class="nav-group collapsed" id="nav-grp-scheduling">
       <div class="nav-group-header" onclick="toggleNavGroup(this)">
         <div class="nav-group-title">
-          <i class="fas fa-boxes-packing nav-group-icon"></i>
-          <span>سلسلة الإمداد والمستودعات</span>
+          <i class="fas fa-calendar-days nav-group-icon"></i>
+          <span>التخطيط والجدولة (Planning & Scheduling)</span>
+        </div>
+        <div class="nav-group-meta">
+          <span class="nav-group-count">2</span>
+          <i class="fas fa-chevron-down nav-group-chevron"></i>
+        </div>
+      </div>
+      <div class="nav-group-items">
+        <a class="nav-item" onclick="switchView('scheduling')">
+          <i class="fas fa-network-wired"></i><span class="nav-text">الجدول الزمني والمسار الحرج CPM</span>
+          <span class="badge-pill" style="background:rgba(16,185,129,0.25)">P6 XER</span>
+        </a>
+        <a class="nav-item" onclick="switchView('site-diary')">
+          <i class="fas fa-calendar-check"></i><span class="nav-text">يوميات وسجلات الموقع</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- DISCIPLINE 4: المكتب الفني والاعتمادات -->
+    <div class="nav-group collapsed" id="nav-grp-techoffice">
+      <div class="nav-group-header" onclick="toggleNavGroup(this)">
+        <div class="nav-group-title">
+          <i class="fas fa-drafting-compass nav-group-icon"></i>
+          <span>المكتب الفني (Technical Office)</span>
         </div>
         <div class="nav-group-meta">
           <span class="nav-group-count">5</span>
@@ -154,139 +144,502 @@
         </div>
       </div>
       <div class="nav-group-items">
-        <a class="nav-item" onclick="switchView('procurement')">
-          <i class="fas fa-cart-shopping"></i><span class="nav-text">أوامر الشراء والتوريد</span>
+        <a class="nav-item" onclick="switchView('submittals')">
+          <i class="fas fa-file-circle-check"></i><span class="nav-text">اعتمادات المخططات والمواد</span>
+          <span class="badge-pill" style="background:rgba(13,148,136,0.3)">Codes A-D</span>
         </a>
-        <a class="nav-item" onclick="switchView('supplier-comparison')">
-          <i class="fas fa-scale-balanced" style="color:var(--teal)"></i><span class="nav-text">مقارنة أسعار الموردين</span>
-          <span class="badge-pill" style="background:rgba(13,148,136,0.3)">SSOT</span>
+        <a class="nav-item" onclick="switchView('rfi')">
+          <i class="fas fa-circle-question"></i><span class="nav-text">استفسارات الموقع الفنية RFI</span>
         </a>
-        <a class="nav-item" onclick="switchView('contractors-matrix')">
-          <i class="fas fa-users-gear" style="color:var(--blue)"></i><span class="nav-text">سجل ومصفوفة المقاولين</span>
+        <a class="nav-item" onclick="switchView('rebar')">
+          <i class="fas fa-bars-staggered"></i><span class="nav-text">تفريد حديد التسليح (BBS)</span>
         </a>
-        <a class="nav-item" onclick="switchView('inventory')">
-          <i class="fas fa-warehouse"></i><span class="nav-text">إدارة المخازن المتعددة</span>
+        <a class="nav-item" onclick="switchView('bim-viewer')">
+          <i class="fas fa-cubes"></i><span class="nav-text">نمذجة البناء 3D / 4D BIM</span>
         </a>
-        <a class="nav-item" onclick="switchView('subcontracts')">
-          <i class="fas fa-user-gear"></i><span class="nav-text">إدارة مقاولي الباطن</span>
+        <a class="nav-item" onclick="switchView('clash')">
+          <i class="fas fa-arrows-to-dot"></i><span class="nav-text">فحص التعارضات (BIM Clash)</span>
         </a>
       </div>
     </div>
 
-    <!-- GROUP 5: التنفيذ والتحكم والفوترة -->
-    <div class="nav-group" id="nav-grp-execution">
+    <!-- DISCIPLINE 5: جدول الكميات وحصر الأعمال -->
+    <div class="nav-group collapsed" id="nav-grp-qs">
       <div class="nav-group-header" onclick="toggleNavGroup(this)">
         <div class="nav-group-title">
-          <i class="fas fa-helmet-safety nav-group-icon"></i>
-          <span>التنفيذ والتحكم والفوترة</span>
+          <i class="fas fa-ruler-combined nav-group-icon"></i>
+          <span>حصر الكميات (BOQ & QS)</span>
         </div>
         <div class="nav-group-meta">
-          <span class="nav-group-count">9</span>
+          <span class="nav-group-count">4</span>
           <i class="fas fa-chevron-down nav-group-chevron"></i>
         </div>
       </div>
       <div class="nav-group-items">
-        <a class="nav-item" onclick="switchView('site-diary')">
-          <i class="fas fa-calendar-check" style="color:var(--teal)"></i><span class="nav-text">يوميات وتقارير الموقع</span>
+        <a class="nav-item" onclick="switchView('wbs-boq')">
+          <i class="fas fa-sitemap"></i><span class="nav-text">جدول الكميات وهيكل WBS/BOQ</span>
         </a>
-        <a class="nav-item" onclick="switchView('punch-list')">
-          <i class="fas fa-clipboard-list" style="color:var(--amber)"></i><span class="nav-text">قائمة الملاحظات (Punch List)</span>
+        <a class="nav-item" onclick="switchView('takeoff')">
+          <i class="fas fa-clipboard-check"></i><span class="nav-text">دفتر الحصر الهندسي (QTO)</span>
         </a>
-        <a class="nav-item" onclick="switchView('rfi')">
-          <i class="fas fa-circle-question" style="color:var(--purple)"></i><span class="nav-text">استفسارات الموقع (RFI Hub)</span>
-          <span class="badge-pill" style="background:rgba(124,58,237,0.3)">Impact</span>
-        </a>
-        <a class="nav-item" onclick="switchView('scheduling')">
-          <i class="fas fa-calendar-days"></i><span class="nav-text">الجدول الزمني والمسار الحرج</span>
+        <a class="nav-item" onclick="switchView('rate-analysis')">
+          <i class="fas fa-calculator"></i><span class="nav-text">التحليل السعري للبنود</span>
         </a>
         <a class="nav-item" onclick="switchView('billing')">
           <i class="fas fa-file-invoice-dollar"></i><span class="nav-text">المستخلصات التراكمية (IPC)</span>
           <span class="badge-pill" style="background:rgba(5,150,105,0.3)">ZATCA</span>
         </a>
-        <a class="nav-item" onclick="switchView('qa-qc')">
-          <i class="fas fa-clipboard-check"></i><span class="nav-text">ضبط وتوكيد الجودة (QA/QC)</span>
+      </div>
+    </div>
+
+    <!-- DISCIPLINE 6: مراقبة التكاليف -->
+    <div class="nav-group collapsed" id="nav-grp-costcontrol">
+      <div class="nav-group-header" onclick="toggleNavGroup(this)">
+        <div class="nav-group-title">
+          <i class="fas fa-chart-line nav-group-icon"></i>
+          <span>مراقبة التكاليف (Cost Control)</span>
+        </div>
+        <div class="nav-group-meta">
+          <span class="nav-group-count">2</span>
+          <i class="fas fa-chevron-down nav-group-chevron"></i>
+        </div>
+      </div>
+      <div class="nav-group-items">
+        <a class="nav-item" onclick="switchView('cost-control')">
+          <i class="fas fa-chart-pie"></i><span class="nav-text">محرك ضبط التكاليف والقيمة المكتسبة</span>
         </a>
-        <a class="nav-item" onclick="switchView('doc-control')">
-          <i class="fas fa-folder-tree"></i><span class="nav-text">إدارة الوثائق (ISO 19650)</span>
-        </a>
-        <a class="nav-item" onclick="switchView('contract-admin')">
-          <i class="fas fa-file-signature"></i><span class="nav-text">إدارة العقود والمطالبات (EOT)</span>
-        </a>
-        <a class="nav-item" onclick="switchView('variations')">
-          <i class="fas fa-file-pen" style="color:var(--amber)"></i><span class="nav-text">أوامر التغيير (Change Orders)</span>
-          <span class="badge-pill" style="background:rgba(217,119,6,0.3)">Variations</span>
+        <a class="nav-item" onclick="switchView('cvr')">
+          <i class="fas fa-scale-balanced"></i><span class="nav-text">سجل CVR — تسوية التكلفة والقيمة</span>
         </a>
       </div>
     </div>
 
-    <!-- GROUP 6: الحوكمة والتقارير المؤسسية -->
-    <div class="nav-group" id="nav-grp-enterprise">
+    <!-- DISCIPLINE 7: المشتريات -->
+    <div class="nav-group collapsed" id="nav-grp-procurement">
       <div class="nav-group-header" onclick="toggleNavGroup(this)">
         <div class="nav-group-title">
-          <i class="fas fa-building-columns nav-group-icon"></i>
-          <span>الحوكمة والتقارير المؤسسية</span>
+          <i class="fas fa-cart-shopping nav-group-icon"></i>
+          <span>المشتريات (Procurement)</span>
         </div>
         <div class="nav-group-meta">
-          <span class="nav-group-count">6</span>
+          <span class="nav-group-count">2</span>
+          <i class="fas fa-chevron-down nav-group-chevron"></i>
+        </div>
+      </div>
+      <div class="nav-group-items">
+        <a class="nav-item" onclick="switchView('procurement')">
+          <i class="fas fa-file-invoice"></i><span class="nav-text">أوامر الشراء والتوريد (PO)</span>
+        </a>
+        <a class="nav-item" onclick="switchView('supplier-comparison')">
+          <i class="fas fa-scale-balanced"></i><span class="nav-text">مقارنة عروض الأسعار (3-Way)</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- DISCIPLINE 8: الموردون -->
+    <div class="nav-group collapsed" id="nav-grp-suppliers">
+      <div class="nav-group-header" onclick="toggleNavGroup(this)">
+        <div class="nav-group-title">
+          <i class="fas fa-truck-moving nav-group-icon"></i>
+          <span>الموردون (Suppliers Intelligence)</span>
+        </div>
+        <div class="nav-group-meta">
+          <span class="nav-group-count">2</span>
+          <i class="fas fa-chevron-down nav-group-chevron"></i>
+        </div>
+      </div>
+      <div class="nav-group-items">
+        <a class="nav-item" onclick="switchView('partners')">
+          <i class="fas fa-address-book"></i><span class="nav-text">دليل الموردين المعتمدين والمؤهلين</span>
+        </a>
+        <a class="nav-item" onclick="switchView('supplier-comparison')">
+          <i class="fas fa-star-half-stroke"></i><span class="nav-text">تقييم أداء وموثوقية الموردين</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- DISCIPLINE 9: المواد والمواصفات -->
+    <div class="nav-group collapsed" id="nav-grp-materials">
+      <div class="nav-group-header" onclick="toggleNavGroup(this)">
+        <div class="nav-group-title">
+          <i class="fas fa-cubes-stacked nav-group-icon"></i>
+          <span>المواد (Materials Intelligence)</span>
+        </div>
+        <div class="nav-group-meta">
+          <span class="nav-group-count">2</span>
+          <i class="fas fa-chevron-down nav-group-chevron"></i>
+        </div>
+      </div>
+      <div class="nav-group-items">
+        <a class="nav-item" onclick="switchView('inventory')">
+          <i class="fas fa-list"></i><span class="nav-text">كتالوج المواد والمواصفات الفنية</span>
+        </a>
+        <a class="nav-item" onclick="switchView('takeoff')">
+          <i class="fas fa-layer-group"></i><span class="nav-text">تتبع استهلاك المواد وربط BOQ</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- DISCIPLINE 10: مقاولو الباطن -->
+    <div class="nav-group collapsed" id="nav-grp-subcontractors">
+      <div class="nav-group-header" onclick="toggleNavGroup(this)">
+        <div class="nav-group-title">
+          <i class="fas fa-users-gear nav-group-icon"></i>
+          <span>مقاولو الباطن (Subcontractors)</span>
+        </div>
+        <div class="nav-group-meta">
+          <span class="nav-group-count">2</span>
+          <i class="fas fa-chevron-down nav-group-chevron"></i>
+        </div>
+      </div>
+      <div class="nav-group-items">
+        <a class="nav-item" onclick="switchView('subcontracts')">
+          <i class="fas fa-file-contract"></i><span class="nav-text">إدارة عقود مقاولي الباطن</span>
+        </a>
+        <a class="nav-item" onclick="switchView('contractors-matrix')">
+          <i class="fas fa-ranking-star"></i><span class="nav-text">مصفوفة تصنيف وتقييم المقاولين</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- DISCIPLINE 11: العقود -->
+    <div class="nav-group collapsed" id="nav-grp-contracts">
+      <div class="nav-group-header" onclick="toggleNavGroup(this)">
+        <div class="nav-group-title">
+          <i class="fas fa-file-signature nav-group-icon"></i>
+          <span>العقود (Contracts Administration)</span>
+        </div>
+        <div class="nav-group-meta">
+          <span class="nav-group-count">2</span>
+          <i class="fas fa-chevron-down nav-group-chevron"></i>
+        </div>
+      </div>
+      <div class="nav-group-items">
+        <a class="nav-item" onclick="switchView('contract-admin')">
+          <i class="fas fa-book"></i><span class="nav-text">إدارة العقود الرئيسية (FIDIC Red Book)</span>
+        </a>
+        <a class="nav-item" onclick="switchView('subcontracts')">
+          <i class="fas fa-file-lines"></i><span class="nav-text">ملحقات العقود والضمانات البنكية</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- DISCIPLINE 12: المطالبات وأوامر التغيير -->
+    <div class="nav-group collapsed" id="nav-grp-claims">
+      <div class="nav-group-header" onclick="toggleNavGroup(this)">
+        <div class="nav-group-title">
+          <i class="fas fa-file-pen nav-group-icon"></i>
+          <span>المطالبات والتغييرات (Claims & Variations)</span>
+        </div>
+        <div class="nav-group-meta">
+          <span class="nav-group-count">2</span>
+          <i class="fas fa-chevron-down nav-group-chevron"></i>
+        </div>
+      </div>
+      <div class="nav-group-items">
+        <a class="nav-item" onclick="switchView('variations')">
+          <i class="fas fa-hand-holding-dollar"></i><span class="nav-text">أوامر التغيير (Change Orders)</span>
+          <span class="badge-pill" style="background:rgba(217,119,6,0.3)">Variations</span>
+        </a>
+        <a class="nav-item" onclick="switchView('contract-admin')">
+          <i class="fas fa-clock-rotate-left"></i><span class="nav-text">تمديد المدة والمطالبات التعاقدية (EOT)</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- DISCIPLINE 13: المستودعات والمخازن -->
+    <div class="nav-group collapsed" id="nav-grp-inventory">
+      <div class="nav-group-header" onclick="toggleNavGroup(this)">
+        <div class="nav-group-title">
+          <i class="fas fa-warehouse nav-group-icon"></i>
+          <span>المستودعات (Inventory & Warehouse)</span>
+        </div>
+        <div class="nav-group-meta">
+          <span class="nav-group-count">1</span>
+          <i class="fas fa-chevron-down nav-group-chevron"></i>
+        </div>
+      </div>
+      <div class="nav-group-items">
+        <a class="nav-item" onclick="switchView('inventory')">
+          <i class="fas fa-boxes-stacked"></i><span class="nav-text">إدارة المخازن المتعددة وأذونات الصرف</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- DISCIPLINE 14: المعدات والآليات -->
+    <div class="nav-group collapsed" id="nav-grp-equipment">
+      <div class="nav-group-header" onclick="toggleNavGroup(this)">
+        <div class="nav-group-title">
+          <i class="fas fa-truck-monster nav-group-icon"></i>
+          <span>المعدات والآليات (Plant & Equipment)</span>
+        </div>
+        <div class="nav-group-meta">
+          <span class="nav-group-count">1</span>
+          <i class="fas fa-chevron-down nav-group-chevron"></i>
+        </div>
+      </div>
+      <div class="nav-group-items">
+        <a class="nav-item" onclick="switchView('equipment')">
+          <i class="fas fa-screwdriver-wrench"></i><span class="nav-text">أسطول الآليات، التشغيل والصيانة</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- DISCIPLINE 15: الموارد الإنشائية -->
+    <div class="nav-group collapsed" id="nav-grp-resources">
+      <div class="nav-group-header" onclick="toggleNavGroup(this)">
+        <div class="nav-group-title">
+          <i class="fas fa-people-carry-box nav-group-icon"></i>
+          <span>الموارد (Resource Management)</span>
+        </div>
+        <div class="nav-group-meta">
+          <span class="nav-group-count">2</span>
+          <i class="fas fa-chevron-down nav-group-chevron"></i>
+        </div>
+      </div>
+      <div class="nav-group-items">
+        <a class="nav-item" onclick="switchView('scheduling')">
+          <i class="fas fa-users-viewfinder"></i><span class="nav-text">تخصيص وتحميل الموارد الإنشائية</span>
+        </a>
+        <a class="nav-item" onclick="switchView('equipment')">
+          <i class="fas fa-gas-pump"></i><span class="nav-text">كفاءة تشغيل المعدات والمحروقات</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- DISCIPLINE 16: الموارد البشرية والرواتب -->
+    <div class="nav-group collapsed" id="nav-grp-hr">
+      <div class="nav-group-header" onclick="toggleNavGroup(this)">
+        <div class="nav-group-title">
+          <i class="fas fa-user-tie nav-group-icon"></i>
+          <span>الموارد البشرية (HR & Payroll)</span>
+        </div>
+        <div class="nav-group-meta">
+          <span class="nav-group-count">2</span>
           <i class="fas fa-chevron-down nav-group-chevron"></i>
         </div>
       </div>
       <div class="nav-group-items">
         <a class="nav-item" onclick="switchView('hr')">
-          <i class="fas fa-users"></i><span class="nav-text">الموارد البشرية</span>
+          <i class="fas fa-id-card"></i><span class="nav-text">الكادر الوظيفي والعمالة الإنشائية</span>
         </a>
         <a class="nav-item" onclick="switchView('payroll')">
-          <i class="fas fa-money-bill-wave"></i><span class="nav-text">كشوف المرتبات</span>
-        </a>
-        <a class="nav-item" onclick="switchView('finance')">
-          <i class="fas fa-landmark"></i><span class="nav-text">الإدارة المالية</span>
-          <span class="badge-pill" style="background:rgba(5,150,105,0.3)">ZATCA</span>
-        </a>
-        <a class="nav-item" onclick="switchView('equipment')">
-          <i class="fas fa-truck-monster"></i><span class="nav-text">إدارة المعدات</span>
-        </a>
-        <a class="nav-item" onclick="switchView('crm')">
-          <i class="fas fa-handshake"></i><span class="nav-text">إدارة علاقات العملاء</span>
-        </a>
-        <a class="nav-item" onclick="switchView('tenders')">
-          <i class="fas fa-gavel"></i><span class="nav-text">إدارة المناقصات</span>
+          <i class="fas fa-money-bill-wave"></i><span class="nav-text">مسيرات الرواتب وحماية الأجور WPS</span>
         </a>
       </div>
     </div>
 
-    <!-- GROUP 7: التقارير والحوكمة -->
-    <div class="nav-group" id="nav-grp-governance">
+    <!-- DISCIPLINE 17: الإدارة المالية -->
+    <div class="nav-group collapsed" id="nav-grp-finance">
       <div class="nav-group-header" onclick="toggleNavGroup(this)">
         <div class="nav-group-title">
-          <i class="fas fa-chart-pie nav-group-icon"></i>
-          <span>التقارير والحوكمة</span>
+          <i class="fas fa-landmark nav-group-icon"></i>
+          <span>الإدارة المالية (Finance & Accounts)</span>
         </div>
         <div class="nav-group-meta">
-          <span class="nav-group-count">7</span>
+          <span class="nav-group-count">2</span>
+          <i class="fas fa-chevron-down nav-group-chevron"></i>
+        </div>
+      </div>
+      <div class="nav-group-items">
+        <a class="nav-item" onclick="switchView('finance')">
+          <i class="fas fa-coins"></i><span class="nav-text">الحسابات العامة ومراكز التكلفة</span>
+        </a>
+        <a class="nav-item" onclick="switchView('billing')">
+          <i class="fas fa-file-invoice"></i><span class="nav-text">الفواتير الضريبية ZATCA Fatoora</span>
+          <span class="badge-pill" style="background:rgba(5,150,105,0.3)">Phase 2</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- DISCIPLINE 18: إدارة علاقات العملاء -->
+    <div class="nav-group collapsed" id="nav-grp-crm">
+      <div class="nav-group-header" onclick="toggleNavGroup(this)">
+        <div class="nav-group-title">
+          <i class="fas fa-handshake nav-group-icon"></i>
+          <span>علاقات العملاء (Construction CRM)</span>
+        </div>
+        <div class="nav-group-meta">
+          <span class="nav-group-count">1</span>
+          <i class="fas fa-chevron-down nav-group-chevron"></i>
+        </div>
+      </div>
+      <div class="nav-group-items">
+        <a class="nav-item" onclick="switchView('crm')">
+          <i class="fas fa-funnel-dollar"></i><span class="nav-text">الفرص التعاقدية وسجل العملاء</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- DISCIPLINE 19: ضبط وتوكيد الجودة -->
+    <div class="nav-group collapsed" id="nav-grp-qaqc">
+      <div class="nav-group-header" onclick="toggleNavGroup(this)">
+        <div class="nav-group-title">
+          <i class="fas fa-clipboard-check nav-group-icon"></i>
+          <span>الجودة (QA/QC Management)</span>
+        </div>
+        <div class="nav-group-meta">
+          <span class="nav-group-count">2</span>
+          <i class="fas fa-chevron-down nav-group-chevron"></i>
+        </div>
+      </div>
+      <div class="nav-group-items">
+        <a class="nav-item" onclick="switchView('qa-qc')">
+          <i class="fas fa-list-check"></i><span class="nav-text">خطط الفحص والاختبار (ITP / NCR)</span>
+        </a>
+        <a class="nav-item" onclick="switchView('punch-list')">
+          <i class="fas fa-clipboard-list"></i><span class="nav-text">قوائم الملاحظات والتسليم (Punch List)</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- DISCIPLINE 20: السلامة والصحة المهنية والبيئة -->
+    <div class="nav-group collapsed" id="nav-grp-hse">
+      <div class="nav-group-header" onclick="toggleNavGroup(this)">
+        <div class="nav-group-title">
+          <i class="fas fa-hard-hat nav-group-icon"></i>
+          <span>السلامة والبيئة (HSE ISO 45001)</span>
+        </div>
+        <div class="nav-group-meta">
+          <span class="nav-group-count">1</span>
+          <i class="fas fa-chevron-down nav-group-chevron"></i>
+        </div>
+      </div>
+      <div class="nav-group-items">
+        <a class="nav-item" onclick="switchView('safety')">
+          <i class="fas fa-shield-heart"></i><span class="nav-text">إدارة السلامة وتصاريح العمل PTW</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- DISCIPLINE 21: إدارة الوثائق والمراسلات -->
+    <div class="nav-group collapsed" id="nav-grp-doccontrol">
+      <div class="nav-group-header" onclick="toggleNavGroup(this)">
+        <div class="nav-group-title">
+          <i class="fas fa-folder-tree nav-group-icon"></i>
+          <span>إدارة الوثائق (Document Control)</span>
+        </div>
+        <div class="nav-group-meta">
+          <span class="nav-group-count">2</span>
+          <i class="fas fa-chevron-down nav-group-chevron"></i>
+        </div>
+      </div>
+      <div class="nav-group-items">
+        <a class="nav-item" onclick="switchView('doc-control')">
+          <i class="fas fa-envelope-open-text"></i><span class="nav-text">المراسلات الرسمية والترانزميتال</span>
+        </a>
+        <a class="nav-item" onclick="switchView('cde')">
+          <i class="fas fa-cloud-arrow-up"></i><span class="nav-text">بيئة البيانات المشتركة CDE (ISO 19650)</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- DISCIPLINE 22: المناقصات والعطاءات -->
+    <div class="nav-group collapsed" id="nav-grp-tenders">
+      <div class="nav-group-header" onclick="toggleNavGroup(this)">
+        <div class="nav-group-title">
+          <i class="fas fa-gavel nav-group-icon"></i>
+          <span>المناقصات (Tenders & Bidding)</span>
+        </div>
+        <div class="nav-group-meta">
+          <span class="nav-group-count">1</span>
+          <i class="fas fa-chevron-down nav-group-chevron"></i>
+        </div>
+      </div>
+      <div class="nav-group-items">
+        <a class="nav-item" onclick="switchView('tenders')">
+          <i class="fas fa-award"></i><span class="nav-text">حزم العطاءات والتسعير التنافسي</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- DISCIPLINE 23: مكتب إدارة المشاريع المؤسسي -->
+    <div class="nav-group collapsed" id="nav-grp-pmo">
+      <div class="nav-group-header" onclick="toggleNavGroup(this)">
+        <div class="nav-group-title">
+          <i class="fas fa-sitemap nav-group-icon"></i>
+          <span>مكتب إدارة المشاريع (PMO)</span>
+        </div>
+        <div class="nav-group-meta">
+          <span class="nav-group-count">2</span>
           <i class="fas fa-chevron-down nav-group-chevron"></i>
         </div>
       </div>
       <div class="nav-group-items">
         <a class="nav-item" onclick="switchView('reports')">
-          <i class="fas fa-chart-pie"></i><span class="nav-text">التقارير المؤسسية والـ BI</span>
+          <i class="fas fa-chart-column"></i><span class="nav-text">مؤشرات حوكمة المحفظة</span>
         </a>
         <a class="nav-item" onclick="switchView('cvr')">
-          <i class="fas fa-scale-balanced"></i><span class="nav-text">سجل CVR — تسوية التكلفة والقيمة</span>
+          <i class="fas fa-balance-scale-right"></i><span class="nav-text">تقرير CVR التنفيذي</span>
         </a>
-        <a class="nav-item" onclick="switchView('cde')">
-          <i class="fas fa-folder-tree"></i><span class="nav-text">بيئة البيانات المشتركة (CDE) ISO 19650</span>
+      </div>
+    </div>
+
+    <!-- DISCIPLINE 24: مركز الذكاء الاصطناعي الإنشائي -->
+    <div class="nav-group collapsed" id="nav-grp-ai">
+      <div class="nav-group-header" onclick="toggleNavGroup(this)">
+        <div class="nav-group-title">
+          <i class="fas fa-brain nav-group-icon" style="color:var(--gold)"></i>
+          <span>الذكاء الاصطناعي (AI Center)</span>
+        </div>
+        <div class="nav-group-meta">
+          <span class="badge-pill" style="background:rgba(201,168,76,0.3); color:var(--gold); font-size:10px;">8 Copilots</span>
+          <i class="fas fa-chevron-down nav-group-chevron"></i>
+        </div>
+      </div>
+      <div class="nav-group-items">
+        <a class="nav-item" onclick="openAiCopilotModal('fidic')">
+          <i class="fas fa-scale-balanced" style="color:var(--gold)"></i><span class="nav-text">محلل بنود FIDIC والعقود</span>
         </a>
-        <a class="nav-item" onclick="switchView('safety')">
-          <i class="fas fa-hard-hat"></i><span class="nav-text">إدارة السلامة والصحة المهنية (HSE)</span>
+        <a class="nav-item" onclick="openAiCopilotModal('evm')">
+          <i class="fas fa-chart-line" style="color:var(--teal)"></i><span class="nav-text">التنبؤ بانحراف التكلفة EVM</span>
         </a>
-        <a class="nav-item" onclick="switchView('evm')">
-          <i class="fas fa-chart-gantt"></i><span class="nav-text">لوحة EVM — القيمة المكتسبة</span>
+        <a class="nav-item" onclick="openAiCopilotModal('procurement')">
+          <i class="fas fa-microchip" style="color:var(--blue)"></i><span class="nav-text">مساعد تدقيق عروض الأسعار</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- DISCIPLINE 25: مركز التقارير و BI -->
+    <div class="nav-group collapsed" id="nav-grp-reports">
+      <div class="nav-group-header" onclick="toggleNavGroup(this)">
+        <div class="nav-group-title">
+          <i class="fas fa-chart-pie nav-group-icon"></i>
+          <span>التقارير و BI (Reports Center)</span>
+        </div>
+        <div class="nav-group-meta">
+          <span class="nav-group-count">2</span>
+          <i class="fas fa-chevron-down nav-group-chevron"></i>
+        </div>
+      </div>
+      <div class="nav-group-items">
+        <a class="nav-item" onclick="switchView('reports')">
+          <i class="fas fa-chart-simple"></i><span class="nav-text">التقارير المؤسسية وذكاء الأعمال</span>
         </a>
         <a class="nav-item" onclick="switchView('audit-trail')">
           <i class="fas fa-fingerprint"></i><span class="nav-text">سجل التدقيق الأمني (Audit Log)</span>
         </a>
+      </div>
+    </div>
+
+    <!-- DISCIPLINE 26: إدارة المنظومة -->
+    <div class="nav-group collapsed" id="nav-grp-admin">
+      <div class="nav-group-header" onclick="toggleNavGroup(this)">
+        <div class="nav-group-title">
+          <i class="fas fa-gears nav-group-icon"></i>
+          <span>إدارة المنظومة (Administration)</span>
+        </div>
+        <div class="nav-group-meta">
+          <span class="nav-group-count">2</span>
+          <i class="fas fa-chevron-down nav-group-chevron"></i>
+        </div>
+      </div>
+      <div class="nav-group-items">
         <a class="nav-item" onclick="switchView('settings')">
-          <i class="fas fa-gears"></i><span class="nav-text">إعدادات المنظومة والصلاحيات</span>
+          <i class="fas fa-sliders"></i><span class="nav-text">إعدادات المنظومة وصلاحيات RBAC</span>
+        </a>
+        <a class="nav-item" onclick="switchView('audit-trail')">
+          <i class="fas fa-shield-halved"></i><span class="nav-text">أمان النظام والتدقيق والامتثال</span>
         </a>
       </div>
     </div>
@@ -294,7 +647,7 @@
 
   <div class="sidebar-footer">
     <div class="sidebar-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></div>
-    <span class="version-label">v7.0.0 Enterprise SaaS</span>
+    <span class="version-label">v8.0.0 Enterprise Construction OS (ECOS)</span>
   </div>
 </aside>
 
@@ -424,89 +777,218 @@
   <main class="page-container">
 
     <!-- VIEW 01: EXECUTIVE & PM DASHBOARD (EVM & S-CURVE) -->
+        <!-- =========================================================================
+         VIEW 01: SINGLE UNIFIED EXECUTIVE DASHBOARD (CEO COCKPIT 360°)
+         All 28 Corporate Indicators with Interactive Drill-Downs
+         ========================================================================= -->
     <section class="page-view active" id="view-dashboard">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; flex-wrap:wrap; gap:12px;">
+      <!-- Cockpit Header Toolbar -->
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; flex-wrap:wrap; gap:12px; background:linear-gradient(135deg, rgba(255,255,255,0.95), rgba(248,250,252,0.9)); padding:16px 20px; border-radius:var(--radius); border:1px solid var(--line); box-shadow:var(--shadow-sm);">
         <div>
-          <h2 style="font-size:20px; font-weight:800; color:var(--navy);" id="dash-project-title">لوحة القيادة والمتابعة</h2>
-          <p style="color:var(--muted); font-size:12px;" id="dash-project-subtitle">مؤشرات الأداء المالي والزمني وفق معايير إدارة القيمة المكتسبة (EVM)</p>
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span class="badge" style="background:var(--navy); color:var(--gold); font-weight:800; font-size:11px; padding:3px 8px;">ECOS v8.0</span>
+            <h2 style="font-size:22px; font-weight:800; color:var(--navy); margin:0;" id="dash-project-title">مركز القيادة والتحكم التنفيذي الموحد</h2>
+          </div>
+          <p style="color:var(--muted); font-size:13px; margin:4px 0 0 0;" id="dash-project-subtitle">المراقبة اللحظية لمحفظة المشاريع، التدفق النقدي، مؤشرات القيمة المكتسبة (EVM)، والمخاطر التعاقدية</p>
         </div>
-        <div style="display:flex; gap:8px; align-items:center;">
-          <a href="modules/executive-dashboard/index.html" target="_blank" class="btn btn-primary btn-sm" style="background:var(--navy); border-color:var(--gold); color:#fff;"><i class="fas fa-expand-alt"></i> لوحة القيادة الموسعة (Cockpit)</a>
-          <span class="badge badge-blue" id="dash-client-badge">العميل: جارٍ التحميل...</span>
+        <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+          <button class="btn btn-primary btn-sm" onclick="openAiCopilotModal('all')" style="background:linear-gradient(135deg, #1E293B, #0F172A); border:1px solid var(--gold); color:var(--gold); font-weight:700;">
+            <i class="fas fa-brain"></i> <span>المساعد الإنشائي الذكي (AI)</span>
+          </button>
+          <a href="modules/executive-dashboard/index.html" target="_blank" class="btn btn-outline btn-sm" style="border-color:var(--navy); color:var(--navy); font-weight:700;">
+            <i class="fas fa-expand-alt"></i> شاشة العرض الكاملة (Full Cockpit)
+          </a>
+          <button class="btn btn-outline btn-sm" onclick="applyActiveContext(); showToast('تم تحديث بيانات لوحة القيادة بنجاح.');" title="تحديث البيانات">
+            <i class="fas fa-rotate"></i>
+          </button>
+          <span class="badge badge-blue" id="dash-client-badge">العميل: جاري التحميل...</span>
           <span class="badge badge-green" id="dash-status-badge">نشط</span>
         </div>
       </div>
 
-      <!-- KPI Grid -->
+      <!-- Quick Executive RAG Portfolio Summary Bar -->
+      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:12px; margin-bottom:20px;">
+        <div class="kpi-card" style="padding:12px 16px; cursor:pointer;" onclick="switchView('projects')">
+          <span style="font-size:11px; color:var(--muted); font-weight:700;">إجمالي محفظة المشاريع</span>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-top:4px;">
+            <strong style="font-size:18px; color:var(--navy);" id="dash-total-projects">4</strong>
+            <span class="badge badge-blue" style="font-size:11px;" id="dash-active-projects">3 نشطة</span>
+          </div>
+        </div>
+        <div class="kpi-card" style="padding:12px 16px; cursor:pointer;" onclick="switchView('finance')">
+          <span style="font-size:11px; color:var(--muted); font-weight:700;">صافي التدفق النقدي الحر</span>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-top:4px;">
+            <strong style="font-size:18px; color:var(--green);" id="dash-portfolio-cashflow">+18,450,000 ر.س</strong>
+            <i class="fas fa-wallet" style="color:var(--green)"></i>
+          </div>
+        </div>
+        <div class="kpi-card" style="padding:12px 16px; cursor:pointer;" onclick="switchView('billing')">
+          <span style="font-size:11px; color:var(--muted); font-weight:700;">إجمالي الفواتير والمستخلصات</span>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-top:4px;">
+            <strong style="font-size:18px; color:var(--blue);" id="dash-portfolio-billed">38,895,000 ر.س</strong>
+            <i class="fas fa-file-invoice-dollar" style="color:var(--blue)"></i>
+          </div>
+        </div>
+        <div class="kpi-card" style="padding:12px 16px; cursor:pointer;" onclick="switchView('finance')">
+          <span style="font-size:11px; color:var(--muted); font-weight:700;">المستحقات المعلقة (AR)</span>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-top:4px;">
+            <strong style="font-size:18px; color:var(--amber);" id="dash-portfolio-receivables">11,300,000 ر.س</strong>
+            <i class="fas fa-clock" style="color:var(--amber)"></i>
+          </div>
+        </div>
+      </div>
+
+      <!-- 28 DRILL-DOWN EXECUTIVE KPI CARDS GRID -->
       <div class="kpi-grid">
-        <div class="kpi-card green">
-          <div class="kpi-header"><span class="kpi-label">قيمة العقد المعتمد (BAC)</span><div class="kpi-icon-wrap" style="background:var(--green-bg); color:var(--green);"><i class="fas fa-file-invoice"></i></div></div>
+        <!-- 1. Contract Value -->
+        <div class="kpi-card green" style="cursor:pointer;" onclick="switchView('projects')" title="انقر لعرض تفاصيل عقد المشروع">
+          <div class="kpi-header"><span class="kpi-label">قيمة العقد المعتمد (Contract)</span><div class="kpi-icon-wrap" style="background:var(--green-bg); color:var(--green);"><i class="fas fa-file-contract"></i></div></div>
           <div class="kpi-value" id="kpi-contract-value">0.00</div>
-          <div class="kpi-footer"><span id="kpi-currency">ر.س</span> · شامل هامش الربح</div>
+          <div class="kpi-footer"><span id="kpi-currency">ر.س</span> · شامل الضريبة والهامش</div>
         </div>
 
-        <div class="kpi-card">
-          <div class="kpi-header"><span class="kpi-label">ميزانية التكلفة المباشرة</span><div class="kpi-icon-wrap" style="background:var(--teal-light); color:var(--teal);"><i class="fas fa-wallet"></i></div></div>
+        <!-- 2. BAC Budget -->
+        <div class="kpi-card" style="cursor:pointer;" onclick="switchView('cost-control')" title="انقر لفتح شاشة ضبط التكاليف">
+          <div class="kpi-header"><span class="kpi-label">ميزانية التكلفة المباشرة (BAC)</span><div class="kpi-icon-wrap" style="background:var(--teal-light); color:var(--teal);"><i class="fas fa-wallet"></i></div></div>
           <div class="kpi-value" id="kpi-budget-cost">0.00</div>
-          <div class="kpi-footer">أساس التكلفة التقديرية</div>
+          <div class="kpi-footer">أساس التكلفة التقديرية المعتمدة</div>
         </div>
 
-        <div class="kpi-card purple">
+        <!-- 3. Earned Value (EV) -->
+        <div class="kpi-card purple" style="cursor:pointer;" onclick="switchView('wbs-boq')" title="انقر لعرض إنجاز بنود الكميات">
           <div class="kpi-header"><span class="kpi-label">القيمة المكتسبة (EV)</span><div class="kpi-icon-wrap" style="background:var(--purple-bg); color:var(--purple);"><i class="fas fa-chart-pie"></i></div></div>
           <div class="kpi-value" id="kpi-ev-value">0.00</div>
-          <div class="kpi-footer"><span id="kpi-progress-pct">0%</span> إنجاز فعلي مقاس</div>
+          <div class="kpi-footer"><span id="kpi-progress-pct">0%</span> إنجاز فعلي مقاس هندسياً</div>
         </div>
 
-        <div class="kpi-card amber">
-          <div class="kpi-header"><span class="kpi-label">التكلفة الفعلية (AC)</span><div class="kpi-icon-wrap" style="background:var(--amber-bg); color:var(--amber);"><i class="fas fa-coins"></i></div></div>
+        <!-- 4. Actual Cost (AC) -->
+        <div class="kpi-card amber" style="cursor:pointer;" onclick="switchView('finance')" title="انقر لعرض القيود المحاسبية والفواتير">
+          <div class="kpi-header"><span class="kpi-label">التكلفة الفعلية الدفترية (AC)</span><div class="kpi-icon-wrap" style="background:var(--amber-bg); color:var(--amber);"><i class="fas fa-coins"></i></div></div>
           <div class="kpi-value" id="kpi-ac-value">0.00</div>
-          <div class="kpi-footer">المصاريف المحققة دفترياً</div>
+          <div class="kpi-footer">المصاريف المحققة دفترياً من AP</div>
         </div>
 
-        <div class="kpi-card" id="card-cpi">
+        <!-- 5. CPI -->
+        <div class="kpi-card" id="card-cpi" style="cursor:pointer;" onclick="switchView('cost-control')">
           <div class="kpi-header"><span class="kpi-label">مؤشر أداء التكلفة (CPI)</span><div class="kpi-icon-wrap" id="icon-cpi" style="background:var(--green-bg); color:var(--green);"><i class="fas fa-scale-balanced"></i></div></div>
           <div class="kpi-value" id="kpi-cpi-val">1.000</div>
           <div class="kpi-footer" id="kpi-cpi-desc">أداء التكلفة ممتاز (EV / AC)</div>
         </div>
 
-        <div class="kpi-card" id="card-spi">
+        <!-- 6. SPI -->
+        <div class="kpi-card" id="card-spi" style="cursor:pointer;" onclick="switchView('scheduling')">
           <div class="kpi-header"><span class="kpi-label">مؤشر أداء الجدول (SPI)</span><div class="kpi-icon-wrap" id="icon-spi" style="background:var(--amber-bg); color:var(--amber);"><i class="fas fa-clock"></i></div></div>
           <div class="kpi-value" id="kpi-spi-val">1.000</div>
           <div class="kpi-footer" id="kpi-spi-desc">أداء الجدول الزمني (EV / PV)</div>
         </div>
 
-        <div class="kpi-card">
-          <div class="kpi-header"><span class="kpi-label">التكلفة المتوقعة (EAC)</span><div class="kpi-icon-wrap" style="background:var(--blue-bg); color:var(--blue);"><i class="fas fa-calculator"></i></div></div>
+        <!-- 7. EAC -->
+        <div class="kpi-card" style="cursor:pointer;" onclick="switchView('cvr')">
+          <div class="kpi-header"><span class="kpi-label">التكلفة المتوقعة عند الانتهاء (EAC)</span><div class="kpi-icon-wrap" style="background:var(--blue-bg); color:var(--blue);"><i class="fas fa-calculator"></i></div></div>
           <div class="kpi-value" id="kpi-eac-val">0.00</div>
-          <div class="kpi-footer">BAC / CPI التنبؤ عند الانتهاء</div>
+          <div class="kpi-footer">BAC / CPI التنبؤ النهائي للتكلفة</div>
         </div>
 
-        <div class="kpi-card green" id="card-vac">
-          <div class="kpi-header"><span class="kpi-label">الانحراف عند الانتهاء (VAC)</span><div class="kpi-icon-wrap" style="background:var(--green-bg); color:var(--green);"><i class="fas fa-arrow-trend-up"></i></div></div>
+        <!-- 8. VAC -->
+        <div class="kpi-card green" id="card-vac" style="cursor:pointer;" onclick="switchView('cvr')">
+          <div class="kpi-header"><span class="kpi-label">الانحراف المتوقع عند الإغلاق (VAC)</span><div class="kpi-icon-wrap" style="background:var(--green-bg); color:var(--green);"><i class="fas fa-arrow-trend-up"></i></div></div>
           <div class="kpi-value" id="kpi-vac-val">0.00</div>
           <div class="kpi-footer" id="kpi-vac-desc">وفر مالي متوقع عند الإغلاق</div>
         </div>
+
+        <!-- 9. Critical Activities -->
+        <div class="kpi-card red" style="cursor:pointer;" onclick="switchView('scheduling')" title="انقر لعرض أنشطة المسار الحرج">
+          <div class="kpi-header"><span class="kpi-label">أنشطة المسار الحرج (Critical)</span><div class="kpi-icon-wrap" style="background:rgba(225,29,72,0.15); color:var(--red);"><i class="fas fa-fire"></i></div></div>
+          <div class="kpi-value" id="dash-critical-activities">2</div>
+          <div class="kpi-footer">أنشطة خالية من السماحية الزمنية (TF=0)</div>
+        </div>
+
+        <!-- 10. Delayed Activities -->
+        <div class="kpi-card amber" style="cursor:pointer;" onclick="switchView('scheduling')" title="انقر لعرض الأنشطة المتأخرة">
+          <div class="kpi-header"><span class="kpi-label">الأنشطة المتأخرة عن المخطط</span><div class="kpi-icon-wrap" style="background:var(--amber-bg); color:var(--amber);"><i class="fas fa-triangle-exclamation"></i></div></div>
+          <div class="kpi-value" id="dash-delayed-activities">1</div>
+          <div class="kpi-footer">تتطلب خطة استدراك وتسريع (Recovery)</div>
+        </div>
+
+        <!-- 11. Change Orders (VO) -->
+        <div class="kpi-card" style="cursor:pointer;" onclick="switchView('variations')" title="انقر لعرض أوامر التغيير">
+          <div class="kpi-header"><span class="kpi-label">أوامر التغيير المعتمدة (VOs)</span><div class="kpi-icon-wrap" style="background:rgba(217,119,6,0.15); color:var(--amber);"><i class="fas fa-file-pen"></i></div></div>
+          <div class="kpi-value" id="dash-change-orders-count">4</div>
+          <div class="kpi-footer" id="dash-change-orders-val">1,240,000 ر.س إجمالي القيمة</div>
+        </div>
+
+        <!-- 12. Equipment Status -->
+        <div class="kpi-card" style="cursor:pointer;" onclick="switchView('equipment')" title="انقر لإدارة المعدات">
+          <div class="kpi-header"><span class="kpi-label">جاهزية أسطول المعدات</span><div class="kpi-icon-wrap" style="background:rgba(13,148,136,0.15); color:var(--teal);"><i class="fas fa-truck-monster"></i></div></div>
+          <div class="kpi-value" id="dash-equipment-active">8 / 10</div>
+          <div class="kpi-footer">معدات نشطة وجاهزة بالتشغيل</div>
+        </div>
+
+        <!-- 13. Inventory Alerts -->
+        <div class="kpi-card" style="cursor:pointer;" onclick="switchView('inventory')" title="انقر لعرض تنبيهات المخزون">
+          <div class="kpi-header"><span class="kpi-label">تنبيهات نقص المخزون</span><div class="kpi-icon-wrap" style="background:rgba(234,88,12,0.15); color:#EA580C;"><i class="fas fa-box-open"></i></div></div>
+          <div class="kpi-value" id="dash-inventory-alerts">2</div>
+          <div class="kpi-footer">أصناف تحت حد إعادة الطلب الأدنى</div>
+        </div>
+
+        <!-- 14. QA/QC Alerts -->
+        <div class="kpi-card" style="cursor:pointer;" onclick="switchView('punch-list')" title="انقر لعرض ملاحظات الجودة">
+          <div class="kpi-header"><span class="kpi-label">ملاحظات الجودة المفتوحة (Punch)</span><div class="kpi-icon-wrap" style="background:rgba(124,58,237,0.15); color:var(--purple);"><i class="fas fa-clipboard-list"></i></div></div>
+          <div class="kpi-value" id="dash-qaqc-alerts">4</div>
+          <div class="kpi-footer">ملاحظات تسليم معلقة للإغلاق</div>
+        </div>
+
+        <!-- 15. HSE Safety Record -->
+        <div class="kpi-card green" style="cursor:pointer;" onclick="switchView('safety')" title="انقر لسجلات السلامة">
+          <div class="kpi-header"><span class="kpi-label">سجل السلامة المهنية (HSE)</span><div class="kpi-icon-wrap" style="background:var(--green-bg); color:var(--green);"><i class="fas fa-shield-heart"></i></div></div>
+          <div class="kpi-value" style="font-size:18px;">Zero LTI</div>
+          <div class="kpi-footer" id="dash-hse-alerts">0 حوادث / 125,000 ساعة آمنة</div>
+        </div>
+
+        <!-- 16. Supplier Rating -->
+        <div class="kpi-card" style="cursor:pointer;" onclick="switchView('supplier-comparison')" title="انقر لتقييم الموردين">
+          <div class="kpi-header"><span class="kpi-label">مؤشر موثوقية الموردين</span><div class="kpi-icon-wrap" style="background:rgba(2,132,199,0.15); color:#0284C7;"><i class="fas fa-scale-balanced"></i></div></div>
+          <div class="kpi-value">94.2%</div>
+          <div class="kpi-footer">التزام بالمواصفات ومواعيد التوريد</div>
+        </div>
       </div>
 
-      <!-- S-Curve & Contract Details -->
+      <!-- S-CURVE & CASH FLOW DUAL CANVAS + CONTRACT OVERVIEW -->
       <div style="display:grid; grid-template-columns: 2fr 1fr; gap:20px; margin-bottom:24px;">
+        <!-- Canvas Chart -->
         <div class="card" style="margin-bottom:0;">
-          <div class="card-header">
-            <h3><i class="fas fa-chart-area" style="color:var(--teal)"></i> منحنى القيمة المكتسبة التراكمي (EVM S-Curve)</h3>
-            <div style="display:flex; gap:12px; font-size:11px; font-weight:700;">
-              <span style="color:#2563EB"><i class="fas fa-minus"></i> المخطط (PV)</span>
-              <span style="color:#7C3AED"><i class="fas fa-minus"></i> المكتسب (EV)</span>
-              <span style="color:#FF6500"><i class="fas fa-minus"></i> الفعلي (AC)</span>
+          <div class="card-header" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+            <div style="display:flex; align-items:center; gap:8px;">
+              <i class="fas fa-chart-area" style="color:var(--teal)"></i>
+              <h3 style="margin:0;">منحنى التحليل التراكمي (Dynamic S-Curve & Cash Flow)</h3>
+            </div>
+            <!-- Toggle Controls -->
+            <div style="display:flex; gap:6px; align-items:center;">
+              <button class="btn btn-primary btn-xs" id="btn-toggle-evm-chart" onclick="setChartMode('evm')">
+                <i class="fas fa-chart-line"></i> القيمة المكتسبة (EVM)
+              </button>
+              <button class="btn btn-outline btn-xs" id="btn-toggle-cf-chart" onclick="setChartMode('cashflow')">
+                <i class="fas fa-money-bill-transfer"></i> التدفق النقدي (Cash Flow)
+              </button>
             </div>
           </div>
           <div class="card-body">
+            <!-- Dynamic Legend -->
+            <div style="display:flex; justify-content:center; gap:20px; margin-bottom:12px; font-size:12px; font-weight:700;">
+              <span style="color:#2563EB"><i class="fas fa-grip-lines"></i> المخطط (PV / Inflow)</span>
+              <span style="color:#7C3AED"><i class="fas fa-grip-lines"></i> المكتسب (EV)</span>
+              <span style="color:#EA580C"><i class="fas fa-grip-lines"></i> الفعلي (AC / Outflow)</span>
+            </div>
             <canvas id="scurveCanvas" class="scurve-canvas"></canvas>
           </div>
         </div>
 
+        <!-- Contractual Details Card -->
         <div class="card" style="margin-bottom:0;">
-          <div class="card-header"><h3><i class="fas fa-circle-info" style="color:var(--amber)"></i> تفاصيل المشروع التعاقدية</h3></div>
-          <div class="card-body" style="font-size:13px; line-height:2;">
+          <div class="card-header">
+            <h3><i class="fas fa-circle-info" style="color:var(--amber)"></i> تفاصيل المشروع التعاقدية (FIDIC)</h3>
+          </div>
+          <div class="card-body" style="font-size:13px; line-height:2.1;">
             <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--line); padding:4px 0;">
               <span style="color:var(--muted)">نوع العقد:</span><strong id="dash-meta-contract-type">-</strong>
             </div>
@@ -520,17 +1002,135 @@
               <span style="color:var(--muted)">الدفعة المقدمة:</span><strong id="dash-meta-advance">10%</strong>
             </div>
             <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--line); padding:4px 0;">
-              <span style="color:var(--muted)">ضريبة القيمة المضافة:</span><strong>15% (ZATCA)</strong>
+              <span style="color:var(--muted)">ضريبة القيمة المضافة:</span><strong>15% (ZATCA Fatoora)</strong>
+            </div>
+            <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--line); padding:4px 0;">
+              <span style="color:var(--muted)">الموقع الجغرافي:</span><strong id="dash-meta-location">-</strong>
             </div>
             <div style="display:flex; justify-content:space-between; padding:4px 0;">
-              <span style="color:var(--muted)">الموقع:</span><strong id="dash-meta-location">-</strong>
+              <span style="color:var(--muted)">كفاءة الإنجاز (TCPI):</span><strong id="kpi-tcpi-val" style="color:var(--blue);">1.000</strong>
             </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PORTFOLIO MULTI-PROJECT PERFORMANCE MATRIX (RAG TABLE) -->
+      <div class="card" style="margin-bottom:24px;">
+        <div class="card-header" style="display:flex; justify-content:space-between; align-items:center;">
+          <h3><i class="fas fa-table-cells" style="color:var(--teal)"></i> مصفوفة أداء محفظة المشاريع (Portfolio RAG Matrix)</h3>
+          <span class="badge badge-blue">متابعة لحظية متعددة الشركات</span>
+        </div>
+        <div class="card-body" style="padding:0;">
+          <div class="table-wrapper">
+            <table id="tbl-portfolio-matrix">
+              <thead>
+                <tr>
+                  <th>رمز المشروع</th>
+                  <th>اسم المشروع</th>
+                  <th>العميل</th>
+                  <th>قيمة العقد (ر.س)</th>
+                  <th>الميزانية (BAC)</th>
+                  <th>الفعلي (AC)</th>
+                  <th>المكتسب (EV)</th>
+                  <th>CPI</th>
+                  <th>SPI</th>
+                  <th>نسبة الإنجاز</th>
+                  <th>حالة RAG</th>
+                  <th>إجراء</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>PRJ-2001</strong></td>
+                  <td>مشروع فلل الغروب - فيلا نموذج 2A</td>
+                  <td>شركة إينوفست</td>
+                  <td class="text-num">183,733.98</td>
+                  <td class="text-num">123,086.07</td>
+                  <td class="text-num">78,500.00</td>
+                  <td class="text-num">79,880.00</td>
+                  <td><span class="badge badge-green">1.018</span></td>
+                  <td><span class="badge badge-green">1.005</span></td>
+                  <td>
+                    <div style="display:flex; align-items:center; gap:8px;">
+                      <div class="progress-bar-wrap" style="flex:1; height:6px; background:#E2E8F0; border-radius:3px; overflow:hidden;">
+                        <div style="width:64.9%; height:100%; background:var(--green);"></div>
+                      </div>
+                      <span style="font-size:11px; font-weight:700;">64.9%</span>
+                    </div>
+                  </td>
+                  <td><span class="badge badge-green">Green (ممتاز)</span></td>
+                  <td><button class="btn btn-outline btn-xs" onclick="onProjectChange('PRJ-2001')">عرض المشروع</button></td>
+                </tr>
+                <tr>
+                  <td><strong>PRJ-2002</strong></td>
+                  <td>برج الصحافة التجاري الإداري</td>
+                  <td>الهيئة الملكية بالرياض</td>
+                  <td class="text-num">45,000,000.00</td>
+                  <td class="text-num">34,500,000.00</td>
+                  <td class="text-num">14,800,000.00</td>
+                  <td class="text-num">14,490,000.00</td>
+                  <td><span class="badge badge-amber">0.979</span></td>
+                  <td><span class="badge badge-amber">0.965</span></td>
+                  <td>
+                    <div style="display:flex; align-items:center; gap:8px;">
+                      <div class="progress-bar-wrap" style="flex:1; height:6px; background:#E2E8F0; border-radius:3px; overflow:hidden;">
+                        <div style="width:42%; height:100%; background:var(--amber);"></div>
+                      </div>
+                      <span style="font-size:11px; font-weight:700;">42.0%</span>
+                    </div>
+                  </td>
+                  <td><span class="badge badge-amber">Amber (متابعة)</span></td>
+                  <td><button class="btn btn-outline btn-xs" onclick="onProjectChange('PRJ-2002')">عرض المشروع</button></td>
+                </tr>
+                <tr>
+                  <td><strong>PRJ-2003</strong></td>
+                  <td>محطة قطار جدة المركزية - حزمة MEP</td>
+                  <td>مجتمعات الغد العقارية</td>
+                  <td class="text-num">18,500,000.00</td>
+                  <td class="text-num">14,200,000.00</td>
+                  <td class="text-num">2,850,000.00</td>
+                  <td class="text-num">2,627,000.00</td>
+                  <td><span class="badge badge-amber">0.922</span></td>
+                  <td><span class="badge badge-green">1.020</span></td>
+                  <td>
+                    <div style="display:flex; align-items:center; gap:8px;">
+                      <div class="progress-bar-wrap" style="flex:1; height:6px; background:#E2E8F0; border-radius:3px; overflow:hidden;">
+                        <div style="width:18.5%; height:100%; background:var(--blue);"></div>
+                      </div>
+                      <span style="font-size:11px; font-weight:700;">18.5%</span>
+                    </div>
+                  </td>
+                  <td><span class="badge badge-green">Green (في البداية)</span></td>
+                  <td><button class="btn btn-outline btn-xs" onclick="onProjectChange('PRJ-2003')">عرض المشروع</button></td>
+                </tr>
+                <tr>
+                  <td><strong>PRJ-2004</strong></td>
+                  <td>مجمع الملقا للأعمال والسكن الفندقي</td>
+                  <td>شركة أفق التطوير العقاري</td>
+                  <td class="text-num">78,400,000.00</td>
+                  <td class="text-num">62,800,000.00</td>
+                  <td class="text-num">25,120,000.00</td>
+                  <td class="text-num">24,115,200.00</td>
+                  <td><span class="badge badge-amber">0.960</span></td>
+                  <td><span class="badge badge-amber">0.970</span></td>
+                  <td>
+                    <div style="display:flex; align-items:center; gap:8px;">
+                      <div class="progress-bar-wrap" style="flex:1; height:6px; background:#E2E8F0; border-radius:3px; overflow:hidden;">
+                        <div style="width:38.4%; height:100%; background:var(--blue);"></div>
+                      </div>
+                      <span style="font-size:11px; font-weight:700;">38.4%</span>
+                    </div>
+                  </td>
+                  <td><span class="badge badge-green">Green (نشط)</span></td>
+                  <td><button class="btn btn-outline btn-xs" onclick="onProjectChange('PRJ-2004')">عرض المشروع</button></td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- VIEW 02: COMPANIES & BRANCHES -->
     <section class="page-view" id="view-companies">
       <div class="card">
         <div class="card-header">
@@ -3052,6 +3652,68 @@
         <button type="submit" class="btn btn-primary"><i class="fas fa-check"></i> تسجيل وإرسال للمراجعة</button>
       </div>
     </form>
+  </div>
+</div>
+
+
+<!-- =========================================================================
+     AI COPILOT MODAL - 8 Specialized Construction AI Copilot Agents
+     ========================================================================= -->
+<div class="modal-overlay" id="modal-ai-copilot" style="display:none;">
+  <div class="modal-container" style="max-width:850px; border-radius:var(--radius); border:1px solid var(--gold); box-shadow:0 25px 50px -12px rgba(0,0,0,0.5);">
+    <div class="modal-header" style="background:linear-gradient(135deg, #0F172A, #1E293B); color:#fff; border-bottom:1px solid var(--gold);">
+      <div style="display:flex; align-items:center; gap:10px;">
+        <i class="fas fa-brain" style="color:var(--gold); font-size:20px;"></i>
+        <div>
+          <h3 style="margin:0; font-size:17px; color:var(--gold);">المركز الذكي للإنشاءات (Construction AI Copilot Hub)</h3>
+          <small style="color:#94A3B8;">8 وكلاء ذكاء اصطناعي متخصصون في الهندسة، العقود، والتكاليف</small>
+        </div>
+      </div>
+      <button class="modal-close-btn" onclick="closeAiCopilotModal()" style="color:#fff;">&times;</button>
+    </div>
+    <div class="modal-body" style="padding:20px;">
+      <!-- Agent Selector Tabs -->
+      <div style="display:flex; gap:8px; overflow-x:auto; padding-bottom:10px; border-bottom:1px solid var(--line); margin-bottom:16px;">
+        <button class="btn btn-primary btn-xs active-copilot-tab" onclick="switchCopilotTab('fidic', this)"><i class="fas fa-scale-balanced"></i> FIDIC و العقود</button>
+        <button class="btn btn-outline btn-xs" onclick="switchCopilotTab('evm', this)"><i class="fas fa-chart-line"></i> التكاليف و EVM</button>
+        <button class="btn btn-outline btn-xs" onclick="switchCopilotTab('cpm', this)"><i class="fas fa-network-wired"></i> الجدول والمسار الحرج</button>
+        <button class="btn btn-outline btn-xs" onclick="switchCopilotTab('procurement', this)"><i class="fas fa-scale-unbalanced"></i> المشتريات ومقارنة الأسعار</button>
+        <button class="btn btn-outline btn-xs" onclick="switchCopilotTab('qaqc', this)"><i class="fas fa-clipboard-check"></i> الجودة و NCR</button>
+        <button class="btn btn-outline btn-xs" onclick="switchCopilotTab('hse', this)"><i class="fas fa-shield-halved"></i> السلامة و ISO 45001</button>
+        <button class="btn btn-outline btn-xs" onclick="switchCopilotTab('boq', this)"><i class="fas fa-calculator"></i> تدقيق الكميات والتسعير</button>
+        <button class="btn btn-outline btn-xs" onclick="switchCopilotTab('cashflow', this)"><i class="fas fa-coins"></i> السيولة والتدفق النقدي</button>
+      </div>
+
+      <!-- Agent Context Banner -->
+      <div id="ai-agent-banner" style="background:rgba(201,168,76,0.08); border:1px solid var(--gold); border-radius:6px; padding:10px 14px; margin-bottom:16px; font-size:12px; display:flex; justify-content:space-between; align-items:center;">
+        <span id="ai-agent-title"><strong>الوكيل النشط:</strong> مستشار العقود ومطالبات فيديك (FIDIC Red Book 2017)</span>
+        <span class="badge badge-teal" id="ai-project-tag">المشروع النشط: فلل الغروب</span>
+      </div>
+
+      <!-- Quick Prompt Suggestions -->
+      <div style="display:flex; gap:6px; flex-wrap:wrap; margin-bottom:14px;" id="ai-prompt-suggestions">
+        <button type="button" class="btn btn-outline btn-xs" onclick="useAiPrompt(this.textContent)">حلل التزام المقاول بالبند 20.1 لمطالبة تمديد الوقت EOT</button>
+        <button type="button" class="btn btn-outline btn-xs" onclick="useAiPrompt(this.textContent)">ما هي التكلفة المتوقعة عند الانتهاء (EAC) ولماذا تجاوزت الميزانية؟</button>
+        <button type="button" class="btn btn-outline btn-xs" onclick="useAiPrompt(this.textContent)">هل هناك أي تعارضات غير محلولة تؤثر على صب خرسانة السقف؟</button>
+      </div>
+
+      <!-- Prompt Input Form -->
+      <div style="margin-bottom:16px;">
+        <textarea id="ai-prompt-input" rows="3" class="search-input" style="width:100%; height:auto; resize:vertical; padding:10px; font-size:13px;" placeholder="اكتب استفسارك الهندسي أو التعاقدي هنا، وسيقوم الوكيل بالتحليل الفوري استناداً لبيانات المشروع الحالية..."></textarea>
+      </div>
+
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+        <small style="color:var(--muted);"><i class="fas fa-lock"></i> البيانات مشفرة وتتم معالجتها وفق معايير الأمان المؤسسي</small>
+        <button type="button" class="btn btn-primary" onclick="runAiCopilotAnalysis()" id="btn-run-ai">
+          <i class="fas fa-wand-magic-sparkles"></i> تشغيل التحليل الذكي
+        </button>
+      </div>
+
+      <!-- AI Response Container -->
+      <div id="ai-response-box" style="display:none; background:#F8FAFC; border:1px solid var(--line); border-radius:8px; padding:16px; font-size:13px; line-height:1.8; max-height:280px; overflow-y:auto;">
+        <div id="ai-response-content"></div>
+      </div>
+    </div>
   </div>
 </div>
 

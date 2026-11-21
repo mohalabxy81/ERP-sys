@@ -1,6 +1,7 @@
 /* ==========================================================================
    CONFIG.JS - Master Multi-Tenant State & Domain Datasets
-   Updated with OpenConstructionERP KSA Benchmarks, Materials & Subcontract Packages
+   ERP-SYS V8 Enterprise Construction Operating System (ECOS)
+   Normalized Relational Keys: Company, Branch, Project, CostCode, Partner
    ========================================================================== */
 window.MimarERP = {
   "companies": [
@@ -6930,7 +6931,10 @@ window.MimarERP = {
       "bac": 8500000,
       "pv": 5100000,
       "ev": 4800000,
-      "ac": 4950000
+      "ac": 4950000,
+      "project_id": "PRJ-2002",
+      "company_id": "CMP-1001",
+      "cost_code": "CC-01"
     },
     {
       "wbs_code": "WBS-02",
@@ -6938,7 +6942,10 @@ window.MimarERP = {
       "bac": 6200000,
       "pv": 3720000,
       "ev": 3300000,
-      "ac": 3550000
+      "ac": 3550000,
+      "project_id": "PRJ-2002",
+      "company_id": "CMP-1001",
+      "cost_code": "CC-02"
     },
     {
       "wbs_code": "WBS-03",
@@ -6946,7 +6953,10 @@ window.MimarERP = {
       "bac": 3800000,
       "pv": 1900000,
       "ev": 1750000,
-      "ac": 1820000
+      "ac": 1820000,
+      "project_id": "PRJ-2002",
+      "company_id": "CMP-1001",
+      "cost_code": "CC-03"
     },
     {
       "wbs_code": "WBS-04",
@@ -6954,7 +6964,10 @@ window.MimarERP = {
       "bac": 2900000,
       "pv": 1740000,
       "ev": 1600000,
-      "ac": 1680000
+      "ac": 1680000,
+      "project_id": "PRJ-2002",
+      "company_id": "CMP-1001",
+      "cost_code": "CC-04"
     },
     {
       "wbs_code": "WBS-05",
@@ -6962,7 +6975,10 @@ window.MimarERP = {
       "bac": 4100000,
       "pv": 2460000,
       "ev": 2200000,
-      "ac": 2300000
+      "ac": 2300000,
+      "project_id": "PRJ-2001",
+      "company_id": "CMP-1001",
+      "cost_code": "CC-05"
     },
     {
       "wbs_code": "WBS-06",
@@ -6970,7 +6986,10 @@ window.MimarERP = {
       "bac": 1200000,
       "pv": 960000,
       "ev": 980000,
-      "ac": 920000
+      "ac": 920000,
+      "project_id": "PRJ-2001",
+      "company_id": "CMP-1001",
+      "cost_code": "CC-06"
     },
     {
       "wbs_code": "WBS-07",
@@ -6978,7 +6997,10 @@ window.MimarERP = {
       "bac": 2500000,
       "pv": 1500000,
       "ev": 1350000,
-      "ac": 1400000
+      "ac": 1400000,
+      "project_id": "PRJ-2001",
+      "company_id": "CMP-1001",
+      "cost_code": "CC-07"
     },
     {
       "wbs_code": "WBS-08",
@@ -6986,7 +7008,10 @@ window.MimarERP = {
       "bac": 1800000,
       "pv": 720000,
       "ev": 650000,
-      "ac": 680000
+      "ac": 680000,
+      "project_id": "PRJ-2001",
+      "company_id": "CMP-1001",
+      "cost_code": "CC-08"
     }
   ],
   "crmOpportunities": [
@@ -7460,7 +7485,14 @@ window.MimarERP = {
       "submission_date": "2026-02-28",
       "approval_date": "2026-03-15",
       "status": "محصل",
-      "collected": 8500000
+      "collected": 8500000,
+      "project_id": "PRJ-2002",
+      "company_id": "CMP-1001",
+      "gross_amount": 8500000,
+      "retention_amount": 850000,
+      "advance_recovery": 425000,
+      "vat_amount": 1275000,
+      "net_amount": 8500000
     },
     {
       "billing_id": "IPC-002",
@@ -7470,7 +7502,14 @@ window.MimarERP = {
       "submission_date": "2026-04-30",
       "approval_date": "2026-05-20",
       "status": "محصل",
-      "collected": 9200000
+      "collected": 9200000,
+      "project_id": "PRJ-2002",
+      "company_id": "CMP-1001",
+      "gross_amount": 9200000,
+      "retention_amount": 920000,
+      "advance_recovery": 460000,
+      "vat_amount": 1380000,
+      "net_amount": 9200000
     },
     {
       "billing_id": "IPC-003",
@@ -7480,7 +7519,14 @@ window.MimarERP = {
       "submission_date": "2026-06-30",
       "approval_date": "2026-07-18",
       "status": "موافق عليه",
-      "collected": 7800000
+      "collected": 7800000,
+      "project_id": "PRJ-2002",
+      "company_id": "CMP-1001",
+      "gross_amount": 7800000,
+      "retention_amount": 780000,
+      "advance_recovery": 390000,
+      "vat_amount": 1170000,
+      "net_amount": 7800000
     },
     {
       "billing_id": "IPC-004",
@@ -7490,7 +7536,14 @@ window.MimarERP = {
       "submission_date": "2026-08-31",
       "approval_date": null,
       "status": "قيد المراجعة",
-      "collected": 0
+      "collected": 0,
+      "project_id": "PRJ-2002",
+      "company_id": "CMP-1001",
+      "gross_amount": 8100000,
+      "retention_amount": 810000,
+      "advance_recovery": 405000,
+      "vat_amount": 1215000,
+      "net_amount": 8100000
     },
     {
       "billing_id": "IPC-005",
@@ -7500,7 +7553,14 @@ window.MimarERP = {
       "submission_date": "2026-03-15",
       "approval_date": "2026-03-25",
       "status": "محصل",
-      "collected": 95000
+      "collected": 95000,
+      "project_id": "PRJ-2001",
+      "company_id": "CMP-1001",
+      "gross_amount": 95000,
+      "retention_amount": 9500,
+      "advance_recovery": 4750,
+      "vat_amount": 14250,
+      "net_amount": 95000
     },
     {
       "billing_id": "IPC-006",
@@ -7510,7 +7570,14 @@ window.MimarERP = {
       "submission_date": "2026-05-10",
       "approval_date": "2026-05-20",
       "status": "موافق عليه",
-      "collected": 42000
+      "collected": 42000,
+      "project_id": "PRJ-2001",
+      "company_id": "CMP-1001",
+      "gross_amount": 42000,
+      "retention_amount": 4200,
+      "advance_recovery": 2100,
+      "vat_amount": 6300,
+      "net_amount": 42000
     },
     {
       "billing_id": "IPC-007",
@@ -7520,7 +7587,14 @@ window.MimarERP = {
       "submission_date": "2026-07-31",
       "approval_date": null,
       "status": "قيد المراجعة",
-      "collected": 0
+      "collected": 0,
+      "project_id": "PRJ-2003",
+      "company_id": "CMP-1002",
+      "gross_amount": 3200000,
+      "retention_amount": 320000,
+      "advance_recovery": 160000,
+      "vat_amount": 480000,
+      "net_amount": 3200000
     }
   ],
   "financeAP": [
@@ -7529,49 +7603,98 @@ window.MimarERP = {
       "supplier": "شركة أسمنت ينبع",
       "amount": 47450,
       "due_date": "2026-11-30",
-      "status": "مدفوع"
+      "status": "مدفوع",
+      "project_id": "PRJ-2001",
+      "company_id": "CMP-1001",
+      "cost_code": "CC-03-01",
+      "supplier_id": "SUP-01",
+      "subtotal": 41261,
+      "vat_amount": 6189,
+      "zatca_uuid": "ZATCA-AP-1000"
     },
     {
       "invoice_id": "AP-INV-002",
       "supplier": "شركة هضاب الخليج للسيراميك",
       "amount": 66470,
       "due_date": "2026-12-15",
-      "status": "معلق"
+      "status": "معلق",
+      "project_id": "PRJ-2001",
+      "company_id": "CMP-1001",
+      "cost_code": "CC-09-03",
+      "supplier_id": "SUP-02",
+      "subtotal": 57800,
+      "vat_amount": 8670,
+      "zatca_uuid": "ZATCA-AP-1001"
     },
     {
       "invoice_id": "AP-INV-003",
       "supplier": "دهانات الجزيرة الصناعية",
       "amount": 28980,
       "due_date": "2026-12-01",
-      "status": "معلق"
+      "status": "معلق",
+      "project_id": "PRJ-2001",
+      "company_id": "CMP-1001",
+      "cost_code": "CC-09-05",
+      "supplier_id": "SUP-03",
+      "subtotal": 25200,
+      "vat_amount": 3780,
+      "zatca_uuid": "ZATCA-AP-1002"
     },
     {
       "invoice_id": "AP-INV-004",
       "supplier": "سعد سيكا للكيماويات",
       "amount": 17077,
       "due_date": "2026-11-20",
-      "status": "متأخر"
+      "status": "متأخر",
+      "project_id": "PRJ-2001",
+      "company_id": "CMP-1001",
+      "cost_code": "CC-07-01",
+      "supplier_id": "SUP-04",
+      "subtotal": 14850,
+      "vat_amount": 2227,
+      "zatca_uuid": "ZATCA-AP-1003"
     },
     {
       "invoice_id": "AP-INV-005",
       "supplier": "شركة سابك للحديد",
       "amount": 491625,
       "due_date": "2026-12-31",
-      "status": "معلق"
+      "status": "معلق",
+      "project_id": "PRJ-2002",
+      "company_id": "CMP-1001",
+      "cost_code": "CC-03-02",
+      "supplier_id": "SUP-05",
+      "subtotal": 427500,
+      "vat_amount": 64125,
+      "zatca_uuid": "ZATCA-AP-1004"
     },
     {
       "invoice_id": "AP-INV-006",
       "supplier": "رواد العزل المتطورة",
       "amount": 38812,
       "due_date": "2026-11-25",
-      "status": "مدفوع"
+      "status": "مدفوع",
+      "project_id": "PRJ-2001",
+      "company_id": "CMP-1001",
+      "cost_code": "CC-07-02",
+      "supplier_id": "CTR-201",
+      "subtotal": 33750,
+      "vat_amount": 5062,
+      "zatca_uuid": "ZATCA-AP-1005"
     },
     {
       "invoice_id": "AP-INV-007",
       "supplier": "مصنع البراك للألمنيوم",
       "amount": 104650,
       "due_date": "2027-01-15",
-      "status": "معلق"
+      "status": "معلق",
+      "project_id": "PRJ-2002",
+      "company_id": "CMP-1001",
+      "cost_code": "CC-05-01",
+      "supplier_id": "SUP-06",
+      "subtotal": 91000,
+      "vat_amount": 13650,
+      "zatca_uuid": "ZATCA-AP-1006"
     }
   ],
   "financeBudget": [
@@ -7848,7 +7971,13 @@ window.MimarERP = {
       "retention_pct": 10,
       "retention_val": 4185,
       "net_paid": 37665,
-      "status": "مكتمل ومسلّم"
+      "status": "مكتمل ومسلّم",
+      "project_id": "PRJ-2001",
+      "company_id": "CMP-1001",
+      "contractor_id": "CTR-201",
+      "cost_code": "CC-07-02",
+      "wbs_code": "WBS-07.1",
+      "performance_rating": 92
     },
     {
       "sub_id": "SUB-2026-02",
@@ -7861,7 +7990,13 @@ window.MimarERP = {
       "retention_pct": 10,
       "retention_val": 4500,
       "net_paid": 40500,
-      "status": "قيد التنفيذ بالموقع"
+      "status": "قيد التنفيذ بالموقع",
+      "project_id": "PRJ-2001",
+      "company_id": "CMP-1001",
+      "contractor_id": "CTR-202",
+      "cost_code": "CC-08-01",
+      "wbs_code": "WBS-08.1",
+      "performance_rating": 88
     },
     {
       "sub_id": "SUB-2026-03",
@@ -7874,7 +8009,13 @@ window.MimarERP = {
       "retention_pct": 10,
       "retention_val": 1140,
       "net_paid": 10260,
-      "status": "قيد التنفيذ بالموقع"
+      "status": "قيد التنفيذ بالموقع",
+      "project_id": "PRJ-2001",
+      "company_id": "CMP-1001",
+      "contractor_id": "CTR-203",
+      "cost_code": "CC-09-04",
+      "wbs_code": "WBS-09.2",
+      "performance_rating": 90
     },
     {
       "sub_id": "SUB-2026-04",
@@ -7887,7 +8028,13 @@ window.MimarERP = {
       "retention_pct": 10,
       "retention_val": 3200,
       "net_paid": 28800,
-      "status": "قيد التنفيذ بالموقع"
+      "status": "قيد التنفيذ بالموقع",
+      "project_id": "PRJ-2001",
+      "company_id": "CMP-1001",
+      "contractor_id": "CTR-204",
+      "cost_code": "CC-09-03",
+      "wbs_code": "WBS-09.3",
+      "performance_rating": 85
     },
     {
       "sub_id": "SUB-2026-05",
@@ -7900,7 +8047,13 @@ window.MimarERP = {
       "retention_pct": 10,
       "retention_val": 2580,
       "net_paid": 23220,
-      "status": "مكتمل ومسلّم"
+      "status": "مكتمل ومسلّم",
+      "project_id": "PRJ-2001",
+      "company_id": "CMP-1001",
+      "contractor_id": "CTR-205",
+      "cost_code": "CC-09-05",
+      "wbs_code": "WBS-09.4",
+      "performance_rating": 94
     },
     {
       "sub_id": "SUB-2026-06",
@@ -7913,7 +8066,13 @@ window.MimarERP = {
       "retention_pct": 10,
       "retention_val": 153500,
       "net_paid": 1381500,
-      "status": "مكتمل ومسلّم ابتدائي"
+      "status": "مكتمل ومسلّم ابتدائي",
+      "project_id": "PRJ-2002",
+      "company_id": "CMP-1001",
+      "contractor_id": "CTR-206",
+      "cost_code": "CC-03-01",
+      "wbs_code": "WBS-01.1",
+      "performance_rating": 91
     },
     {
       "sub_id": "SUB-2026-07",
@@ -7926,7 +8085,13 @@ window.MimarERP = {
       "retention_pct": 10,
       "retention_val": 275000,
       "net_paid": 2475000,
-      "status": "قيد التنفيذ بالموقع (75%)"
+      "status": "قيد التنفيذ بالموقع (75%)",
+      "project_id": "PRJ-2002",
+      "company_id": "CMP-1001",
+      "contractor_id": "CTR-207",
+      "cost_code": "CC-05-01",
+      "wbs_code": "WBS-01.2",
+      "performance_rating": 87
     },
     {
       "sub_id": "SUB-2026-08",
@@ -7939,7 +8104,13 @@ window.MimarERP = {
       "retention_pct": 10,
       "retention_val": 105000,
       "net_paid": 945000,
-      "status": "قيد التوريد والتركيب (55%)"
+      "status": "قيد التوريد والتركيب (55%)",
+      "project_id": "PRJ-2002",
+      "company_id": "CMP-1001",
+      "contractor_id": "CTR-208",
+      "cost_code": "CC-14-01",
+      "wbs_code": "WBS-02.1",
+      "performance_rating": 95
     },
     {
       "sub_id": "SUB-2026-09",
@@ -7952,7 +8123,13 @@ window.MimarERP = {
       "retention_pct": 10,
       "retention_val": 260000,
       "net_paid": 2340000,
-      "status": "قيد التمديدات والتركيب (60%)"
+      "status": "قيد التمديدات والتركيب (60%)",
+      "project_id": "PRJ-2003",
+      "company_id": "CMP-1002",
+      "contractor_id": "CTR-209",
+      "cost_code": "CC-15-01",
+      "wbs_code": "WBS-03.1",
+      "performance_rating": 89
     },
     {
       "sub_id": "SUB-2026-10",
@@ -7965,7 +8142,13 @@ window.MimarERP = {
       "retention_pct": 10,
       "retention_val": 82000,
       "net_paid": 738000,
-      "status": "قيد التنفيذ بالموقع (45%)"
+      "status": "قيد التنفيذ بالموقع (45%)",
+      "project_id": "PRJ-2003",
+      "company_id": "CMP-1002",
+      "contractor_id": "CTR-210",
+      "cost_code": "CC-16-01",
+      "wbs_code": "WBS-03.2",
+      "performance_rating": 86
     }
   ],
   "bimElements": [
@@ -9103,6 +9286,175 @@ window.MimarERP = {
           "decision": "مسودة عرض"
         }
       ]
+    }
+  ],
+  "scheduleMaster": [
+    {
+      "activity_id": "ACT-101",
+      "project_id": "PRJ-2001",
+      "wbs_code": "WBS-09.1",
+      "activity_name": "أعمال لياسة الحوائط الداخلية",
+      "duration_days": 30,
+      "planned_start": "2026-02-01",
+      "planned_finish": "2026-03-02",
+      "predecessors": [],
+      "relation_type": "FS",
+      "weight_pct": 20.5,
+      "actual_progress_pct": 100,
+      "budget": 35000,
+      "status": "مكتمل"
+    },
+    {
+      "activity_id": "ACT-102",
+      "project_id": "PRJ-2001",
+      "wbs_code": "WBS-09.2",
+      "activity_name": "أعمال تركيب السيراميك والبورسلان",
+      "duration_days": 25,
+      "planned_start": "2026-03-03",
+      "planned_finish": "2026-03-28",
+      "predecessors": [
+        "ACT-101"
+      ],
+      "relation_type": "FS",
+      "weight_pct": 24.2,
+      "actual_progress_pct": 75,
+      "budget": 42000,
+      "status": "جاري العمل"
+    },
+    {
+      "activity_id": "ACT-103",
+      "project_id": "PRJ-2001",
+      "wbs_code": "WBS-09.3",
+      "activity_name": "أعمال دهانات الجدران والأسقف الداخلية",
+      "duration_days": 20,
+      "planned_start": "2026-03-29",
+      "planned_finish": "2026-04-18",
+      "predecessors": [
+        "ACT-102"
+      ],
+      "relation_type": "FS",
+      "weight_pct": 18,
+      "actual_progress_pct": 40,
+      "budget": 25000,
+      "status": "جاري العمل"
+    },
+    {
+      "activity_id": "ACT-104",
+      "project_id": "PRJ-2001",
+      "wbs_code": "WBS-08.1",
+      "activity_name": "تركيب قطاعات الألمنيوم والواجهات الزجاجية",
+      "duration_days": 22,
+      "planned_start": "2026-03-10",
+      "planned_finish": "2026-04-01",
+      "predecessors": [
+        "ACT-101"
+      ],
+      "relation_type": "SS",
+      "weight_pct": 15.3,
+      "actual_progress_pct": 50,
+      "budget": 28000,
+      "status": "جاري العمل"
+    },
+    {
+      "activity_id": "ACT-105",
+      "project_id": "PRJ-2001",
+      "wbs_code": "WBS-07.1",
+      "activity_name": "أعمال العزل المائي والحراري للأسطح",
+      "duration_days": 15,
+      "planned_start": "2026-04-02",
+      "planned_finish": "2026-04-17",
+      "predecessors": [
+        "ACT-104"
+      ],
+      "relation_type": "FS",
+      "weight_pct": 12,
+      "actual_progress_pct": 20,
+      "budget": 18000,
+      "status": "مخطط"
+    },
+    {
+      "activity_id": "ACT-106",
+      "project_id": "PRJ-2001",
+      "wbs_code": "WBS-09.4",
+      "activity_name": "التسليم الابتدائي وإعداد قائمة الملاحظات (Punch List)",
+      "duration_days": 10,
+      "planned_start": "2026-04-19",
+      "planned_finish": "2026-04-29",
+      "predecessors": [
+        "ACT-103",
+        "ACT-105"
+      ],
+      "relation_type": "FS",
+      "weight_pct": 10,
+      "actual_progress_pct": 0,
+      "budget": 12000,
+      "status": "مخطط"
+    },
+    {
+      "activity_id": "ACT-201",
+      "project_id": "PRJ-2002",
+      "wbs_code": "WBS-01.1",
+      "activity_name": "أعمال صب الأعمدة والأسقف الخرسانية للأدوار المتكررة",
+      "duration_days": 90,
+      "planned_start": "2026-01-01",
+      "planned_finish": "2026-03-31",
+      "predecessors": [],
+      "relation_type": "FS",
+      "weight_pct": 35,
+      "actual_progress_pct": 85,
+      "budget": 12000000,
+      "status": "جاري العمل"
+    },
+    {
+      "activity_id": "ACT-202",
+      "project_id": "PRJ-2002",
+      "wbs_code": "WBS-01.2",
+      "activity_name": "توريد وتركيب هياكل الكرتن وول والواجهات الزجاجية",
+      "duration_days": 60,
+      "planned_start": "2026-04-01",
+      "planned_finish": "2026-05-30",
+      "predecessors": [
+        "ACT-201"
+      ],
+      "relation_type": "FS",
+      "weight_pct": 25,
+      "actual_progress_pct": 30,
+      "budget": 9500000,
+      "status": "جاري العمل"
+    },
+    {
+      "activity_id": "ACT-203",
+      "project_id": "PRJ-2002",
+      "wbs_code": "WBS-02.1",
+      "activity_name": "أعمال التكييف المركزي ومجاري الهواء HVAC",
+      "duration_days": 75,
+      "planned_start": "2026-03-15",
+      "planned_finish": "2026-05-28",
+      "predecessors": [
+        "ACT-201"
+      ],
+      "relation_type": "SS",
+      "weight_pct": 20,
+      "actual_progress_pct": 45,
+      "budget": 7000000,
+      "status": "جاري العمل"
+    },
+    {
+      "activity_id": "ACT-204",
+      "project_id": "PRJ-2002",
+      "wbs_code": "WBS-02.2",
+      "activity_name": "شبكات مكافحة الحريق والرش الآلي",
+      "duration_days": 45,
+      "planned_start": "2026-05-29",
+      "planned_finish": "2026-07-12",
+      "predecessors": [
+        "ACT-203"
+      ],
+      "relation_type": "FS",
+      "weight_pct": 20,
+      "actual_progress_pct": 10,
+      "budget": 6000000,
+      "status": "مخطط"
     }
   ]
 };
