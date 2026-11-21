@@ -68,7 +68,9 @@ function getProjectPlannedValue(prj) {
       return planned > 0 ? planned : BAC * 0.5;
     }
   }
-  const pct = Math.min((prj.physical_progress_pct || 50) + 10, 100);
+  const pct = prj.planned_progress_pct !== undefined 
+    ? prj.planned_progress_pct 
+    : Math.min((prj.physical_progress_pct || 50) + 5, 100);
   return BAC * (pct / 100);
 }
 

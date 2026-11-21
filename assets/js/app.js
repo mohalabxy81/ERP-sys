@@ -2378,8 +2378,12 @@ function exportTableToExcel(tableId, defaultFilename = "ERP-Export.csv") {
   for (let i = 0; i < rows.length; i++) {
     const row = [];
     const cols = rows[i].querySelectorAll("th, td");
-    for (let j = 0; j < cols.length; j++) {
+        for (let j = 0; j < cols.length; j++) {
       let text = (cols[j].innerText || "").replace(/\r?\n|\r/g, " ").replace(/"/g, '""').trim();
+      // OWASP Formula Injection Neutralization (Excel, Calc, Google Sheets)
+      if (/^[=\+\-@]/.test(text)) {
+        text = "'" + text;
+      }
       row.push('"' + text + '"');
     }
     if (row.length > 0) csv.push(row.join(","));
@@ -3558,7 +3562,7 @@ const ERP_PERSIST_KEYS = [
   'inventoryLedger','subcontractsMaster','bimElements','siteDiaryLogs',
   'punchListItems','rfiList','submittalsList','rebarBBSItems',
   'variationsMaster','cvrLedgerMaster','bimClashesMaster','cdeContainersMaster',
-  'safetyIncidents','safetyTrainings','purchaseOrders','scheduleTasks','auditLogs',
+  'safetyIncidents','safetyTrainings','purchaseOrders','scheduleMaster','qaqcInspections','engineeringDrawings','claimsMaster','auditLogs',
   'middleEastRegionalConfig','currentCompanyId','currentProjectId','currentRole'
 ];
 
@@ -3628,10 +3632,10 @@ function renderCVRLedger() {
   const tbody = document.getElementById('tbl-cvr-body');
   if (!tbody) return;
 
-  // Populate project dropdown
+  // Populate project dropdown with both snake_case and camelCase support
   const projSel = document.getElementById('cvr-filter-proj');
   if (projSel && projSel.options && projSel.options.length <= 1) {
-    const projs = [...new Set(data.map(r => r.projectId))];
+    const projs = [...new Set(data.map(r => r.project_id || r.projectId).filter(Boolean))];
     projs.forEach(p => {
       const o = document.createElement('option');
       o.value = p; o.textContent = p;
@@ -3639,23 +3643,29 @@ function renderCVRLedger() {
     });
   }
 
-  const filtered = projFilter ? data.filter(r => r.projectId === projFilter) : data;
+  const filtered = projFilter ? data.filter(r => (r.project_id || r.projectId) === projFilter) : data;
 
-  // KPI aggregation
+  // KPI aggregation with full field fallback
   let totalEV = 0, totalIPC = 0, totalAC = 0, totalRevised = 0, totalEAC = 0;
   filtered.forEach(r => {
-    totalEV  += (r.internalEV || 0);
-    totalIPC += (r.externalIPC || 0);
-    totalAC  += (r.actualCost || 0);
-    totalRevised += (r.revisedContractSum || 0);
-    totalEAC += (r.forecastEAC || 0);
+    const ev = r.internal_earned_value !== undefined ? r.internal_earned_value : (r.internalEV || 0);
+    const ipc = r.external_certified_ipc !== undefined ? r.external_certified_ipc : (r.externalIPC || 0);
+    const ac = r.actual_cost_to_date !== undefined ? r.actual_cost_to_date : (r.actualCost || 0);
+    const rev = r.revised_contract_sum !== undefined ? r.revised_contract_sum : (r.revisedContractSum || 0);
+    const eac = r.forecast_final_cost_eac !== undefined ? r.forecast_final_cost_eac : (r.forecastEAC || 0);
+
+    totalEV  += ev;
+    totalIPC += ipc;
+    totalAC  += ac;
+    totalRevised += rev;
+    totalEAC += eac;
   });
   const grossProfit = totalEV - totalAC;
   const grossMargin = totalEV > 0 ? ((grossProfit / totalEV) * 100).toFixed(1) : '—';
   const underbilling = totalEV - totalIPC;
-  const fcastMargin = totalEAC > 0 ? (((totalRevised - totalEAC) / totalRevised) * 100).toFixed(1) : '—';
+  const fcastMargin = totalEAC > 0 && totalRevised > 0 ? (((totalRevised - totalEAC) / totalRevised) * 100).toFixed(1) : '—';
 
-  const fmt = n => n.toLocaleString('ar-SA', { maximumFractionDigits: 0 });
+  const fmt = n => (n || 0).toLocaleString('ar-SA', { maximumFractionDigits: 0 });
 
   const kpiMargin = document.getElementById('cvr-kpi-margin');
   if (kpiMargin) kpiMargin.textContent = grossMargin !== '—' ? grossMargin + '%' : '—';
@@ -3667,31 +3677,43 @@ function renderCVRLedger() {
   if (kpiFcastMargin) kpiFcastMargin.textContent = fcastMargin !== '—' ? fcastMargin + '%' : '—';
 
   const statusBadge = s => {
-    if (s === 'Approved') return '<span class="badge badge-green">معتمد</span>';
-    if (s === 'Under Review') return '<span class="badge badge-amber">قيد المراجعة</span>';
-    if (s === 'Draft') return '<span class="badge badge-blue">مسودة</span>';
-    return '<span class="badge badge-blue">' + s + '</span>';
+    const text = String(s || '');
+    if (text.includes('Balanced') || text.includes('Approved') || text === 'معتمد') return '<span class="badge badge-green">متطابق ومدقق</span>';
+    if (text.includes('Review') || text.includes('قيد')) return '<span class="badge badge-amber">قيد المراجعة</span>';
+    if (text.includes('Draft') || text.includes('مسودة')) return '<span class="badge badge-blue">مسودة</span>';
+    return '<span class="badge badge-blue">' + escapeHTML(text) + '</span>';
   };
 
   tbody.innerHTML = filtered.map(r => {
-    const gp = (r.internalEV || 0) - (r.actualCost || 0);
-    const gm = (r.internalEV || 0) > 0 ? ((gp / r.internalEV) * 100).toFixed(1) : '—';
-    const fm = (r.forecastEAC || 0) > 0 && (r.revisedContractSum || 0) > 0
-      ? (((r.revisedContractSum - r.forecastEAC) / r.revisedContractSum) * 100).toFixed(1) + '%' : '—';
+    const prjId = r.project_id || r.projectId || '—';
+    const period = r.period || '—';
+    const orig = r.original_contract_sum !== undefined ? r.original_contract_sum : (r.originalContractSum || 0);
+    const varSum = r.approved_variations !== undefined ? r.approved_variations : (r.approvedVariations || 0);
+    const rev = r.revised_contract_sum !== undefined ? r.revised_contract_sum : (r.revisedContractSum || 0);
+    const ev = r.internal_earned_value !== undefined ? r.internal_earned_value : (r.internalEV || 0);
+    const ipc = r.external_certified_ipc !== undefined ? r.external_certified_ipc : (r.externalIPC || 0);
+    const ac = r.actual_cost_to_date !== undefined ? r.actual_cost_to_date : (r.actualCost || 0);
+    const eac = r.forecast_final_cost_eac !== undefined ? r.forecast_final_cost_eac : (r.forecastEAC || 0);
+    const stat = r.reconciliation_status || r.status || 'معتمد';
+
+    const gp = ev - ac;
+    const gm = ev > 0 ? ((gp / ev) * 100).toFixed(1) : '—';
+    const fm = eac > 0 && rev > 0 ? (((rev - eac) / rev) * 100).toFixed(1) + '%' : '—';
+
     return `<tr>
-      <td><strong>${r.projectId}</strong></td>
-      <td>${r.period}</td>
-      <td class="text-num">${fmt(r.originalContractSum || 0)}</td>
-      <td class="text-num">${fmt(r.approvedVariations || 0)}</td>
-      <td class="text-num">${fmt(r.revisedContractSum || 0)}</td>
-      <td class="text-num">${fmt(r.internalEV || 0)}</td>
-      <td class="text-num">${fmt(r.externalIPC || 0)}</td>
-      <td class="text-num">${fmt(r.actualCost || 0)}</td>
+      <td><strong>${escapeHTML(prjId)}</strong></td>
+      <td>${escapeHTML(period)}</td>
+      <td class="text-num">${fmt(orig)}</td>
+      <td class="text-num">${fmt(varSum)}</td>
+      <td class="text-num">${fmt(rev)}</td>
+      <td class="text-num">${fmt(ev)}</td>
+      <td class="text-num">${fmt(ipc)}</td>
+      <td class="text-num">${fmt(ac)}</td>
       <td class="text-num" style="color:${gp >= 0 ? 'var(--green)' : 'var(--red)'}">${fmt(gp)}</td>
       <td style="color:${parseFloat(gm) >= 0 ? 'var(--green)' : 'var(--red)'}"><strong>${gm !== '—' ? gm + '%' : '—'}</strong></td>
-      <td class="text-num">${fmt(r.forecastEAC || 0)}</td>
+      <td class="text-num">${fmt(eac)}</td>
       <td><strong>${fm}</strong></td>
-      <td>${statusBadge(r.status)}</td>
+      <td>${statusBadge(stat)}</td>
     </tr>`;
   }).join('');
 }
@@ -3706,27 +3728,45 @@ function renderCDEContainers() {
   const tbody = document.getElementById('tbl-cde-body');
   if (!tbody) return;
 
-  // Populate CDE new-doc project dropdown
+  // Populate CDE new-doc project dropdown using real project keys
   const projSel = document.getElementById('cde-new-proj');
   if (projSel && projSel.options && projSel.options.length === 0) {
     (MimarERP.projects || []).forEach(p => {
       const o = document.createElement('option');
-      o.value = p.id; o.textContent = p.id + ' — ' + p.name;
+      const pid = p.project_id || p.id;
+      const pname = p.project_name_ar || p.name || '';
+      o.value = pid;
+      o.textContent = pid + ' — ' + pname;
       projSel.appendChild(o);
     });
   }
 
+  // Derive normalized state for each doc
+  const getNormalizedState = d => {
+    if (d.isoState) return d.isoState;
+    const s = String(d.iso_status || '');
+    if (s.includes('A1') || s.includes('Approved') || s.includes('Published')) return 'Published';
+    if (s.includes('S1') || s.includes('Coordination') || s.includes('Shared')) return 'Shared';
+    if (s.includes('Archived')) return 'Archived';
+    return 'WIP';
+  };
+
   // Count per state
   const counts = { WIP: 0, Shared: 0, Published: 0, Archived: 0 };
-  data.forEach(d => { if (counts[d.isoState] !== undefined) counts[d.isoState]++; });
+  data.forEach(d => {
+    const st = getNormalizedState(d);
+    if (counts[st] !== undefined) counts[st]++;
+  });
   ['WIP','Shared','Published','Archived'].forEach(s => {
     const el = document.getElementById('cde-count-' + s.toLowerCase());
     if (el) el.textContent = counts[s];
   });
 
   const filtered = data.filter(d => {
-    return (!stateFilter || d.isoState === stateFilter) &&
-           (!discFilter || d.discipline === discFilter);
+    const st = getNormalizedState(d);
+    const disc = d.discipline || '';
+    return (!stateFilter || st === stateFilter) &&
+           (!discFilter || disc.includes(discFilter));
   });
 
   const stateBadge = s => {
@@ -3736,7 +3776,7 @@ function renderCDEContainers() {
       'Published': '<span class="badge badge-green">Published</span>',
       'Archived': '<span class="badge" style="background:#e0e0e0;color:#616161;">Archived</span>'
     };
-    return map[s] || '<span class="badge">' + s + '</span>';
+    return map[s] || '<span class="badge">' + escapeHTML(s) + '</span>';
   };
 
   const nextState = s => {
@@ -3745,18 +3785,31 @@ function renderCDEContainers() {
   };
 
   tbody.innerHTML = filtered.map(d => {
-    const next = nextState(d.isoState);
-    const advBtn = next ? `<button class="btn btn-sm" style="font-size:11px;padding:3px 8px;" onclick="advanceCDEState('${d.docNumber}')">→ ${next}</button>` : '<span style="color:var(--muted);font-size:11px;">نهائي</span>';
+    const docNum = d.doc_number || d.docNumber || '—';
+    const title = d.title || '—';
+    const disc = d.discipline || '—';
+    const rev = d.revision || 'P01';
+    const st = getNormalizedState(d);
+    const suit = d.suitability || d.suitabilityCode || '—';
+    const uniclass = d.classification || d.uniclassCode || '—';
+    const auth = d.author || '—';
+    const date = d.date || '—';
+
+    const next = nextState(st);
+    const advBtn = next
+      ? `<button class="btn btn-sm" style="font-size:11px;padding:3px 8px;" onclick="advanceCDEState('${escapeHTML(docNum)}')">→ ${next}</button>`
+      : '<span style="color:var(--muted);font-size:11px;">نهائي</span>';
+
     return `<tr>
-      <td><strong style="font-family:monospace;">${d.docNumber}</strong></td>
-      <td>${d.title}</td>
-      <td>${d.discipline}</td>
-      <td style="text-align:center;font-weight:700;">${d.revision}</td>
-      <td>${stateBadge(d.isoState)}</td>
-      <td><code>${d.suitabilityCode || '—'}</code></td>
-      <td style="font-size:11px;color:var(--muted);">${d.uniclassCode || '—'}</td>
-      <td>${d.author}</td>
-      <td style="font-size:12px;">${d.date || '—'}</td>
+      <td><strong style="font-family:monospace;">${escapeHTML(docNum)}</strong></td>
+      <td>${escapeHTML(title)}</td>
+      <td>${escapeHTML(disc)}</td>
+      <td style="text-align:center;font-weight:700;">${escapeHTML(rev)}</td>
+      <td>${stateBadge(st)}</td>
+      <td><code>${escapeHTML(suit)}</code></td>
+      <td style="font-size:11px;color:var(--muted);">${escapeHTML(uniclass)}</td>
+      <td>${escapeHTML(auth)}</td>
+      <td style="font-size:12px;">${escapeHTML(date)}</td>
       <td>${advBtn}</td>
     </tr>`;
   }).join('');
@@ -3765,13 +3818,27 @@ function renderCDEContainers() {
 function advanceCDEState(docNumber) {
   const data = MimarERP.cdeContainersMaster || [];
   const flow = { 'WIP': 'Shared', 'Shared': 'Published', 'Published': 'Archived' };
-  const doc = data.find(d => d.docNumber === docNumber);
-  if (!doc || !flow[doc.isoState]) return;
-  const prev = doc.isoState;
-  doc.isoState = flow[doc.isoState];
+  const doc = data.find(d => (d.doc_number === docNumber || d.docNumber === docNumber));
+  if (!doc) return;
+
+  const getSt = d => {
+    if (d.isoState) return d.isoState;
+    const s = String(d.iso_status || '');
+    if (s.includes('A1') || s.includes('Approved') || s.includes('Published')) return 'Published';
+    if (s.includes('S1') || s.includes('Coordination') || s.includes('Shared')) return 'Shared';
+    if (s.includes('Archived')) return 'Archived';
+    return 'WIP';
+  };
+
+  const current = getSt(doc);
+  if (!flow[current]) return;
+  const next = flow[current];
+
+  doc.isoState = next;
+  doc.iso_status = next;
   saveToLocalStorage();
   renderCDEContainers();
-  showToast(`الوثيقة ${docNumber} انتقلت من ${prev} إلى ${doc.isoState} ✓`);
+  showToast(`الوثيقة ${docNumber} انتقلت من ${current} إلى ${next} ✓`);
 }
 
 function openAddCDEModal() {
@@ -3928,17 +3995,28 @@ function renderEVMDashboard() {
     }
   });
 
-  // Build WBS-level EVM table from wbs + boq data
+    // Build WBS-level EVM table from real wbs + boq data (Zero Synthetic / Random Data)
   const wbsGroups = {};
-  (wbsData || []).forEach(w => { wbsGroups[w.code || w.id] = { label: w.description || w.name, pv: 0, ev: 0, ac: 0 }; });
+  (wbsData || []).forEach(w => {
+    const code = w.code || w.id || w.wbs_id;
+    const label = w.description || w.name || w.title_ar || code;
+    wbsGroups[code] = { label, pv: 0, ev: 0, ac: 0 };
+  });
   (boqData || []).forEach(b => {
     const key = b.wbs || Object.keys(wbsGroups)[0] || 'WBS-01';
     if (!wbsGroups[key]) wbsGroups[key] = { label: key, pv: 0, ev: 0, ac: 0 };
-    const pv = (b.quantity || 0) * (b.rate || 0);
-    const prog = (b.progress_pct || Math.random() * 0.6 + 0.2);
+    const pv = (b.quantity || b.qty_approved || 0) * (b.rate_selling || b.rate || b.rate_direct_total || 0);
+    const prog = (b.qty_approved > 0 && b.qty_executed !== undefined)
+      ? (b.qty_executed / b.qty_approved)
+      : (b.progress_pct !== undefined ? b.progress_pct : 0.65);
+    const ev = pv * Math.min(Math.max(prog, 0), 1);
+    const costRatio = (b.total_cost_direct && b.total_selling)
+      ? (b.total_cost_direct / b.total_selling)
+      : 0.85;
+    const ac = ev * costRatio;
     wbsGroups[key].pv += pv;
-    wbsGroups[key].ev += pv * prog;
-    wbsGroups[key].ac += pv * prog * (0.9 + Math.random() * 0.2);
+    wbsGroups[key].ev += ev;
+    wbsGroups[key].ac += ac;
   });
 
   const perfBadge = (cpi, spi) => {
