@@ -198,6 +198,33 @@ test('knowhow.html links from index.html view-knowhow & topbar', () => {
   assert(html.includes('href="knowhow.html"'), 'Link to knowhow.html missing in index.html');
 });
 
+console.log('\n🎨 8. Clean Architecture: 100% External CSS & JS Separation');
+const allHtmlFiles = [
+  'index.html',
+  'knowhow.html',
+  'modules/cost-control/index.html',
+  'modules/document-control/index.html',
+  'modules/executive-dashboard/index.html',
+  'modules/hse/index.html',
+  'modules/planning/index.html',
+  'modules/procurement/index.html'
+];
+allHtmlFiles.forEach(f => {
+  test(`Zero embedded <style> and inline <script> in ${f}`, () => {
+    assert(fs.existsSync(f), `${f} missing`);
+    const c = fs.readFileSync(f, 'utf8');
+    const styles = c.match(/<style[^>]*>[\s\S]*?<\/style>/gi) || [];
+    assert(styles.length === 0, `${f} still has ${styles.length} <style> blocks`);
+    const inlineScripts = [];
+    const scriptRegex = /<script(?![^>]*\bsrc=)[^>]*>([\s\S]*?)<\/script>/gi;
+    let m;
+    while ((m = scriptRegex.exec(c)) !== null) {
+      if (m[1].trim().length > 0) inlineScripts.push(m[1].length);
+    }
+    assert(inlineScripts.length === 0, `${f} still has ${inlineScripts.length} inline <script> blocks`);
+  });
+});
+
 // --- Summary ---
 console.log(`\n${'='.repeat(40)}`);
 console.log(`PASSED: ${pass}  |  FAILED: ${fail}  |  TOTAL: ${pass + fail}`);
