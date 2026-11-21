@@ -1,6 +1,6 @@
 /**
  * ERP-SYS V8 Full Stack Validation Test
- * Tests: Config data, EVM calculations, CPM traversal, AI agents, Gantt, PMO, Roadmap, PrintEngine, Storage
+ * Tests: Config data, EVM calculations, CPM traversal, AI agents, Gantt, PMO, Roadmap, PrintEngine, Storage, Accounting
  */
 const vm = require('vm');
 const fs = require('fs');
@@ -43,6 +43,8 @@ test('subcontractsMaster has project_id & contractor_id', () => { assert(M.subco
 test('costControlRegister has project_id', () => assert(M.costControlRegister[0].project_id, 'project_id missing'));
 test('qaqcInspections exists with ≥7 inspections', () => assert(M.qaqcInspections && M.qaqcInspections.length >= 7, `Got ${M.qaqcInspections ? M.qaqcInspections.length : 0}`));
 test('engineeringDrawings exists with ≥7 drawings', () => assert(M.engineeringDrawings && M.engineeringDrawings.length >= 7, `Got ${M.engineeringDrawings ? M.engineeringDrawings.length : 0}`));
+test('purchaseOrders exists with ≥6 orders', () => assert(M.purchaseOrders && M.purchaseOrders.length >= 6, `Got ${M.purchaseOrders ? M.purchaseOrders.length : 0}`));
+test('claimsMaster exists with ≥4 FIDIC claims', () => assert(M.claimsMaster && M.claimsMaster.length >= 4, `Got ${M.claimsMaster ? M.claimsMaster.length : 0}`));
 
 // --- 2. EVM Engine ---
 console.log('\n📊 2. EVM Engine (Real Data Aggregation)');
@@ -73,8 +75,8 @@ test('calculatePortfolioEVM returns valid totals', () => {
   assert(port.SPI > 0, 'SPI=0');
 });
 
-// --- 3. CPM Engine (Topological CPM Traversal) ---
-console.log('\n🔗 3. CPM Engine (Topological CPM Traversal)');
+// --- 3. CPM Engine & Enterprise Features ---
+console.log('\n🔗 3. CPM Engine & Enterprise Features');
 const entCode = fs.readFileSync('assets/js/enterprise-features.js', 'utf8');
 const entCtx = { window: {}, TextEncoder: require('util').TextEncoder };
 vm.createContext(entCtx);
@@ -109,8 +111,13 @@ test('CpmEngine.generateXER returns string with ERMHDR', () => {
 test('renderGanttChart exported in enterprise-features', () => {
   assert(typeof entCtx.window.renderGanttChart === 'function', 'renderGanttChart not found');
 });
-test('PrintEngine exported with printIPC', () => {
-  assert(entCtx.window.PrintEngine && typeof entCtx.window.PrintEngine.printIPC === 'function', 'PrintEngine missing');
+test('PrintEngine exported with printIPC, printPO, printClaim', () => {
+  assert(entCtx.window.PrintEngine && typeof entCtx.window.PrintEngine.printIPC === 'function', 'printIPC missing');
+  assert(typeof entCtx.window.PrintEngine.printPO === 'function', 'printPO missing');
+  assert(typeof entCtx.window.PrintEngine.printClaim === 'function', 'printClaim missing');
+});
+test('AccountingWorkflowEngine exported', () => {
+  assert(entCtx.window.AccountingWorkflowEngine && typeof entCtx.window.AccountingWorkflowEngine.postMaterialToAP === 'function', 'AccountingWorkflowEngine missing');
 });
 
 // --- 4. Storage & Crud Engine ---
@@ -121,6 +128,8 @@ test('scheduleMaster, qaqcInspections, engineeringDrawings in SAVE_KEYS', () => 
   assert(crudCode.includes("'scheduleMaster'"));
   assert(crudCode.includes("'qaqcInspections'"));
   assert(crudCode.includes("'engineeringDrawings'"));
+  assert(crudCode.includes("'purchaseOrders'"));
+  assert(crudCode.includes("'claimsMaster'"));
 });
 
 // --- 5. app.js exports & Dynamic Renderers ---
@@ -135,6 +144,9 @@ test('setChartMode exported in evm-calculator', () => {
 test('renderBillingTable reads from financeBillings', () => assert(appCode.includes('MimarERP.financeBillings')));
 test('renderInspectionsTable reads from qaqcInspections', () => assert(appCode.includes('MimarERP.qaqcInspections')));
 test('renderDrawingsTable reads from engineeringDrawings', () => assert(appCode.includes('MimarERP.engineeringDrawings')));
+test('renderProcurementTable reads from purchaseOrders', () => assert(appCode.includes('MimarERP.purchaseOrders')));
+test('render3WayMatchTable function defined', () => assert(appCode.includes('function render3WayMatchTable')));
+test('renderClaimsTable function defined', () => assert(appCode.includes('function renderClaimsTable')));
 
 // --- 6. HTML structure ---
 console.log('\n🌐 6. index.html Structure');
@@ -155,6 +167,8 @@ test('view-ai-center section exists', () => assert(html.includes('id="view-ai-ce
 test('view-pmo section exists', () => assert(html.includes('id="view-pmo"')));
 test('view-roadmap section exists', () => assert(html.includes('id="view-roadmap"')));
 test('ganttCanvas exists in view-scheduling', () => assert(html.includes('id="ganttCanvas"')));
+test('tbl-proc-3way-match exists in index.html', () => assert(html.includes('id="tbl-proc-3way-match"')));
+test('tbl-claims exists in index.html', () => assert(html.includes('id="tbl-claims"')));
 
 // --- Summary ---
 console.log(`\n${'='.repeat(40)}`);
@@ -162,6 +176,6 @@ console.log(`PASSED: ${pass}  |  FAILED: ${fail}  |  TOTAL: ${pass + fail}`);
 if (fail === 0) {
   console.log('🎉 ALL TESTS PASSED — ERP-SYS V8 Stack is Complete & Healthy!\n');
 } else {
-  console.log(`⚠️  ${fail} test(s) failed. Review errors above.\n`);
+  console.error(`💥 ${fail} TESTS FAILED\n`);
+  process.exit(1);
 }
-process.exit(fail > 0 ? 1 : 0);

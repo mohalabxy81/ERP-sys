@@ -1165,17 +1165,311 @@
     },
 
     printPO: function(poId) {
-      alert("جاري تجهيز أمر الشراء التوريدي المعتمد: " + (poId || "PO-2026-001"));
+      const pos = (window.MimarERP && window.MimarERP.purchaseOrders) ? window.MimarERP.purchaseOrders : [];
+      const po = pos.find(x => x.po_id === poId) || pos[0] || {
+        po_id: "PO-2026-001",
+        project_name: "فلل الغروب السكنية",
+        project_id: "PRJ-2001",
+        supplier_name: "شركة أسمنت ينبع والمدينة",
+        supplier_id: "SUP-01",
+        material_desc: "أسمنت بورتلاندي عادي 50 كجم",
+        cost_code: "MAT-CONC-01",
+        quantity: 1000,
+        unit: "كيس",
+        unit_price: 16.50,
+        total_amount: 16500.00,
+        issue_date: "2026-03-01",
+        delivery_date: "2026-03-05"
+      };
+
+      const subtotal = po.total_amount;
+      const vat = subtotal * 0.15;
+      const grandTotal = subtotal + vat;
+
+      const printHtml = `<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>أمر شراء معتمد - ${po.po_id}</title>
+  <style>
+    body { font-family: 'Tajawal', sans-serif; margin: 25px 40px; color: #1e293b; direction: rtl; }
+    .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 3px double #0f172a; padding-bottom: 15px; margin-bottom: 25px; }
+    .header h1 { margin: 0; font-size: 22px; color: #0f172a; }
+    .header p { margin: 4px 0 0; color: #64748b; font-size: 13px; }
+    .meta-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 15px; margin-bottom: 25px; font-size: 13px; }
+    .meta-row { display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px dashed #cbd5e1; }
+    .meta-label { color: #64748b; font-weight: 600; }
+    .meta-val { font-weight: 700; color: #0f172a; }
+    table { width: 100%; border-collapse: collapse; margin-bottom: 25px; font-size: 13px; }
+    th { background: #0f172a; color: #ffffff; padding: 10px; border: 1px solid #0f172a; text-align: right; }
+    td { padding: 9px; border: 1px solid #cbd5e1; }
+    .num { text-align: left; font-family: monospace; font-size: 14px; }
+    .total-row { background: #f1f5f9; font-weight: 800; font-size: 14px; }
+    .signatures { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-top: 40px; text-align: center; }
+    .sig-box { border-top: 1px solid #0f172a; padding-top: 10px; font-size: 12px; }
+    @media print { body { margin: 0; } .no-print { display: none; } }
+  </style>
+</head>
+<body>
+  <div class="no-print" style="margin-bottom:20px; text-align:left;">
+    <button onclick="window.print()" style="padding:8px 16px; background:#0f172a; color:#fff; border:none; border-radius:4px; cursor:pointer; font-weight:700;">طباعة أمر الشراء (Print PO)</button>
+  </div>
+  <div class="header">
+    <div>
+      <h1>أمر شراء مواد وتوريدات (Official Purchase Order)</h1>
+      <p>شركة إعمار وعمران للإنشاءات العامة · الرقم الضريبي: 310123456700003</p>
+    </div>
+    <div style="text-align:left;">
+      <h2 style="margin:0; color:#0f172a; font-family:monospace;">${po.po_id}</h2>
+      <span style="font-size:12px; color:#64748b;">تاريخ الإصدار: ${po.issue_date}</span>
+    </div>
+  </div>
+
+  <div class="meta-grid">
+    <div>
+      <div class="meta-row"><span class="meta-label">المورد المعتمد:</span><span class="meta-val">${po.supplier_name}</span></div>
+      <div class="meta-row"><span class="meta-label">رمز المورد:</span><span class="meta-val">${po.supplier_id || 'SUP-01'}</span></div>
+      <div class="meta-row"><span class="meta-label">شروط الدفع:</span><span class="meta-val">30 يوماً من قبول الاستلام GRN</span></div>
+    </div>
+    <div>
+      <div class="meta-row"><span class="meta-label">المشروع المعني:</span><span class="meta-val">${po.project_name || 'فلل الغروب'}</span></div>
+      <div class="meta-row"><span class="meta-label">كود المشروع:</span><span class="meta-val">${po.project_id || 'PRJ-2001'}</span></div>
+      <div class="meta-row"><span class="meta-label">تاريخ التوريد بالموقع:</span><span class="meta-val">${po.delivery_date}</span></div>
+    </div>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th style="width:5%;">#</th>
+        <th>المادة والمواصفة الفنية</th>
+        <th style="width:15%;">كود التكلفة</th>
+        <th style="width:12%;">الكمية</th>
+        <th style="width:15%;">سعر الوحدة</th>
+        <th style="width:20%;">القيمة الإجمالية (SAR)</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>1</td>
+        <td><strong>${po.material_desc}</strong></td>
+        <td>${po.cost_code || 'MAT-01'}</td>
+        <td class="num">${Number(po.quantity).toLocaleString("ar-SA")} ${po.unit}</td>
+        <td class="num">${Number(po.unit_price).toLocaleString("ar-SA", {minimumFractionDigits:2, maximumFractionDigits:2})}</td>
+        <td class="num" style="font-weight:700;">${Number(subtotal).toLocaleString("ar-SA", {minimumFractionDigits:2, maximumFractionDigits:2})}</td>
+      </tr>
+      <tr>
+        <td colspan="5" style="text-align:left; font-weight:700;">المجموع الفرعي الخاضع للضريبة</td>
+        <td class="num">${Number(subtotal).toLocaleString("ar-SA", {minimumFractionDigits:2, maximumFractionDigits:2})}</td>
+      </tr>
+      <tr>
+        <td colspan="5" style="text-align:left; font-weight:700;">ضريبة القيمة المضافة (15% VAT)</td>
+        <td class="num">${Number(vat).toLocaleString("ar-SA", {minimumFractionDigits:2, maximumFractionDigits:2})}</td>
+      </tr>
+      <tr class="total-row">
+        <td colspan="5" style="text-align:left; color:#15803d; font-size:15px;">الإجمالي الكلي شامل الضريبة (SAR)</td>
+        <td class="num" style="color:#15803d; font-size:16px;">${Number(grandTotal).toLocaleString("ar-SA", {minimumFractionDigits:2, maximumFractionDigits:2})}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="signatures">
+    <div class="sig-box">
+      <strong>مدير المشتريات وسلاسل الإمداد</strong>
+      <p style="margin-top:40px;">الاسم والاعتماد</p>
+    </div>
+    <div class="sig-box">
+      <strong>مدير المشروع بالموقع</strong>
+      <p style="margin-top:40px;">الاعتماد والتأكيد</p>
+    </div>
+  </div>
+</body>
+</html>`;
+      const win = window.open("", "_blank", "width=900,height=800");
+      if (win) { win.document.write(printHtml); win.document.close(); }
+    },
+
+    printClaim: function(claimId) {
+      const claims = (window.MimarERP && window.MimarERP.claimsMaster) ? window.MimarERP.claimsMaster : [];
+      const c = claims.find(x => x.claim_id === claimId) || claims[0] || {
+        claim_id: "CLM-2026-01",
+        project_name: "فلل الغروب السكنية",
+        project_id: "PRJ-2001",
+        subject: "تأخر تسليم إحداثيات ومناسيب الربط والمخططات المعتمدة من الأمانة",
+        fidic_clause: "FIDIC 2017 Sub-Clause 1.9 & 8.4",
+        eot_days_claimed: 14,
+        cost_impact: 48500,
+        notice_date: "2026-01-20",
+        evidence_package: "كتاب الأمانة رقم 412 + صور الموقع + جدول P6 Fragnet"
+      };
+
+      const printHtml = `<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>مذكرة مطالبة تعاقدية - ${c.claim_id}</title>
+  <style>
+    body { font-family: 'Tajawal', sans-serif; margin: 25px 40px; color: #1e293b; direction: rtl; line-height: 1.6; }
+    .header { border-bottom: 3px double #0f172a; padding-bottom: 15px; margin-bottom: 25px; }
+    .header h1 { margin: 0; font-size: 22px; color: #0f172a; }
+    .meta-box { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 15px; margin-bottom: 25px; font-size: 13px; }
+    .section-title { font-weight: 800; font-size: 15px; color: #0f172a; border-right: 4px solid #0284c7; padding-right: 10px; margin: 20px 0 10px; }
+    table { width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 13px; }
+    th { background: #0f172a; color: #ffffff; padding: 9px; border: 1px solid #0f172a; text-align: right; }
+    td { padding: 9px; border: 1px solid #cbd5e1; }
+    .num { text-align: left; font-family: monospace; font-size: 14px; }
+    .signatures { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-top: 50px; text-align: center; }
+    .sig-box { border-top: 1px solid #0f172a; padding-top: 10px; font-size: 12px; }
+    @media print { body { margin: 0; } .no-print { display: none; } }
+  </style>
+</head>
+<body>
+  <div class="no-print" style="margin-bottom:20px; text-align:left;">
+    <button onclick="window.print()" style="padding:8px 16px; background:#0f172a; color:#fff; border:none; border-radius:4px; cursor:pointer; font-weight:700;">طباعة مذكرة المطالبة (Print FIDIC Claim)</button>
+  </div>
+  <div class="header">
+    <div style="display:flex; justify-content:space-between; align-items:center;">
+      <div>
+        <h1>إشعار ومذكرة مطالبة تعاقدية رسمية (FIDIC Clause 20.1 Notice of Claim)</h1>
+        <p>عقد مقاولة إنشاءات عامة وفق الشروط العامة لعقود الفيديك (FIDIC Red Book 2017)</p>
+      </div>
+      <div style="text-align:left;">
+        <h2 style="margin:0; color:#b91c1c; font-family:monospace;">${c.claim_id}</h2>
+        <span style="font-size:12px; color:#64748b;">تاريخ الإشعار: ${c.notice_date}</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="meta-box">
+    <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+      <div><strong>المشروع:</strong> ${c.project_name || 'فلل الغروب السكنية'} (${c.project_id || 'PRJ-2001'})</div>
+      <div><strong>السند والفقرة التعاقدية:</strong> ${c.fidic_clause}</div>
+      <div><strong>المقاول العام:</strong> شركة إعمار وعمران للإنشاءات</div>
+      <div><strong>المهندس الاستشاري المشرف:</strong> دار الهندسة للتصميم والاستشارات</div>
+    </div>
+  </div>
+
+  <div class="section-title">1. البيان الوقائعي والحدث المسبب للتأخير (Factual Narrative)</div>
+  <p style="font-size:13px; text-align:justify;">${c.subject}. وقع هذا الحدث خارج نطاق سيطرة المقاول وأدى إلى تعطيل الأنشطة الواقعة على المسار الحرج المعتمد في البرنامج الزمني Baseline وفق المادة 8.4 من عقد الفيديك.</p>
+
+  <div class="section-title">2. الأثر الزمني والمالي المطلوب (Claim Particulars & Quantification)</div>
+  <table>
+    <thead>
+      <tr>
+        <th>البيان والمطالبة</th>
+        <th style="width:25%;">المطالبة الإجمالية</th>
+        <th style="width:35%;">المستند الثبوتي المرتبط</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>تمديد مدة العقد الإنشائي (Extension of Time - EOT)</td>
+        <td class="num" style="font-weight:700; color:#b91c1c;">${c.eot_days_claimed} يوم تقويمي</td>
+        <td>تحليل المسار الحرج P6 Time Impact Analysis (TIA)</td>
+      </tr>
+      <tr>
+        <td>التعويض المالي عن تكاليف التعطيل والمصاريف الإدارية الموقعية</td>
+        <td class="num" style="font-weight:700; color:#15803d;">+${Number(c.cost_impact).toLocaleString("ar-SA")} ر.س</td>
+        <td>سجلات الرواتب، إيجار الآليات، والمصاريف غير المباشرة</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="signatures">
+    <div class="sig-box">
+      <strong>مدير العقود والمطالبات - المقاول</strong>
+      <p style="margin-top:40px;">الاسم والختم الرسمي</p>
+    </div>
+    <div class="sig-box">
+      <strong>استلام المهندس الاستشاري المشرف</strong>
+      <p style="margin-top:40px;">تاريخ وساعة الاستلام</p>
+    </div>
+  </div>
+</body>
+</html>`;
+      const win = window.open("", "_blank", "width=900,height=800");
+      if (win) { win.document.write(printHtml); win.document.close(); }
     },
 
     printNCR: function(ncrId) {
-      alert("جاري تجهيز تقرير عدم المطابقة الفني المعتمد: " + (ncrId || "NCR-2026-001"));
+      alert("تقرير عدم المطابقة الفني المعتمد (NCR Form ISO 9001): " + (ncrId || "NCR-2026-001"));
     },
 
     printCVR: function() {
       alert("جاري تصدير تقرير تسوية التكلفة والقيمة (CVR Ledger AACE RP 20R)");
     }
   };
+
+  // =========================================================================
+  // 11. DEEP ACCOUNTING WORKFLOW INTEGRATION ENGINE
+  // =========================================================================
+  const AccountingWorkflowEngine = {
+    postMaterialToAP: function(poId) {
+      if (!window.MimarERP || !MimarERP.purchaseOrders) return false;
+      const po = MimarERP.purchaseOrders.find(p => p.po_id === poId);
+      if (!po) return false;
+
+      const invoiceItem = {
+        invoice_id: "INV-" + po.po_id.replace("PO-", ""),
+        supplier: po.supplier_name,
+        amount: po.total_amount * 1.15,
+        due_date: new Date(Date.now() + 30*86400000).toISOString().split('T')[0],
+        status: "معلق",
+        project_id: po.project_id,
+        cost_code: po.cost_code,
+        vat_amount: po.total_amount * 0.15
+      };
+
+      if (!MimarERP.financeAP) MimarERP.financeAP = [];
+      MimarERP.financeAP.unshift(invoiceItem);
+      if (typeof logAudit === 'function') {
+        logAudit('إنشاء فاتورة مشتريات AP', 'حسابات دائنة', "ترحيل أمر الشراء " + po.po_id + " بمبلغ " + invoiceItem.amount + " ر.س");
+      }
+      return true;
+    },
+
+    postSubcontractPaymentVoucher: function(subId, certifiedAmount) {
+      if (!window.MimarERP) return false;
+      const retention = certifiedAmount * 0.10;
+      const netPayable = certifiedAmount - retention;
+      const vat = netPayable * 0.15;
+      const totalVoucher = netPayable + vat;
+
+      const voucher = {
+        invoice_id: "SUB-VOUCH-" + subId,
+        supplier: "مستخلص مقاول باطن: " + subId,
+        amount: totalVoucher,
+        due_date: new Date(Date.now() + 15*86400000).toISOString().split('T')[0],
+        status: "معلق",
+        cost_code: "SUB-WORK-01",
+        retention_amount: retention,
+        vat_amount: vat
+      };
+
+      if (!MimarERP.financeAP) MimarERP.financeAP = [];
+      MimarERP.financeAP.unshift(voucher);
+      if (typeof logAudit === 'function') {
+        logAudit('ترحيل سند صرف مقاول باطن', 'عقود باطن', "ترحيل مستخلص " + subId + " بقيمة " + totalVoucher + " ر.س");
+      }
+      return true;
+    },
+
+    allocateEquipmentCost: function(equipId, projectId, hours, fuelCost) {
+      if (typeof logAudit === 'function') {
+        logAudit('تخصيص تكلفة معدات', 'معدات وآليات', "تشغيل " + equipId + " لمدة " + hours + " س ووقود " + fuelCost + " ر.س للمشروع " + projectId);
+      }
+      return true;
+    },
+
+    allocateLaborCost: function(projectId, wbsCode, workersCount, totalCost) {
+      if (typeof logAudit === 'function') {
+        logAudit('تخصيص تكلفة عمالة', 'مراقبة التكاليف', "توزيع " + workersCount + " عامل بمبلغ " + totalCost + " ر.س على " + wbsCode + " للمشروع " + projectId);
+      }
+      return true;
+    }
+  };
+
+  window.AccountingWorkflowEngine = AccountingWorkflowEngine;
 
   window.renderGanttChart = renderGanttChart;
   window.PrintEngine = PrintEngine;

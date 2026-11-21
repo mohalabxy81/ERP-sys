@@ -2079,26 +2079,13 @@
           </div>
           <div class="card-body" style="padding:0;">
             <div class="table-wrapper">
-              <table>
+              <table id="tbl-proc-3way-match">
                 <thead><tr>
                   <th>رقم أمر الشراء (PO)</th><th>إشعار استلام الموقع (GRN)</th><th>فاتورة المورد</th>
                   <th>قيمة PO</th><th>قيمة الاستلام الفعلي</th><th>قيمة الفاتورة المطالب بها</th>
                   <th>نسبة الانحراف</th><th>حالة الاعتماد المالي</th>
                 </tr></thead>
-                <tbody>
-                  <tr>
-                    <td>PO-2026-001</td><td>GRN-01 (أسمنت ينبع)</td><td>INV-YB-4412</td>
-                    <td class="text-num">16,500.00</td><td class="text-num">16,500.00</td><td class="text-num">16,500.00</td>
-                    <td class="text-center"><span class="badge badge-green">0.0% متطابق</span></td>
-                    <td><span class="badge badge-green">مصرح بالصرف المالي</span></td>
-                  </tr>
-                  <tr>
-                    <td>PO-2026-002</td><td>GRN-02 (هضاب الخليج)</td><td>INV-HG-9801</td>
-                    <td class="text-num">24,780.00</td><td class="text-num">24,780.00</td><td class="text-num">24,780.00</td>
-                    <td class="text-center"><span class="badge badge-green">0.0% متطابق</span></td>
-                    <td><span class="badge badge-green">مصرح بالصرف المالي</span></td>
-                  </tr>
-                </tbody>
+                <tbody></tbody>
               </table>
             </div>
           </div>
@@ -2559,7 +2546,7 @@
         </div>
         <div style="display:flex; gap:8px;">
           <span class="badge badge-purple"><i class="fas fa-file-contract"></i> FIDIC Clause 20.1</span>
-          <button class="btn btn-outline btn-sm" onclick="showToast('تم تصدير حزمة المطالبة التعاقدية بصيغة PDF.')"><i class="fas fa-file-pdf"></i> تصدير مذكرة المطالبة</button>
+          <button class="btn btn-outline btn-sm" onclick="if(window.PrintEngine&&window.PrintEngine.printClaim)window.PrintEngine.printClaim();else showToast('تم تصدير حزمة المطالبة التعاقدية بصيغة PDF.');"><i class="fas fa-file-pdf"></i> طباعة مذكرة المطالبة (FIDIC 20.1)</button>
         </div>
       </div>
 
@@ -2569,31 +2556,12 @@
         </div>
         <div class="card-body" style="padding:0;">
           <div class="table-wrapper">
-            <table>
+            <table id="tbl-claims">
               <thead><tr>
                 <th>رقم المطالبة</th><th>الموضوع والحدث المسبب للتأخير</th><th>السند والفقرة التعاقدية</th>
-                <th>أيام التمديد المطلوبة</th><th>الأثر المالي المطلوب</th><th>تاريخ الإخطار (Clause 20.1)</th><th>حالة المهندس المشرف</th>
+                <th>أيام التمديد المطلوبة</th><th>الأثر المالي المطلوب</th><th>تاريخ الإخطار (Clause 20.1)</th><th>حالة المهندس المشرف</th><th>الإجراء</th>
               </tr></thead>
-              <tbody>
-                <tr>
-                  <td><strong>CLM-2026-01</strong></td>
-                  <td>تأخر تسليم إحداثيات ومناسيب الربط من الأمانة</td>
-                  <td>FIDIC 2017 Sub-Clause 1.9 & 8.4</td>
-                  <td class="text-num"><span class="badge badge-purple">14 يوم</span></td>
-                  <td class="text-num" style="color:var(--green); font-weight:700;">+48,500 ر.س</td>
-                  <td>2026-01-20</td>
-                  <td><span class="badge badge-green">معتمد جزئياً (7 أيام + 25,000 ر.س)</span></td>
-                </tr>
-                <tr>
-                  <td><strong>CLM-2026-02</strong></td>
-                  <td>تعديل مسارات التكييف وسماكة العزل بموجب توجيه المالك</td>
-                  <td>FIDIC 2017 Sub-Clause 13.3</td>
-                  <td class="text-num"><span class="badge badge-purple">21 يوم</span></td>
-                  <td class="text-num" style="color:var(--green); font-weight:700;">+112,000 ر.س</td>
-                  <td>2026-02-15</td>
-                  <td><span class="badge badge-amber">قيد التدقيق والتقييم الحسابي</span></td>
-                </tr>
-              </tbody>
+              <tbody></tbody>
             </table>
           </div>
         </div>

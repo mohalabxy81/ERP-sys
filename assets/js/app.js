@@ -136,6 +136,8 @@ function switchView(viewId) {
   if (viewId === "billing") renderBillingTable();
   if (viewId === "qa-qc") renderInspectionsTable();
   if (viewId === "doc-control") renderDrawingsTable();
+  if (viewId === "procurement") { renderProcurementTable(); render3WayMatchTable(); }
+  if (viewId === "contract-admin") renderClaimsTable();
 }
 
 function toggleNavGroup(headerEl) {
@@ -231,6 +233,8 @@ function renderAllViews() {
   renderTakeoffTable();
   renderRateAnalysisCards();
   renderProcurementTable();
+  render3WayMatchTable();
+  renderClaimsTable();
   renderInventoryTable();
   renderSubcontractsTable();
   renderScheduleTable();
@@ -882,41 +886,90 @@ function renderRateAnalysisCards() {
 function renderProcurementTable() {
   const tbody = document.querySelector("#tbl-po-list tbody");
   if (!tbody) return;
-  tbody.innerHTML = `
-    <tr>
-      <td class="text-num"><strong>PO-2026-001</strong></td>
-      <td>شركة أسمنت ينبع والمدينة</td>
-      <td>أسمنت بورتلاندي عادي 50 كجم</td>
-      <td class="text-num">1,000 كيس</td>
-      <td class="text-num">16.50</td>
-      <td class="text-num"><strong>16,500.00</strong></td>
-      <td class="text-num">2026-03-01</td>
-      <td class="text-num">2026-03-05</td>
-      <td><span class="badge badge-green">مستلم بالكامل (GRN-01)</span></td>
-    </tr>
-    <tr>
-      <td class="text-num"><strong>PO-2026-002</strong></td>
-      <td>شركة هضاب الخليج للسيراميك</td>
-      <td>سيراميك وبورسلان وبلاط أحواش</td>
-      <td class="text-num">650 م²</td>
-      <td class="text-num">38.12</td>
-      <td class="text-num"><strong>24,780.00</strong></td>
-      <td class="text-num">2026-03-10</td>
-      <td class="text-num">2026-03-15</td>
-      <td><span class="badge badge-green">مستلم بالكامل (GRN-02)</span></td>
-    </tr>
-    <tr>
-      <td class="text-num"><strong>PO-2026-003</strong></td>
-      <td>شركة دهانات الجزيرة</td>
-      <td>غراء لاصق Santex C2TE</td>
-      <td class="text-num">180 كيس</td>
-      <td class="text-num">49.71</td>
-      <td class="text-num"><strong>8,947.80</strong></td>
-      <td class="text-num">2026-03-18</td>
-      <td class="text-num">2026-03-22</td>
-      <td><span class="badge badge-blue">قيد التوريد والتسليم</span></td>
-    </tr>
-  `;
+  tbody.innerHTML = "";
+
+  const prj = getActiveProject();
+  const allPOs = MimarERP.purchaseOrders || [];
+  const list = allPOs.filter(p => !prj || p.project_id === prj.project_id);
+  const data = list.length > 0 ? list : allPOs;
+
+  data.forEach(po => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td class="text-num"><strong style="color:var(--teal)">${po.po_id}</strong></td>
+      <td><strong>${po.supplier_name}</strong></td>
+      <td>${po.material_desc} ${po.cost_code ? `<span class="badge badge-subtle" style="font-size:10px; margin-right:4px;">${po.cost_code}</span>` : ''}</td>
+      <td class="text-num font-mono">${Number(po.quantity).toLocaleString("ar-SA")} ${po.unit}</td>
+      <td class="text-num font-mono">${Number(po.unit_price).toLocaleString("ar-SA", {minimumFractionDigits:2, maximumFractionDigits:2})}</td>
+      <td class="text-num font-mono" style="font-weight:700;">${Number(po.total_amount).toLocaleString("ar-SA", {minimumFractionDigits:2, maximumFractionDigits:2})}</td>
+      <td class="text-num">${po.issue_date}</td>
+      <td class="text-num">${po.delivery_date}</td>
+      <td>
+        <span class="badge ${po.status_badge || 'badge-green'}">${po.status}</span>
+        <button class="btn btn-outline btn-xs" style="margin-right:6px; font-size:10px; padding:2px 6px;" onclick="if(window.PrintEngine && window.PrintEngine.printPO) window.PrintEngine.printPO('${po.po_id}'); else showToast('جاري طباعة أمر الشراء');">
+          <i class="fas fa-print"></i> PO
+        </button>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+function render3WayMatchTable() {
+  const tbody = document.querySelector("#tbl-proc-3way-match tbody");
+  if (!tbody) return;
+  tbody.innerHTML = "";
+
+  const data = MimarERP.purchaseOrders || [];
+  data.forEach(po => {
+    const tr = document.createElement("tr");
+    const isMatched = po.variance_pct === 0;
+    const varBadge = isMatched ? "badge-green" : "badge-amber";
+    tr.innerHTML = `
+      <td class="text-num"><strong style="color:var(--teal)">${po.po_id}</strong></td>
+      <td>${po.grn_id} (${po.supplier_name})</td>
+      <td class="text-num font-mono">${po.invoice_ref}</td>
+      <td class="text-num font-mono">${Number(po.total_amount).toLocaleString("ar-SA", {minimumFractionDigits:2, maximumFractionDigits:2})}</td>
+      <td class="text-num font-mono">${Number(po.grn_received_amount || po.total_amount).toLocaleString("ar-SA", {minimumFractionDigits:2, maximumFractionDigits:2})}</td>
+      <td class="text-num font-mono" style="font-weight:700;">${Number(po.invoice_amount || po.total_amount).toLocaleString("ar-SA", {minimumFractionDigits:2, maximumFractionDigits:2})}</td>
+      <td class="text-center"><span class="badge ${varBadge}">${po.variance_pct || 0}% متطابق</span></td>
+      <td><span class="badge badge-green">${po.match_status || 'مصرح بالصرف المالي'}</span></td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+function renderClaimsTable() {
+  const tbody = document.querySelector("#tbl-claims tbody");
+  if (!tbody) return;
+  tbody.innerHTML = "";
+
+  const prj = getActiveProject();
+  const allClaims = MimarERP.claimsMaster || [];
+  const list = allClaims.filter(c => !prj || c.project_id === prj.project_id);
+  const data = list.length > 0 ? list : allClaims;
+
+  data.forEach(c => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td class="text-num"><strong style="color:var(--purple)">${c.claim_id}</strong></td>
+      <td>
+        <strong>${c.subject}</strong>
+        <div style="font-size:11px; color:var(--muted)">${c.project_name || ''}</div>
+      </td>
+      <td><span class="badge badge-blue" style="font-size:11px;">${c.fidic_clause}</span></td>
+      <td class="text-num"><span class="badge badge-purple">${c.eot_days_claimed} يوم</span></td>
+      <td class="text-num font-mono" style="color:var(--green); font-weight:700;">+${Number(c.cost_impact).toLocaleString("ar-SA")} ر.س</td>
+      <td class="text-num">${c.notice_date}</td>
+      <td><span class="badge ${c.status_badge || 'badge-green'}">${c.status}</span></td>
+      <td>
+        <button class="btn btn-outline btn-xs" style="font-size:10px; padding:2px 6px;" onclick="if(window.PrintEngine && window.PrintEngine.printClaim) window.PrintEngine.printClaim('${c.claim_id}'); else showToast('جاري تجهيز مذكرة المطالبة');">
+          <i class="fas fa-file-pdf"></i> مذكرة
+        </button>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
 }
 
 function renderInventoryTable() {

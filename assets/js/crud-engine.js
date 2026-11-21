@@ -31,7 +31,7 @@ const SAVE_KEYS = [
   'inventoryLedger','subcontractsMaster','bimElements','siteDiaryLogs',
   'punchListItems','rfiList','submittalsList','rebarBBSItems',
   'variationsMaster','cvrLedgerMaster','bimClashesMaster','cdeContainersMaster',
-  'safetyIncidents','safetyTrainings','purchaseOrders','scheduleTasks','scheduleMaster','qaqcInspections','engineeringDrawings','auditLogs',
+  'safetyIncidents','safetyTrainings','purchaseOrders','claimsMaster','scheduleTasks','scheduleMaster','qaqcInspections','engineeringDrawings','auditLogs',
   'currentCompanyId','currentProjectId','currentRole'
 ];
 
