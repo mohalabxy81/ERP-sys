@@ -1,6 +1,6 @@
 /**
  * ERP-SYS V8 Full Stack Validation Test
- * Tests: Config data, EVM calculations, CPM traversal, AI agents, Gantt, PMO, Roadmap, PrintEngine, Storage, Accounting
+ * Tests: Config data, EVM calculations, CPM traversal, AI agents, Gantt, PMO, Roadmap, PrintEngine, Storage, Accounting, KNOWHOW
  */
 const vm = require('vm');
 const fs = require('fs');
@@ -147,9 +147,10 @@ test('renderDrawingsTable reads from engineeringDrawings', () => assert(appCode.
 test('renderProcurementTable reads from purchaseOrders', () => assert(appCode.includes('MimarERP.purchaseOrders')));
 test('render3WayMatchTable function defined', () => assert(appCode.includes('function render3WayMatchTable')));
 test('renderClaimsTable function defined', () => assert(appCode.includes('function renderClaimsTable')));
+test('filterKnowhowCards function defined', () => assert(appCode.includes('function filterKnowhowCards')));
 
-// --- 6. HTML structure ---
-console.log('\n🌐 6. index.html Structure');
+// --- 6. HTML structure & KNOWHOW Guide ---
+console.log('\n🌐 6. index.html Structure & KNOWHOW Guide');
 const html = fs.readFileSync('index.html', 'utf8');
 test('26 nav groups in sidebar', () => {
   const count = (html.split('id="nav-grp-')).length - 1;
@@ -169,12 +170,17 @@ test('view-roadmap section exists', () => assert(html.includes('id="view-roadmap
 test('ganttCanvas exists in view-scheduling', () => assert(html.includes('id="ganttCanvas"')));
 test('tbl-proc-3way-match exists in index.html', () => assert(html.includes('id="tbl-proc-3way-match"')));
 test('tbl-claims exists in index.html', () => assert(html.includes('id="tbl-claims"')));
+test('view-knowhow section exists in index.html', () => assert(html.includes('id="view-knowhow"')));
+test('KNOWHOW button exists in topbar', () => assert(html.includes('KNOWHOW!! دليل الاستخدام')));
+test('KNOWHOW 8 lifecycle stages documented', () => {
+  assert(html.includes('المرحلة 1 من 8') && html.includes('المرحلة 8 من 8'), 'Lifecycle stages incomplete');
+});
 
 // --- Summary ---
 console.log(`\n${'='.repeat(40)}`);
 console.log(`PASSED: ${pass}  |  FAILED: ${fail}  |  TOTAL: ${pass + fail}`);
 if (fail === 0) {
-  console.log('🎉 ALL TESTS PASSED — ERP-SYS V8 Stack is Complete & Healthy!\n');
+  console.log('🎉 ALL TESTS PASSED — ERP-SYS V8 Stack & KNOWHOW!! Guide are Complete!\n');
 } else {
   console.error(`💥 ${fail} TESTS FAILED\n`);
   process.exit(1);

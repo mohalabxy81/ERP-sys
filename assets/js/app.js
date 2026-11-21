@@ -4159,3 +4159,23 @@ document.addEventListener("click", (e) => {
 });
 
 
+
+
+/* ==========================================================================
+   KNOWHOW!! Interactive Guide Helper Functions
+   ========================================================================== */
+function filterKnowhowCards() {
+  const input = document.getElementById("knowhow-search-input");
+  if (!input) return;
+  const q = input.value.toLowerCase().trim();
+  const cards = document.querySelectorAll(".knowhow-card");
+  cards.forEach(card => {
+    if (!q) {
+      card.style.display = "";
+    } else {
+      const match = card.textContent.toLowerCase().includes(q);
+      card.style.display = match ? "" : "none";
+    }
+  });
+}
+window.filterKnowhowCards = filterKnowhowCards;

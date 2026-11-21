@@ -70,6 +70,10 @@
         </div>
       </div>
       <div class="nav-group-items">
+        <a class="nav-item" onclick="switchView('knowhow')" style="background:rgba(201,168,76,0.15); border:1px solid var(--gold); border-radius:6px; margin:4px 6px; font-weight:800; color:var(--navy);">
+          <i class="fas fa-graduation-cap" style="color:var(--gold)"></i><span class="nav-text">🎓 دليل الاستخدام (KNOWHOW!!)</span>
+          <span class="badge badge-gold" style="font-size:10px;">شامل</span>
+        </a>
         <a class="nav-item active" onclick="switchView('dashboard')">
           <i class="fas fa-gauge-high"></i><span class="nav-text">لوحة التحكم التنفيذية الموحدة</span>
         </a>
@@ -687,6 +691,12 @@
 
     <div class="topbar-right">
       <!-- Role Switcher -->
+      <!-- KNOWHOW!! Interactive Guide Button -->
+      <button class="btn btn-sm" onclick="switchView('knowhow')" style="background:linear-gradient(135deg, #d97706, #b45309); color:#ffffff; font-weight:800; border:none; border-radius:6px; padding:6px 14px; display:inline-flex; align-items:center; gap:8px; cursor:pointer; box-shadow:0 2px 8px rgba(217,119,6,0.35);" title="دليل التشغيل الهندسي الشامل خطوة بخطوة">
+        <i class="fas fa-graduation-cap" style="font-size:14px;"></i>
+        <span>KNOWHOW!! دليل الاستخدام</span>
+      </button>
+
       <div class="role-badge">
         <i class="fas fa-user-shield"></i>
         <select class="context-select" id="ctx-role" onchange="onRoleChange(this.value)" style="color:var(--amber); font-weight:800;">
@@ -3528,6 +3538,578 @@
           </div>
         </div>
       </div>
+    </section>
+
+    <!-- ==================================================================== -->
+    <!-- VIEW: KNOWHOW!! — ENTERPRISE KNOWLEDGE BASE & INTERACTIVE GUIDE     -->
+    <!-- ==================================================================== -->
+    <section class="page-view" id="view-knowhow">
+      <!-- Header Banner -->
+      <div style="background:linear-gradient(135deg, #0f172a 0%, #1e293b 60%, #334155 100%); color:#ffffff; border-radius:10px; padding:28px; margin-bottom:24px; position:relative; overflow:hidden; border:1px solid rgba(201,168,76,0.4); box-shadow:0 4px 20px rgba(0,0,0,0.15);">
+        <div style="position:absolute; left:-30px; top:-30px; opacity:0.07; font-size:220px; color:#fff; pointer-events:none;"><i class="fas fa-graduation-cap"></i></div>
+        <div style="position:relative; z-index:2; max-width:900px;">
+          <div style="display:inline-flex; align-items:center; gap:8px; background:rgba(201,168,76,0.25); border:1px solid var(--gold); color:var(--gold); padding:4px 12px; border-radius:20px; font-size:12px; font-weight:800; margin-bottom:12px;">
+            <i class="fas fa-star"></i> دليل التشغيل الإنشائي والهندسي الشامل المعتمد
+          </div>
+          <h1 style="font-size:26px; font-weight:900; margin:0 0 10px; color:#ffffff; letter-spacing:-0.5px;">
+            🎓 دليل المعرفة والتشغيل الموحد — <span style="color:var(--gold); font-family:sans-serif;">KNOWHOW!!</span>
+          </h1>
+          <p style="font-size:14px; line-height:1.7; color:#cbd5e1; margin:0 0 18px;">
+            دليلك التفاعلي خطوة بخطوة (<span style="color:#fcd34d; font-weight:700;">Step-by-Step</span>) لاحتراف العمل على منصة <strong>ERP-SYS V8</strong> لإدارة المقاولات والمشاريع الكبرى. يشرح لك بالتفصيل أين تضغط، ماذا تفعل، والهدف الهندسي والمالي من كل شاشة؛ بدءاً من دراسة العطاء وتوقيع عقد فيديك، مروراً بالهيكل الخرساني والتشطيبات والمستخلصات المعتمدة بزكاتكا ZATCA، وحتى التسليم الابتدائي والنهائي للمشروع.
+          </p>
+          <div style="display:flex; gap:12px; flex-wrap:wrap;">
+            <a href="#knowhow-lifecycle" class="btn btn-primary btn-sm" style="background:var(--gold); color:#000; font-weight:800; border:none;"><i class="fas fa-route"></i> دورة حياة المشروع (من الألف إلى الياء)</a>
+            <a href="#knowhow-roles" class="btn btn-outline btn-sm" style="border-color:#cbd5e1; color:#fff;"><i class="fas fa-user-gear"></i> دليلك بحسب دورك الوظيفي</a>
+            <a href="#knowhow-matrix" class="btn btn-outline btn-sm" style="border-color:#cbd5e1; color:#fff;"><i class="fas fa-hand-pointer"></i> أين أضغط لأفعل كذا؟ (Action Matrix)</a>
+            <button class="btn btn-sm" onclick="openAiCopilotModal('fidic')" style="background:rgba(255,255,255,0.15); color:#fff; border:none;"><i class="fas fa-bolt" style="color:var(--gold)"></i> استشارة المساعد الذكي</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Search Bar inside KNOWHOW -->
+      <div class="card" style="margin-bottom:24px; padding:16px;">
+        <div style="display:flex; align-items:center; gap:12px;">
+          <i class="fas fa-search" style="color:var(--teal); font-size:18px;"></i>
+          <input type="text" id="knowhow-search-input" onkeyup="filterKnowhowCards()" placeholder="ابحث في دليل التشغيل (مثلاً: مستخلص، مسار حرج، ZATCA، مقاول باطن، دفعة مقدمة، استلام صب، فحص خرسانة)..." style="width:100%; border:none; outline:none; font-family:inherit; font-size:14px; color:var(--navy);">
+        </div>
+      </div>
+
+      <!-- ==================================================================== -->
+      <!-- SECTION 1: END-TO-END CONSTRUCTION LIFECYCLE (8 STAGES)              -->
+      <!-- ==================================================================== -->
+      <div id="knowhow-lifecycle" style="margin-bottom:32px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+          <div>
+            <h2 style="font-size:20px; font-weight:800; color:var(--navy);"><i class="fas fa-arrows-spin" style="color:var(--teal)"></i> دورة حياة المشروع المتكاملة: من دراسة العطاء إلى التسليم والتشطيب (8 مراحل)</h2>
+            <p style="color:var(--muted); font-size:12px;">تسلسل العمليات القياسي المعتمد وفق معايير PMI والمواصفات العامة لعقود الفيديك FIDIC Red Book 2017</p>
+          </div>
+          <span class="badge badge-purple" style="font-size:11px; padding:4px 10px;">8 مراحل تنفيذية</span>
+        </div>
+
+        <div style="display:flex; flex-direction:column; gap:18px;">
+
+          <!-- STAGE 1 -->
+          <div class="card knowhow-card" style="border-right:5px solid var(--purple); padding:20px;">
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px; flex-wrap:wrap; gap:8px;">
+              <div>
+                <span class="badge badge-purple" style="font-size:11px; font-weight:800;">المرحلة 1 من 8</span>
+                <h3 style="font-size:17px; font-weight:800; color:var(--navy); margin:6px 0 2px;">
+                  1. دراسة المناقصة، حصر الكميات الهندسي، وتحليل الأسعار (Tendering & BOQ Estimation)
+                </h3>
+                <span style="font-size:12px; color:var(--muted);">الهدف: استيعاب كراسة الشروط والمخططات وتقديم عرض مالي وفني رابح ومدروس بدقة.</span>
+              </div>
+              <button class="btn btn-outline btn-xs" onclick="switchView('takeoff')"><i class="fas fa-arrow-left"></i> انتقال لشاشة حصر الكميات</button>
+            </div>
+            
+            <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:6px; padding:12px; margin-bottom:12px; font-size:13px; line-height:1.7;">
+              <strong style="color:var(--navy);"><i class="fas fa-hand-pointer" style="color:var(--teal)"></i> خطوات العمل وأين تضغط بالتحديد في المنظومة:</strong>
+              <ol style="margin:6px 0 0; padding-right:20px;">
+                <li>اذهب إلى القائمة الجانبية ➔ اضغط على <strong>المناقصات والعطاءات (Tenders)</strong> لاستعراض كراسة الشروط والمواصفات وتاريخ فتح المظاريف.</li>
+                <li>انتقل إلى <strong>حصر الكميات الهندسي (Takeoff)</strong> ➔ اضغط على زر <code>حصر كميات تفصيلي</code> لحساب كميات الخرسانة، حديد التسليح، التشطيبات، والبنود المعمارية والميكانيكية طبقاً للمخططات التصميمية.</li>
+                <li>انتقل إلى <strong>تحليل الأسعار (Rate Analysis)</strong> ➔ فكك كل بند في جدول الكميات BOQ إلى مكوناته الأربعة الأساسية: (عمالة + مواد + معدات + مقاولي باطن) مع إضافة الهامش الربحي والمصاريف الإدارية (Markup & Overheads).</li>
+                <li>انتقل إلى <strong>مقارنة عروض أسعار الموردين (Supplier Comparison)</strong> لمقارنة عروض الموردين للمواد الرئيسية (أسمنت، حديد، بورسلان) واختيار السعر الأنسب لمظروفك المالي.</li>
+              </ol>
+            </div>
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; font-size:12px;">
+              <div><strong style="color:var(--green);"><i class="fas fa-file-export"></i> المخرجات المكتملة:</strong> جدول كميات مسعر (Priced BOQ)، مظروف مالي وفني معتمد، وتحليل التكلفة المباشرة وغير المباشرة.</div>
+              <div style="color:var(--gold); font-weight:700;"><i class="fas fa-lightbulb"></i> نصيحة استشارية: استخدم وكيل الذكاء الاصطناعي BOQ Copilot لمقارنة الكميات بين المخططات والـ BOQ لكشف أي نقص أو فائض في البنود مبكراً.</div>
+            </div>
+          </div>
+
+          <!-- STAGE 2 -->
+          <div class="card knowhow-card" style="border-right:5px solid var(--blue); padding:20px;">
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px; flex-wrap:wrap; gap:8px;">
+              <div>
+                <span class="badge badge-blue" style="font-size:11px; font-weight:800;">المرحلة 2 من 8</span>
+                <h3 style="font-size:17px; font-weight:800; color:var(--navy); margin:6px 0 2px;">
+                  2. الترسية، صياغة عقد فيديك، وتأسيس المشروع في المنظومة (Award, Contracts & Setup)
+                </h3>
+                <span style="font-size:12px; color:var(--muted);">الهدف: تثبيت الحقوق التعاقدية، ضبط الميزانية المعتمدة (BAC)، وتعيين الكوادر الهندسية.</span>
+              </div>
+              <button class="btn btn-outline btn-xs" onclick="switchView('projects')"><i class="fas fa-arrow-left"></i> انتقال لشاشة المشاريع</button>
+            </div>
+            
+            <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:6px; padding:12px; margin-bottom:12px; font-size:13px; line-height:1.7;">
+              <strong style="color:var(--navy);"><i class="fas fa-hand-pointer" style="color:var(--teal)"></i> خطوات العمل وأين تضغط بالتحديد في المنظومة:</strong>
+              <ol style="margin:6px 0 0; padding-right:20px;">
+                <li>اذهب إلى <strong>إدارة المشاريع (Projects)</strong> ➔ اضغط على زر <code>إضافة مشروع جديد</code> ➔ أدخل كود المشروع (مثل PRJ-2005)، اسم المشروع، القيمة التعاقدية الإجمالية، تواريخ البداية والنهاية، والجهة المالكة والاستشاري.</li>
+                <li>انتقل إلى <strong>هيكل تفكيك الأعمال WBS & BOQ</strong> ➔ قم باستيراد جدول الكميات التعاقدي النهائي وربط كل بند بكود تكلفة (Cost Code) وحزمة عمل محددة.</li>
+                <li>انتقل إلى <strong>العقود والمطالبات (Contract Admin)</strong> ➔ سجل بيانات العقد الرئيسي وشروطه طبقاً لعقد الفيديك <strong>FIDIC Red Book 2017</strong> (نسبة الدفعة المقدمة، نسبة حسم محتجز الضمان 10%، خطاب ضمان الدفعة المقدمة والنهائية).</li>
+                <li>اختر المشروع النشط من <strong>القائمة المنسدلة في الشريط العلوي (Project Context Switcher)</strong> حتى تصبح جميع الشاشات والعمليات القادمة مرتبطة بهذا المشروع تحديداً.</li>
+              </ol>
+            </div>
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; font-size:12px;">
+              <div><strong style="color:var(--green);"><i class="fas fa-file-export"></i> المخرجات المكتملة:</strong> سجل المشروع المعتمد، ميزانية خط الأساس (Baseline Budget BAC)، وسجل الالتزامات التعاقدية.</div>
+              <div style="color:var(--gold); font-weight:700;"><i class="fas fa-lightbulb"></i> نصيحة استشارية: تأكد من ربط كل بند BOQ بكود تكلفة Cost Code مطابق لمصروفات المحاسبة، لضمان دقة مؤشر CPI لاحقاً.</div>
+            </div>
+          </div>
+
+          <!-- STAGE 3 -->
+          <div class="card knowhow-card" style="border-right:5px solid var(--red); padding:20px;">
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px; flex-wrap:wrap; gap:8px;">
+              <div>
+                <span class="badge badge-red" style="font-size:11px; font-weight:800;">المرحلة 3 من 8</span>
+                <h3 style="font-size:17px; font-weight:800; color:var(--navy); margin:6px 0 2px;">
+                  3. التخطيط الهندسي والجدولة الزمنية والمسار الحرج (Planning, CPM & Gantt Studio)
+                </h3>
+                <span style="font-size:12px; color:var(--muted);">الهدف: وضع خطة تنفيذية زمنية ملزمة، اكتشاف الأنشطة الحرجة، ومنع أي تأخير في المشروع.</span>
+              </div>
+              <button class="btn btn-outline btn-xs" onclick="switchView('scheduling')"><i class="fas fa-arrow-left"></i> انتقال للجدول الزمني</button>
+            </div>
+            
+            <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:6px; padding:12px; margin-bottom:12px; font-size:13px; line-height:1.7;">
+              <strong style="color:var(--navy);"><i class="fas fa-hand-pointer" style="color:var(--teal)"></i> خطوات العمل وأين تضغط بالتحديد في المنظومة:</strong>
+              <ol style="margin:6px 0 0; padding-right:20px;">
+                <li>اذهب إلى <strong>التخطيط والجدولة (Planning & Scheduling)</strong> ➔ اضغط على زر <code>إضافة نشاط زمني جديد</code> لإدخال أنشطة الحفر، الخرسانات، العزل، المباني، والتشطيبات مع المدد الزمنية والأوزان النسبية Weight %.</li>
+                <li>حدد العلاقات المنطقية (Predecessors) لكل نشاط؛ مثلاً: صب الخرسانة يعتمد على إنهاء حديد التسليح (FS - Finish to Start).</li>
+                <li>اضغط على زر <code>حساب المسار الحرج (CPM Forward/Backward)</code> ➔ سيقوم المحرك بإجراء الحسابات الطوبولوجية في أجزاء من الثانية ويحدد الأنشطة الحرجة التي لا تقبل أي تأخير (Total Float = 0) ويضع بجانبها علامة اللهب <span class="badge badge-red"><i class="fas fa-fire"></i> مسار حرج</span>.</li>
+                <li>انزل أسفل الصفحة لمشاهدة <strong>مخطط جانت التفاعلي (Interactive Gantt Chart)</strong> لمتابعة الخط الزمني وتاريخ اليوم ومسارات التداخل.</li>
+                <li>اضغط على زر <code>تصدير ملف Primavera P6 (.XER)</code> لتنزيل ملف متكامل متوافق 100% مع برنامج بريمافيرا P6 لتقديمه للمكتب الاستشاري للاعتماد.</li>
+              </ol>
+            </div>
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; font-size:12px;">
+              <div><strong style="color:var(--green);"><i class="fas fa-file-export"></i> المخرجات المكتملة:</strong> البرنامج الزمني المعتمد (Baseline Schedule)، مصفوفة المسار الحرج CPM، وملف Primavera P6 XER.</div>
+              <div style="color:var(--gold); font-weight:700;"><i class="fas fa-lightbulb"></i> نصيحة استشارية: الأنشطة الحرجة باللون الأحمر هي التي تسبب غرامات تأخير لو تعطلت، راقبها يومياً من لوحة CEO!</div>
+            </div>
+          </div>
+
+          <!-- STAGE 4 -->
+          <div class="card knowhow-card" style="border-right:5px solid var(--teal); padding:20px;">
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px; flex-wrap:wrap; gap:8px;">
+              <div>
+                <span class="badge badge-teal" style="font-size:11px; font-weight:800;">المرحلة 4 من 8</span>
+                <h3 style="font-size:17px; font-weight:800; color:var(--navy); margin:6px 0 2px;">
+                  4. المكتب الفني، مخططات الورشة، والاعتمادات الهندسية (Technical Office, BIM & CDE)
+                </h3>
+                <span style="font-size:12px; color:var(--muted);">الهدف: استخراج مخططات صالحة للتنفيذ (IFC) وحل التعارضات الهندسية قبل العمل بالموقع.</span>
+              </div>
+              <button class="btn btn-outline btn-xs" onclick="switchView('doc-control')"><i class="fas fa-arrow-left"></i> انتقال لسجل المخططات</button>
+            </div>
+            
+            <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:6px; padding:12px; margin-bottom:12px; font-size:13px; line-height:1.7;">
+              <strong style="color:var(--navy);"><i class="fas fa-hand-pointer" style="color:var(--teal)"></i> خطوات العمل وأين تضغط بالتحديد في المنظومة:</strong>
+              <ol style="margin:6px 0 0; padding-right:20px;">
+                <li>اذهب إلى <strong>المكتب الفني ➔ سجل المخططات الهندسية (Drawings Log)</strong> لإدراج وتحديث مخططات الورشة (Shop Drawings) ومتابعة إصداراتها (Rev 01..Rev 03) والتأكد من حصولها على ختم صالح للتنفيذ <code>IFC (Code A)</code>.</li>
+                <li>انتقل إلى <strong>اعتمادات المواد (Material Submittals)</strong> لرفع عينات المواد والمواصفات الفنية للدهانات، البورسلان، والحديد للحصول على موافقة الاستشاري قبل الشراء.</li>
+                <li>انتقل إلى <strong>الاستفسارات الفنية (RFI Log)</strong> ➔ اضغط على زر <code>إنشاء RFI جديد</code> عند وجود أي تعارض في المخططات أو نقص في التفاصيل لتوثيق استفسار رسمي للاستشاري والمصمم.</li>
+                <li>انتقل إلى <strong>فاحص التصادمات (BIM Clash Detection)</strong> لفحص تعارضات مجاري التكييف HVAC مع الكمرات الخرسانية وحساب تكلفة التعديل تجنباً للتكسير بالموقع.</li>
+              </ol>
+            </div>
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; font-size:12px;">
+              <div><strong style="color:var(--green);"><i class="fas fa-file-export"></i> المخرجات المكتملة:</strong> مخططات تنفيذية معتمدة IFC، سجل إغلاق RFIs، ومواد مطابقة لكود البناء السعودي SBC.</div>
+              <div style="color:var(--gold); font-weight:700;"><i class="fas fa-lightbulb"></i> نصيحة استشارية: لا تبدأ بصب أي عنصر خرساني إلا بمخطط يحمل رمز Rev معتمد صراحة بـ Code A من الاستشاري المشرف.</div>
+            </div>
+          </div>
+
+          <!-- STAGE 5 -->
+          <div class="card knowhow-card" style="border-right:5px solid var(--amber); padding:20px;">
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px; flex-wrap:wrap; gap:8px;">
+              <div>
+                <span class="badge badge-amber" style="font-size:11px; font-weight:800;">المرحلة 5 من 8</span>
+                <h3 style="font-size:17px; font-weight:800; color:var(--navy); margin:6px 0 2px;">
+                  5. المشتريات، التوريدات، مقاولو الباطن والمخازن (Procurement, 3-Way Match & Subs)
+                </h3>
+                <span style="font-size:12px; color:var(--muted);">الهدف: توريد المواد بالجودة المعتمدة والمطابقة الثلاثية للحسابات وإدارة التزامات مقاولي الباطن.</span>
+              </div>
+              <button class="btn btn-outline btn-xs" onclick="switchView('procurement')"><i class="fas fa-arrow-left"></i> انتقال للمشتريات</button>
+            </div>
+            
+            <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:6px; padding:12px; margin-bottom:12px; font-size:13px; line-height:1.7;">
+              <strong style="color:var(--navy);"><i class="fas fa-hand-pointer" style="color:var(--teal)"></i> خطوات العمل وأين تضغط بالتحديد في المنظومة:</strong>
+              <ol style="margin:6px 0 0; padding-right:20px;">
+                <li>اذهب إلى <strong>المشتريات (Procurement)</strong> ➔ اضغط على زر <code>إصدار أمر شراء (PO)</code> وحدد المورد، المادة، كود التكلفة، الكمية، وسعر الوحدة والضريبة 15%.</li>
+                <li>اضغط على زر <code>طباعة PO</code> في جدول أوامر الشراء لطباعة أمر شراء رسمي جاهز بالرقم الضريبي وشروط الاستلام.</li>
+                <li>عند وصول الشحنة للموقع، يحرر أمين المستودع إشعار استلام موقعي <strong>(GRN)</strong> ويفحص الكمية.</li>
+                <li>اضغط على تبويب <strong>مطابقة الحسابات الدائنة (3-Way Matching)</strong> لمقارنة أمر الشراء PO مع استلام الموقع GRN مع فاتورة المورد Invoice؛ إذا كانت نسبة الانحراف ضمن حدود $pm 1.0%$ يصرح المحرك بالصرف المالي تلقائياً.</li>
+                <li>انتقل إلى <strong>مقاولو الباطن (Subcontracts)</strong> ➔ سجل عقود مقاولي اللياسة، السباكة، والكهرباء مع حسم محتجز الضمان (10% Retention) ومتابعة تقييم أدائهم الموقعي.</li>
+              </ol>
+            </div>
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; font-size:12px;">
+              <div><strong style="color:var(--green);"><i class="fas fa-file-export"></i> المخرجات المكتملة:</strong> أوامر شراء PO رسمية، إشعارات استلام GRN، مطابقة دائنة 100%، وسندات صرف مقاولي الباطن.</div>
+              <div style="color:var(--gold); font-weight:700;"><i class="fas fa-lightbulb"></i> نصيحة استشارية: استخدم محرك الربط المحاسبي التلقائي لترحيل قيود المشتريات فوراً إلى الذمم الدائنة AP دون إعادة إدخال يدوي.</div>
+            </div>
+          </div>
+
+          <!-- STAGE 6 -->
+          <div class="card knowhow-card" style="border-right:5px solid var(--green); padding:20px;">
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px; flex-wrap:wrap; gap:8px;">
+              <div>
+                <span class="badge badge-green" style="font-size:11px; font-weight:800;">المرحلة 6 من 8</span>
+                <h3 style="font-size:17px; font-weight:800; color:var(--navy); margin:6px 0 2px;">
+                  6. التنفيذ الميداني، اليوميات، ضبط الجودة والسلامة (Site Execution, QA/QC & HSE)
+                </h3>
+                <span style="font-size:12px; color:var(--muted);">الهدف: استلام وفحص كل عنصر إنشائي، توثيق أحداث الموقع، وتطبيق متطلبات ISO 45001.</span>
+              </div>
+              <button class="btn btn-outline btn-xs" onclick="switchView('qa-qc')"><i class="fas fa-arrow-left"></i> انتقال لشاشة الجودة</button>
+            </div>
+            
+            <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:6px; padding:12px; margin-bottom:12px; font-size:13px; line-height:1.7;">
+              <strong style="color:var(--navy);"><i class="fas fa-hand-pointer" style="color:var(--teal)"></i> خطوات العمل وأين تضغط بالتحديد في المنظومة:</strong>
+              <ol style="margin:6px 0 0; padding-right:20px;">
+                <li>اذهب إلى <strong>إدارة الموقع ➔ اليوميات الموقعية (Site Diary)</strong> يومياً لتسجيل حالة الطقس، عدد العمال بالموقع، الآليات العاملة، والأعمال المنجزة بالتفصيل؛ هذا السجل هو دليلك القانوني في أي مطالبة تمديد مدة EOT لاحقاً.</li>
+                <li>اذهب إلى <strong>إدارة الجودة (QA/QC)</strong> ➔ اضغط على زر <code>طلب فحص موقعي جديد (WIR/MIR)</code> قبل صب أي خرسانة أو دفان أو تغطية تمديدات، وسجل قرار الاستشاري (Code A معتمد، Code B معتمد بملاحظات، Code C مرفوض).</li>
+                <li>إذا وُجد أي هبوط في اختبارات كسر المكعبات الخرسانية أو عيب مصنعي، افتح فوراً <strong>تقرير عدم مطابقة (NCR)</strong> وحدد الإجراء التصحيحي CAR.</li>
+                <li>انتقل إلى <strong>السلامة والصحة المهنية (HSE)</strong> لإصدار تصاريح العمل الساخن والمرتفعات (PTW)، تسجيل محادثات الصندوق اليومية (TBT)، والتأكد من بقاء مؤشر الحوادث LTIFR صفرياً.</li>
+              </ol>
+            </div>
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; font-size:12px;">
+              <div><strong style="color:var(--green);"><i class="fas fa-file-export"></i> المخرجات المكتملة:</strong> سجلات WIR/MIR معتمدة، محاضر كسر الخرسانة، تقارير سلامة ISO 45001، وتوثيق موقعي معاصر.</div>
+              <div style="color:var(--gold); font-weight:700;"><i class="fas fa-lightbulb"></i> نصيحة استشارية: اليوميات الموقعية الدقيقة هي السلاح الأقوى في تحكيم نزاعات الفيديك؛ لا تترك يوماً دون توثيق!</div>
+            </div>
+          </div>
+
+          <!-- STAGE 7 -->
+          <div class="card knowhow-card" style="border-right:5px solid var(--gold); padding:20px;">
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px; flex-wrap:wrap; gap:8px;">
+              <div>
+                <span class="badge badge-gold" style="font-size:11px; font-weight:800;">المرحلة 7 من 8</span>
+                <h3 style="font-size:17px; font-weight:800; color:var(--navy); margin:6px 0 2px;">
+                  7. المستخلصات المرحلية، الفوترة الإلكترونية ZATCA، وضبط التكاليف EVM
+                </h3>
+                <span style="font-size:12px; color:var(--muted);">الهدف: تحصيل مستحقات الشركة المالية، إصدار فواتير ضريبية نظامية، ومراقبة مؤشرات الربحية CPI و SPI.</span>
+              </div>
+              <button class="btn btn-outline btn-xs" onclick="switchView('billing')"><i class="fas fa-arrow-left"></i> انتقال لشاشة المستخلصات</button>
+            </div>
+            
+            <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:6px; padding:12px; margin-bottom:12px; font-size:13px; line-height:1.7;">
+              <strong style="color:var(--navy);"><i class="fas fa-hand-pointer" style="color:var(--teal)"></i> خطوات العمل وأين تضغط بالتحديد في المنظومة:</strong>
+              <ol style="margin:6px 0 0; padding-right:20px;">
+                <li>اذهب إلى <strong>المستخلصات والشهادات (Billing & IPC)</strong> ➔ اضغط على زر <code>إنشاء مستخلص جديد (IPC)</code> شهرياً بعد قياس وحصر الأعمال المنفذة على أرض الواقع.</li>
+                <li>سيقوم النظام تلقائياً بخصم الأعمال السابقة، وحساب قيمة الأعمال الحالية، وحسم محتجز الضمان 10%، وحسم نسبة استرداد الدفعة المقدمة 5%، وإضافة ضريبة القيمة المضافة 15% VAT.</li>
+                <li>اضغط على زر <code>ZATCA QR</code> في جدول المستخلصات لعرض الختم الرقمي المشفر المعتمد من هيئة الزكاة والضريبة والجمارك (المرحلة الثانية).</li>
+                <li>اضغط على زر <strong>طباعة المستخلص</strong> لتوليد شهادة الدفع المرحلية الرسمية A4 الجاهزة للتوقيع من مهندس الاستشاري وممثل المالك.</li>
+                <li>انتقل إلى <strong>ضبط التكاليف (Cost Control EVM)</strong> و<strong>لوحة التحكم التنفيذية</strong> لمراجعة مؤشرات الأداء:
+                  <ul style="margin:4px 0 0; padding-right:20px;">
+                    <li><strong>CPI (Cost Performance Index):</strong> إذا كان أكبر من 1.0 فالأعمال تنجز بأقل من الميزانية المحددة (وفر وأرباح).</li>
+                    <li><strong>SPI (Schedule Performance Index):</strong> إذا كان أكبر من 1.0 فالمشروع متقدم على الجدول الزمني.</li>
+                    <li>استعرض كانفاس <strong>منحنى S-Curve</strong> ومطابقة السيولة النقدية التدفقية (Cash Flow).</li>
+                  </ul>
+                </li>
+              </ol>
+            </div>
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; font-size:12px;">
+              <div><strong style="color:var(--green);"><i class="fas fa-file-export"></i> المخرجات المكتملة:</strong> شهادة دفع مرحلية IPC رسمية، فاتورة ضريبية ZATCA Phase 2، تقرير EVM شهري، وتدفق نقدي موجب.</div>
+              <div style="color:var(--gold); font-weight:700;"><i class="fas fa-lightbulb"></i> نصيحة استشارية: احتفظ بنسخة PDF من كل IPC معتمدة فوراً لتفادي أي تأخير في صرف البنوك للتمويل الإنشائي.</div>
+            </div>
+          </div>
+
+          <!-- STAGE 8 -->
+          <div class="card knowhow-card" style="border-right:5px solid var(--purple); padding:20px;">
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px; flex-wrap:wrap; gap:8px;">
+              <div>
+                <span class="badge badge-purple" style="font-size:11px; font-weight:800;">المرحلة 8 من 8</span>
+                <h3 style="font-size:17px; font-weight:800; color:var(--navy); margin:6px 0 2px;">
+                  8. أوامر التغيير، مطالبات فيديك 20.1، التسليم الابتدائي وقوائم الملاحظات (Closeout)
+                </h3>
+                <span style="font-size:12px; color:var(--muted);">الهدف: توثيق تمديد المدة والتعويض المالي، إغلاق الملاحظات الهندسية، واسترداد محتجز الضمان بالكامل.</span>
+              </div>
+              <button class="btn btn-outline btn-xs" onclick="switchView('contract-admin')"><i class="fas fa-arrow-left"></i> انتقال للمطالبات والعقود</button>
+            </div>
+            
+            <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:6px; padding:12px; margin-bottom:12px; font-size:13px; line-height:1.7;">
+              <strong style="color:var(--navy);"><i class="fas fa-hand-pointer" style="color:var(--teal)"></i> خطوات العمل وأين تضغط بالتحديد في المنظومة:</strong>
+              <ol style="margin:6px 0 0; padding-right:20px;">
+                <li>إذا طلب المالك أو الاستشاري تعديلاً في المواصفات أو زيادة في الكميات، اذهب إلى <strong>أوامر التغيير (Variations)</strong> ➔ افتح أمر تغيير جديد (VO) طبقاً للمادة 13 من الفيديك وسجل الأثر المالي والزمني المطلوب قبل البدء في التنفيذ.</li>
+                <li>إذا حدث تأخير من جهة خارجية (مثل تأخر تراخيص البلدية أو استلام المناسيب)، اذهب إلى <strong>العقود والمطالبات (Contract Admin)</strong> ➔ سجل مطالبة تمديد مدة EOT طبقاً للمادة 20.1 خلال 28 يوماً من وقوع الحدث واضغط على زر <code>طباعة مذكرة المطالبة (FIDIC 20.1)</code>.</li>
+                <li>عند انتهاء الأعمال الإنشائية والتشطيبات، اذهب إلى <strong>قوائم الملاحظات (Punch List)</strong> لتسجيل وفحص وتصفية الملاحظات الهندسية وتسليمها للاستشاري بنداً بنداً.</li>
+                <li>انتقل إلى <strong>بيئة البيانات CDE</strong> لرفع المخططات كما نفذت <strong>As-Built Drawings</strong> وكتيبات التشغيل والصيانة (O&M Manuals).</li>
+                <li>أصدر <strong>المستخلص الختامي (Final Account IPC)</strong> واسترد خطاب الضمان البنكي واستلم شهادة الإنجاز والتسليم الابتدائي (Taking-Over Certificate).</li>
+              </ol>
+            </div>
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; font-size:12px;">
+              <div><strong style="color:var(--green);"><i class="fas fa-file-export"></i> المخرجات المكتملة:</strong> تسليم ابتدائي معتمد، استرداد محتجز الضمان 10%، إغلاق أوامر التغيير والمطالبات، وتسليم مخططات As-Built.</div>
+              <div style="color:var(--gold); font-weight:700;"><i class="fas fa-lightbulb"></i> نصيحة استشارية: شرط الـ 28 يوماً في المادة 20.1 من فيديك شرط قاطع (Time-Bar)؛ أرسل إشعار المطالبة فوراً من المنظومة!</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ==================================================================== -->
+      <!-- SECTION 2: ROLE-BASED OPERATING GUIDE (WHERE TO CLICK BY ROLE)       -->
+      <!-- ==================================================================== -->
+      <div id="knowhow-roles" style="margin-bottom:32px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+          <div>
+            <h2 style="font-size:20px; font-weight:800; color:var(--navy);"><i class="fas fa-users-gear" style="color:var(--teal)"></i> دليلك التشغيلي بحسب دورك الوظيفي وتخصصك (Role-Based Step-by-Step)</h2>
+            <p style="color:var(--muted); font-size:12px;">حدد مسمى وظيفتك لتعرف أين تبدأ يومك، ماذا تراجع، وما هي الشاشات والأزرار الخاصة بك تحديداً</p>
+          </div>
+          <span class="badge badge-blue">8 مسارات تخصصية</span>
+        </div>
+
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(320px, 1fr)); gap:18px;">
+
+          <!-- Role 1: CEO -->
+          <div class="card" style="border-top:4px solid var(--gold); padding:18px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+              <strong style="color:var(--navy); font-size:16px;"><i class="fas fa-crown" style="color:var(--gold)"></i> المدير التنفيذي والمالك (CEO & Executives)</strong>
+              <span class="badge badge-gold">إشراف استراتيجي</span>
+            </div>
+            <p style="font-size:12px; color:var(--muted); margin-bottom:12px;">مهمتك: متابعة صحة محفظة المشاريع، السيولة النقدية، التدخل لمنع الخسائر وتأخير المشاريع.</p>
+            <div style="background:#f8fafc; border-radius:6px; padding:10px; font-size:12px; line-height:1.7; margin-bottom:12px;">
+              <strong>أين تضغط كل صباح؟</strong>
+              <ul style="margin:4px 0 0; padding-right:16px;">
+                <li>اضغط على <code>لوحة التحكم التنفيذية (Dashboard)</code> لمتابعة بطاقات مؤشرات الأداء الـ 28.</li>
+                <li>راجع جدول <strong>مصفوفة صحة المشاريع (Portfolio RAG Matrix)</strong>: أي مشروع مؤشره أحمر يتطلب تدخلاً فورياً.</li>
+                <li>شاهد تبديل الكانفاس بين <strong>منحنى EVM</strong> ومخطط <strong>السيولة النقدية (Cash Flow)</strong>.</li>
+                <li>اضغط على <code>لوحة حوكمة المشاريع (PMO Cockpit)</code> لمراجعة عبور بوابات المراحل Stage-Gates.</li>
+              </ul>
+            </div>
+            <button class="btn btn-outline btn-sm" style="width:100%;" onclick="switchView('dashboard')"><i class="fas fa-gauge-high"></i> فتح لوحة القيادة التنفيذية</button>
+          </div>
+
+          <!-- Role 2: Project Manager -->
+          <div class="card" style="border-top:4px solid var(--blue); padding:18px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+              <strong style="color:var(--navy); font-size:16px;"><i class="fas fa-user-tie" style="color:var(--blue)"></i> مدير المشروع الموقعي (Project Manager)</strong>
+              <span class="badge badge-blue">قيادة الموقع</span>
+            </div>
+            <p style="font-size:12px; color:var(--muted); margin-bottom:12px;">مهمتك: إدارة تنفيذ الأعمال، متابعة الأنشطة الحرجة، وتنسيق أعمال مقاولي الباطن والموارد.</p>
+            <div style="background:#f8fafc; border-radius:6px; padding:10px; font-size:12px; line-height:1.7; margin-bottom:12px;">
+              <strong>أين تضغط كل صباح؟</strong>
+              <ul style="margin:4px 0 0; padding-right:16px;">
+                <li>اختر مشروعك من <strong>قائمة المشاريع أعلى الشاشة</strong> لفلترة البيانات.</li>
+                <li>اذهب إلى <code>الجدول الزمني (Scheduling)</code> لمتابعة الأنشطة المجدولة للأسبوع الحالي.</li>
+                <li>اذهب إلى <code>اليوميات الموقعية (Site Diary)</code> لاعتماد التقرير اليومي وتأكيد عدد العمال والآليات.</li>
+                <li>اذهب إلى <code>مقاولو الباطن (Subcontracts)</code> للتأكد من صرف مستخلصاتهم ومستوى إنجازهم.</li>
+              </ul>
+            </div>
+            <button class="btn btn-outline btn-sm" style="width:100%;" onclick="switchView('site-diary')"><i class="fas fa-book-journal-whills"></i> فتح اليوميات الموقعية</button>
+          </div>
+
+          <!-- Role 3: Planning Engineer -->
+          <div class="card" style="border-top:4px solid var(--red); padding:18px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+              <strong style="color:var(--navy); font-size:16px;"><i class="fas fa-calendar-alt" style="color:var(--red)"></i> مهندس التخطيط والجدولة (Planning Engineer)</strong>
+              <span class="badge badge-red">المسار الحرج CPM</span>
+            </div>
+            <p style="font-size:12px; color:var(--muted); margin-bottom:12px;">مهمتك: بناء البرنامج الزمني، حساب المسار الحرج، تحديث نسب الإنجاز، وإعداد خطط الاستدراك (Recovery).</p>
+            <div style="background:#f8fafc; border-radius:6px; padding:10px; font-size:12px; line-height:1.7; margin-bottom:12px;">
+              <strong>أين تضغط كل أسبوع؟</strong>
+              <ul style="margin:4px 0 0; padding-right:16px;">
+                <li>اذهب إلى <code>التخطيط والجدولة (Scheduling)</code> ➔ حدث نسب الإنجاز الفعلي % لكل نشاط.</li>
+                <li>اضغط على زر <code>حساب المسار الحرج (CPM Forward/Backward)</code> لمراجعة التغير في مدة المشروع والتعويم Float.</li>
+                <li>راجع <code>مخطط جانت شارت التفاعلي (Interactive Gantt)</code> لفحص الأنشطة المتأخرة.</li>
+                <li>اضغط على <code>تصدير ملف Primavera P6 (.XER)</code> لإرسال التحديث لمهندس الاستشاري.</li>
+              </ul>
+            </div>
+            <button class="btn btn-outline btn-sm" style="width:100%;" onclick="switchView('scheduling')"><i class="fas fa-network-wired"></i> فتح شاشة الجدولة ومسار CPM</button>
+          </div>
+
+          <!-- Role 4: Cost Controller -->
+          <div class="card" style="border-top:4px solid var(--green); padding:18px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+              <strong style="color:var(--navy); font-size:16px;"><i class="fas fa-calculator" style="color:var(--green)"></i> مهندس مراقبة التكاليف (Cost Control Engineer)</strong>
+              <span class="badge badge-green">مراقبة الميزانية EVM</span>
+            </div>
+            <p style="font-size:12px; color:var(--muted); margin-bottom:12px;">مهمتك: مقارنة التكلفة الفعلية (AC) بالقيمة المكتسبة (EV) والميزانية المعتمدة (BAC) وكشف الهدر.</p>
+            <div style="background:#f8fafc; border-radius:6px; padding:10px; font-size:12px; line-height:1.7; margin-bottom:12px;">
+              <strong>أين تضغط شهرياً؟</strong>
+              <ul style="margin:4px 0 0; padding-right:16px;">
+                <li>اذهب إلى <code>ضبط التكاليف (Cost Control)</code> ➔ راجع جدول WBS EVM Ledger ومؤشرات CPI/SPI.</li>
+                <li>حلل تباين التكلفة (Cost Variance = EV - AC) وتأكد من بقاء التكلفة المتوقعة عند الاكتمال EAC ضمن BAC.</li>
+                <li>اذهب إلى <code>تسوية القيمة والتكلفة CVR Ledger (AACE RP 20R)</code> لتوليد مراجعة الربحية المحققة.</li>
+                <li>اضغط على <code>وكيل EVM الذكي</code> لتوليد توقعات التكلفة والاستشارات الاستباقية.</li>
+              </ul>
+            </div>
+            <button class="btn btn-outline btn-sm" style="width:100%;" onclick="switchView('cost-control')"><i class="fas fa-chart-pie"></i> فتح شاشة ضبط التكاليف EVM</button>
+          </div>
+
+          <!-- Role 5: Technical Office & QS -->
+          <div class="card" style="border-top:4px solid var(--teal); padding:18px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+              <strong style="color:var(--navy); font-size:16px;"><i class="fas fa-drafting-compass" style="color:var(--teal)"></i> مهندس المكتب الفني وحصر الكميات (Technical Office & QS)</strong>
+              <span class="badge badge-teal">المخططات والكميات</span>
+            </div>
+            <p style="font-size:12px; color:var(--muted); margin-bottom:12px;">مهمتك: إعداد مخططات الورشة التنفيذية Shop Drawings، اعتماد المواد، حصر الحديد والخرسانة، ورفع المستخلصات.</p>
+            <div style="background:#f8fafc; border-radius:6px; padding:10px; font-size:12px; line-height:1.7; margin-bottom:12px;">
+              <strong>أين تضغط دورياً؟</strong>
+              <ul style="margin:4px 0 0; padding-right:16px;">
+                <li>اذهب إلى <code>سجل المخططات (Drawings Log)</code> لتحديث حالة المخططات والتأكد من اعتمادها IFC.</li>
+                <li>اذهب إلى <code>تفريد حديد التسليح (Rebar BBS)</code> لتوليد جداول تفريد وتقطيع حديد التسليح طبقاً لـ BS 8666.</li>
+                <li>اذهب إلى <code>الاستفسارات الفنية (RFI)</code> لرفع استفسارات التناقض بين المعماري والإنشائي.</li>
+                <li>اذهب إلى <code>حصر الكميات (Takeoff)</code> لحصر الكميات المنفذة ورفعها للمستخلص الشهري.</li>
+              </ul>
+            </div>
+            <button class="btn btn-outline btn-sm" style="width:100%;" onclick="switchView('takeoff')"><i class="fas fa-ruler-combined"></i> فتح شاشة حصر الكميات</button>
+          </div>
+
+          <!-- Role 6: Procurement & Warehouse -->
+          <div class="card" style="border-top:4px solid var(--amber); padding:18px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+              <strong style="color:var(--navy); font-size:16px;"><i class="fas fa-boxes-packing" style="color:var(--amber)"></i> مدير المشتريات والمستودعات (Procurement & Logistics)</strong>
+              <span class="badge badge-amber">سلاسل الإمداد والمخزون</span>
+            </div>
+            <p style="font-size:12px; color:var(--muted); margin-bottom:12px;">مهمتك: التفاوض مع الموردين، إصدار أوامر الشراء، مراقبة المخزون، والمطابقة الثلاثية لفواتير التوريد.</p>
+            <div style="background:#f8fafc; border-radius:6px; padding:10px; font-size:12px; line-height:1.7; margin-bottom:12px;">
+              <strong>أين تضغط يومياً؟</strong>
+              <ul style="margin:4px 0 0; padding-right:16px;">
+                <li>اذهب إلى <code>المشتريات (Procurement)</code> ➔ اضغط <code>إصدار أمر شراء جديد (PO)</code> وحدد المورد والكميات.</li>
+                <li>اضغط على زر <code>طباعة PO</code> لتسليم أمر الشراء المعتمد للمورد.</li>
+                <li>انتقل إلى تبويب <code>مطابقة الحسابات الدائنة (3-Way Matching)</code> للتأكد من مطابقة PO مع GRN مع الفاتورة.</li>
+                <li>اذهب إلى <code>المخازن والمستودعات (Inventory)</code> لمتابعة أرصدة الأسمنت والحديد وحدود إعادة الطلب.</li>
+              </ul>
+            </div>
+            <button class="btn btn-outline btn-sm" style="width:100%;" onclick="switchView('procurement')"><i class="fas fa-truck-ramp-box"></i> فتح شاشة المشتريات والتوريد</button>
+          </div>
+
+          <!-- Role 7: QA/QC & HSE -->
+          <div class="card" style="border-top:4px solid var(--green); padding:18px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+              <strong style="color:var(--navy); font-size:16px;"><i class="fas fa-clipboard-check" style="color:var(--green)"></i> مهندس الجودة والسلامة (QA/QC & HSE Engineer)</strong>
+              <span class="badge badge-green">مطابقة الكود والسلامة</span>
+            </div>
+            <p style="font-size:12px; color:var(--muted); margin-bottom:12px;">مهمتك: التأكد من مطابقة التنفيذ لكود البناء السعودي SBC، استلام الأعمال مع الاستشاري، وحماية أرواح العمال.</p>
+            <div style="background:#f8fafc; border-radius:6px; padding:10px; font-size:12px; line-height:1.7; margin-bottom:12px;">
+              <strong>أين تضغط يومياً بالموقع؟</strong>
+              <ul style="margin:4px 0 0; padding-right:16px;">
+                <li>اذهب إلى <code>إدارة الجودة (QA/QC)</code> ➔ اضغط <code>طلب فحص موقعي جديد (WIR/MIR)</code> قبل أي صب أو عزل.</li>
+                <li>سجل قرارات الاستشاري فور استلام محضر الفحص وتأكد من إغلاق الملاحظات.</li>
+                <li>اذهب إلى <code>السلامة والصحة المهنية (HSE)</code> لإصدار تصاريح العمل الساخن والمرتفعات PTW.</li>
+                <li>اذهب إلى <code>قوائم الملاحظات (Punch List)</code> لمتابعة إنهاء ومعالجة الملاحظات المعلقة بالموقع.</li>
+              </ul>
+            </div>
+            <button class="btn btn-outline btn-sm" style="width:100%;" onclick="switchView('qa-qc')"><i class="fas fa-shield-halved"></i> فتح شاشة الجودة والسلامة</button>
+          </div>
+
+          <!-- Role 8: Finance & Billing -->
+          <div class="card" style="border-top:4px solid var(--purple); padding:18px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+              <strong style="color:var(--navy); font-size:16px;"><i class="fas fa-file-invoice-dollar" style="color:var(--purple)"></i> المدير المالي ومحاسب المشروع (Finance & Billing Accountant)</strong>
+              <span class="badge badge-purple">الفوترة والتدفقات النقدية</span>
+            </div>
+            <p style="font-size:12px; color:var(--muted); margin-bottom:12px;">مهمتك: إصدار مستخلصات المالك IPC، ختم فواتير ZATCA المرحلة الثانية، إدارة المقبوضات والمدفوعات ومسيرات الرواتب.</p>
+            <div style="background:#f8fafc; border-radius:6px; padding:10px; font-size:12px; line-height:1.7; margin-bottom:12px;">
+              <strong>أين تضغط دورياً؟</strong>
+              <ul style="margin:4px 0 0; padding-right:16px;">
+                <li>اذهب إلى <code>المستخلصات والشهادات (Billing & IPC)</code> ➔ اضغط <code>إنشاء مستخلص جديد</code> شهرياً.</li>
+                <li>اضغط على زر <code>ZATCA QR</code> في جدول المستخلصات لعرض وتدقيق الختم الضريبي الرقمي المشفر.</li>
+                <li>اضغط على زر <strong>طباعة المستخلص</strong> لتوليد شهادة الدفع الرسمية A4 بتوقيعات الأطراف الثلاثة.</li>
+                <li>اذهب إلى <code>المالية والمحاسبة ➔ الذمم الدائنة (AP)</code> لصرف مستحقات الموردين ومقاولي الباطن بعد حسم 10% ضمان.</li>
+                <li>اذهب إلى <code>الرواتب والأجور (Payroll)</code> لإصدار مسير الرواتب المعتمد لنظام حماية الأجور WPS.</li>
+              </ul>
+            </div>
+            <button class="btn btn-outline btn-sm" style="width:100%;" onclick="switchView('billing')"><i class="fas fa-qrcode"></i> فتح شاشة المستخلصات والفوترة</button>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ==================================================================== -->
+      <!-- SECTION 3: QUICK ACTION MATRIX (WHERE TO CLICK TO DO X)              -->
+      <!-- ==================================================================== -->
+      <div id="knowhow-matrix" class="card" style="margin-bottom:32px; padding:20px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+          <div>
+            <h2 style="font-size:18px; font-weight:800; color:var(--navy);"><i class="fas fa-hand-pointer" style="color:var(--gold)"></i> مصفوفة الأزرار السريعة: أين أضغط لأفعل ما أريد فوراً؟ (Action Matrix)</h2>
+            <p style="color:var(--muted); font-size:12px;">جدول مرجعي سريع يوصلك للوظيفة والزر المباشر بنقرة واحدة</p>
+          </div>
+          <span class="badge badge-gold">دليل النقرات السريعة</span>
+        </div>
+
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th style="width:30%;">المهمة المطلوبة (What you want to do)</th>
+                <th style="width:25%;">المسار في القائمة (Navigation Path)</th>
+                <th style="width:25%;">الزر المباشر (Exact Button to Click)</th>
+                <th style="width:20%;">انتقال فوري (Jump)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>طباعة مستخلص رسمي للمالك مع ختم ZATCA QR</strong></td>
+                <td>المستخلصات والشهادات (Billing)</td>
+                <td>زر <code>ZATCA QR</code> أو زر <code>طباعة IPC</code></td>
+                <td><button class="btn btn-primary btn-xs" onclick="switchView('billing')">انتقال</button></td>
+              </tr>
+              <tr>
+                <td><strong>حساب المسار الحرج CPM واكتشاف الأنشطة المتأخرة</strong></td>
+                <td>التخطيط والجدولة (Scheduling)</td>
+                <td>زر <code>حساب المسار الحرج (CPM)</code></td>
+                <td><button class="btn btn-primary btn-xs" onclick="switchView('scheduling')">انتقال</button></td>
+              </tr>
+              <tr>
+                <td><strong>تصدير جدول زمني لبرنامج Primavera P6</strong></td>
+                <td>التخطيط والجدولة (Scheduling)</td>
+                <td>زر <code>تصدير ملف Primavera P6 (.XER)</code></td>
+                <td><button class="btn btn-primary btn-xs" onclick="switchView('scheduling')">انتقال</button></td>
+              </tr>
+              <tr>
+                <td><strong>إصدار وطباعة أمر شراء مواد رسمي معتمد (PO)</strong></td>
+                <td>المشتريات والتوريد (Procurement)</td>
+                <td>زر <code>إصدار أمر شراء جديد</code> ثم زر <code>PO</code></td>
+                <td><button class="btn btn-primary btn-xs" onclick="switchView('procurement')">انتقال</button></td>
+              </tr>
+              <tr>
+                <td><strong>مطابقة فواتير الموردين مع التوريد الفعلي (3-Way Match)</strong></td>
+                <td>المشتريات ➔ تبويب مطابقة الحسابات</td>
+                <td>استعراض جدول <code>مطابقة الحسابات الدائنة</code></td>
+                <td><button class="btn btn-primary btn-xs" onclick="switchView('procurement')">انتقال</button></td>
+              </tr>
+              <tr>
+                <td><strong>رفع طلب فحص موقعي خرسانة أو عزل للاستشاري (WIR/MIR)</strong></td>
+                <td>إدارة الجودة (QA/QC)</td>
+                <td>زر <code>طلب فحص موقعي جديد (WIR/MIR)</code></td>
+                <td><button class="btn btn-primary btn-xs" onclick="switchView('qa-qc')">انتقال</button></td>
+              </tr>
+              <tr>
+                <td><strong>صياغة وطباعة إشعار مطالبة تمديد مدة وفق فيديك 20.1</strong></td>
+                <td>العقود والمطالبات (Contract Admin)</td>
+                <td>زر <code>طباعة مذكرة المطالبة (FIDIC 20.1)</code></td>
+                <td><button class="btn btn-primary btn-xs" onclick="switchView('contract-admin')">انتقال</button></td>
+              </tr>
+              <tr>
+                <td><strong>معرفة هل المشروع خاسر أم رابح (مؤشر CPI و SPI)</strong></td>
+                <td>ضبط التكاليف (Cost Control EVM)</td>
+                <td>مراجعة مؤشرات <code>CPI</code> و <code>SPI</code> في بطاقات EVM</td>
+                <td><button class="btn btn-primary btn-xs" onclick="switchView('cost-control')">انتقال</button></td>
+              </tr>
+              <tr>
+                <td><strong>متابعة خريطة الطريق الهرمية للمشاريع 7-Levels</strong></td>
+                <td>التخطيط والجدولة ➔ خارطة الطريق</td>
+                <td>شاشة <code>خارطة الطريق المؤسسية (Roadmap)</code></td>
+                <td><button class="btn btn-primary btn-xs" onclick="switchView('roadmap')">انتقال</button></td>
+              </tr>
+              <tr>
+                <td><strong>استشارة وكلاء الذكاء الاصطناعي الثمانية فورياً</strong></td>
+                <td>الذكاء الاصطناعي (AI Center)</td>
+                <td>زر <code>تشغيل الوكيل</code> أو زر Copilot في الشريط العلوي</td>
+                <td><button class="btn btn-primary btn-xs" onclick="switchView('ai-center')">انتقال</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ==================================================================== -->
+      <!-- SECTION 4: AI COPILOT CONSULTATION DIRECTORY                         -->
+      <!-- ==================================================================== -->
+      <div class="card" style="background:linear-gradient(135deg, #f8fafc, #f1f5f9); border:1px solid #cbd5e1; padding:20px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:10px;">
+          <div>
+            <h3 style="margin:0; color:var(--navy); font-weight:800;"><i class="fas fa-brain" style="color:var(--gold)"></i> هل واجهت استفساراً معقداً أثناء تشغيل المنظومة؟</h3>
+            <p style="margin:4px 0 0; color:var(--muted); font-size:12px;">منظومة الذكاء الاصطناعي المتخصصة مبرمجة لمساعدتك فورياً في صياغة العقود، التدقيق المالي، وتحليل الجداول الزمنية</p>
+          </div>
+          <button class="btn btn-primary btn-sm" onclick="openAiCopilotModal('fidic')"><i class="fas fa-bolt"></i> تشغيل المساعد الفوري الآن</button>
+        </div>
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:12px; font-size:12px;">
+          <div style="background:#ffffff; border:1px solid #e2e8f0; border-radius:6px; padding:10px; cursor:pointer;" onclick="openAiCopilotModal('fidic')">
+            <strong style="color:var(--purple);"><i class="fas fa-scale-balanced"></i> وكيل فيديك</strong>: لصياغة المطالبات وإشعارات 20.1
+          </div>
+          <div style="background:#ffffff; border:1px solid #e2e8f0; border-radius:6px; padding:10px; cursor:pointer;" onclick="openAiCopilotModal('cpm')">
+            <strong style="color:var(--red);"><i class="fas fa-fire"></i> وكيل المسار الحرج</strong>: لضغط الجدول وتلافي التأخير
+          </div>
+          <div style="background:#ffffff; border:1px solid #e2e8f0; border-radius:6px; padding:10px; cursor:pointer;" onclick="openAiCopilotModal('evm')">
+            <strong style="color:var(--blue);"><i class="fas fa-chart-line"></i> وكيل EVM</strong>: للتنبؤ بالتكلفة عند الاكتمال EAC
+          </div>
+          <div style="background:#ffffff; border:1px solid #e2e8f0; border-radius:6px; padding:10px; cursor:pointer;" onclick="openAiCopilotModal('procurement')">
+            <strong style="color:var(--teal);"><i class="fas fa-truck"></i> وكيل المشتريات</strong>: للتفاوض ومقارنة عروض التوريد
+          </div>
+        </div>
+      </div>
+
     </section>
 </main>
 </div>
