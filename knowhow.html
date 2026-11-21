@@ -1,0 +1,1918 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KNOWHOW!! — دليل المكتب الفني الشامل | ERP-SYS V8</title>
+<style>
+/* ================================================================
+   KNOWHOW!! Standalone Guide — ERP-SYS V8
+   Senior QS / Technical Office Expert Edition
+   ================================================================ */
+:root {
+  --navy:   #1a2e44;
+  --navy-l: #243d5c;
+  --gold:   #c9a84c;
+  --gold-l: #e8c97a;
+  --teal:   #0d9488;
+  --teal-l: #14b8a6;
+  --green:  #10b981;
+  --red:    #ef4444;
+  --amber:  #f59e0b;
+  --blue:   #3b82f6;
+  --purple: #8b5cf6;
+  --bg:     #f1f5f9;
+  --card:   #ffffff;
+  --border: #e2e8f0;
+  --text:   #1e293b;
+  --muted:  #64748b;
+  --radius: 12px;
+  --shadow: 0 2px 12px rgba(0,0,0,0.08);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Segoe UI', 'Noto Sans Arabic', Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  direction: rtl;
+  line-height: 1.7;
+}
+
+/* ── TOP BAR ── */
+.topbar {
+  background: linear-gradient(135deg, var(--navy) 0%, var(--navy-l) 100%);
+  color: white;
+  padding: 0 32px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 999;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.2);
+}
+.topbar-brand { display: flex; align-items: center; gap: 14px; }
+.topbar-logo {
+  width: 42px; height: 42px;
+  background: var(--gold);
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px; font-weight: 900; color: var(--navy);
+}
+.topbar-title { font-size: 20px; font-weight: 700; }
+.topbar-sub   { font-size: 11px; color: var(--gold-l); }
+.topbar-actions { display: flex; gap: 10px; }
+.btn {
+  padding: 8px 18px; border-radius: 8px; border: none;
+  cursor: pointer; font-size: 13px; font-weight: 600;
+  text-decoration: none; display: inline-flex; align-items: center; gap: 6px;
+  transition: all 0.2s;
+}
+.btn-gold   { background: var(--gold); color: var(--navy); }
+.btn-gold:hover { background: var(--gold-l); }
+.btn-outline { background: transparent; color: white; border: 1.5px solid rgba(255,255,255,0.4); }
+.btn-outline:hover { background: rgba(255,255,255,0.1); }
+
+/* ── LAYOUT ── */
+.layout { display: flex; min-height: calc(100vh - 64px); }
+
+/* ── SIDEBAR TOC ── */
+.sidebar-toc {
+  width: 280px; min-width: 280px;
+  background: var(--navy);
+  color: white;
+  padding: 20px 0;
+  position: sticky; top: 64px;
+  height: calc(100vh - 64px);
+  overflow-y: auto;
+}
+.toc-header {
+  padding: 0 20px 16px;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  margin-bottom: 10px;
+}
+.toc-header h3 { font-size: 13px; color: var(--gold-l); letter-spacing: 1px; text-transform: uppercase; }
+.toc-item {
+  display: block;
+  padding: 9px 20px;
+  color: rgba(255,255,255,0.75);
+  text-decoration: none;
+  font-size: 13px;
+  transition: all 0.2s;
+  border-right: 3px solid transparent;
+}
+.toc-item:hover, .toc-item.active {
+  background: rgba(255,255,255,0.08);
+  color: white;
+  border-right-color: var(--gold);
+}
+.toc-item .num {
+  display: inline-block; width: 24px; height: 24px;
+  background: rgba(201,168,76,0.2); color: var(--gold-l);
+  border-radius: 50%; text-align: center; line-height: 24px;
+  font-size: 11px; font-weight: 700;
+  margin-left: 8px;
+}
+
+/* ── MAIN CONTENT ── */
+.main-content {
+  flex: 1;
+  padding: 32px;
+  max-width: 1100px;
+  overflow-x: hidden;
+}
+
+/* ── SECTION ── */
+.section {
+  background: var(--card);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  margin-bottom: 32px;
+  overflow: hidden;
+}
+.section-header {
+  padding: 24px 28px;
+  background: linear-gradient(135deg, var(--navy) 0%, var(--navy-l) 100%);
+  color: white;
+  display: flex; align-items: center; gap: 16px;
+}
+.section-num {
+  width: 48px; height: 48px; border-radius: 50%;
+  background: var(--gold); color: var(--navy);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px; font-weight: 900;
+  flex-shrink: 0;
+}
+.section-title { font-size: 20px; font-weight: 700; }
+.section-subtitle { font-size: 13px; color: rgba(255,255,255,0.7); margin-top: 2px; }
+.section-body { padding: 28px; }
+
+/* ── TYPOGRAPHY ── */
+h3 { font-size: 16px; font-weight: 700; color: var(--navy); margin: 20px 0 10px; }
+h4 { font-size: 14px; font-weight: 600; color: var(--teal); margin: 16px 0 8px; }
+p  { margin-bottom: 12px; font-size: 14px; color: var(--text); }
+ul, ol { padding-right: 20px; margin-bottom: 12px; }
+li { font-size: 14px; margin-bottom: 4px; }
+strong { color: var(--navy); }
+
+/* ── FLOWCHART ── */
+.flowchart {
+  display: flex; flex-wrap: wrap; align-items: center;
+  gap: 0; padding: 20px 0; margin: 16px 0;
+}
+.flow-step {
+  display: flex; flex-direction: column; align-items: center;
+  min-width: 100px; text-align: center;
+}
+.flow-box {
+  padding: 10px 16px;
+  border-radius: 10px;
+  font-size: 12px; font-weight: 600;
+  min-width: 100px;
+}
+.flow-box.navy  { background: var(--navy);  color: white; }
+.flow-box.teal  { background: var(--teal);  color: white; }
+.flow-box.gold  { background: var(--gold);  color: var(--navy); }
+.flow-box.green { background: var(--green); color: white; }
+.flow-box.blue  { background: var(--blue);  color: white; }
+.flow-box.purple{ background: var(--purple);color: white; }
+.flow-box.red   { background: var(--red);   color: white; }
+.flow-arrow {
+  font-size: 20px; color: var(--muted);
+  display: flex; align-items: center;
+  padding: 0 4px;
+}
+
+/* ── TABLES ── */
+.tbl-wrap { overflow-x: auto; margin: 16px 0; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+thead th {
+  background: var(--navy); color: white;
+  padding: 10px 14px; text-align: right;
+  font-weight: 600; white-space: nowrap;
+}
+tbody td {
+  padding: 9px 14px; border-bottom: 1px solid var(--border);
+  vertical-align: top;
+}
+tbody tr:hover { background: rgba(26,46,68,0.03); }
+tbody tr:last-child td { border-bottom: none; }
+.td-num { font-family: 'Courier New', monospace; color: var(--navy); font-weight: 700; }
+.td-green { color: var(--green); font-weight: 700; }
+.td-red   { color: var(--red);   font-weight: 700; }
+.td-gold  { color: #a8872a;      font-weight: 700; }
+
+/* ── ALERT BOXES ── */
+.alert {
+  display: flex; gap: 12px; align-items: flex-start;
+  padding: 14px 18px; border-radius: 10px; margin: 16px 0;
+  font-size: 13px;
+}
+.alert-icon { font-size: 20px; flex-shrink: 0; }
+.alert.info    { background: #dbeafe; border-right: 4px solid var(--blue);   }
+.alert.success { background: #d1fae5; border-right: 4px solid var(--green);  }
+.alert.warning { background: #fef3c7; border-right: 4px solid var(--amber);  }
+.alert.danger  { background: #fee2e2; border-right: 4px solid var(--red);    }
+.alert.tip     { background: #ede9fe; border-right: 4px solid var(--purple); }
+
+/* ── CODE / FORMULA BLOCKS ── */
+.code-block {
+  background: #0f172a;
+  color: #e2e8f0;
+  border-radius: 10px;
+  padding: 18px 20px;
+  font-family: 'Courier New', monospace;
+  font-size: 13px;
+  line-height: 1.8;
+  margin: 16px 0;
+  overflow-x: auto;
+  direction: ltr;
+  text-align: left;
+}
+.code-block .comment { color: #64748b; }
+.code-block .label   { color: #fbbf24; }
+.code-block .value   { color: #34d399; }
+.code-block .total   { color: #f87171; font-weight: 700; }
+.code-block .formula { color: #93c5fd; }
+
+/* ── STEP CARDS ── */
+.steps-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; margin: 16px 0; }
+.step-card {
+  border: 1px solid var(--border);
+  border-radius: 10px; padding: 16px;
+  position: relative;
+}
+.step-card-num {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: var(--navy); color: white;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: 13px;
+  margin-bottom: 10px;
+}
+.step-card h4 { margin: 0 0 6px; font-size: 14px; color: var(--navy); }
+.step-card p  { margin: 0; font-size: 13px; color: var(--muted); }
+.step-card .nav-hint {
+  display: inline-block; margin-top: 8px;
+  background: var(--navy); color: var(--gold);
+  border-radius: 6px; padding: 3px 10px;
+  font-size: 11px; font-weight: 600;
+}
+
+/* ── KPI ROW ── */
+.kpi-row { display: flex; flex-wrap: wrap; gap: 14px; margin: 16px 0; }
+.kpi-card {
+  flex: 1; min-width: 140px;
+  background: var(--navy);
+  border-radius: 10px; padding: 16px;
+  color: white; text-align: center;
+}
+.kpi-card .kpi-label { font-size: 11px; color: rgba(255,255,255,0.6); margin-bottom: 4px; }
+.kpi-card .kpi-formula { font-size: 13px; color: var(--gold-l); font-weight: 600; margin-bottom: 2px; }
+.kpi-card .kpi-meaning { font-size: 11px; color: rgba(255,255,255,0.5); }
+
+/* ── CHECKLIST ── */
+.checklist { list-style: none; padding: 0; }
+.checklist li {
+  padding: 8px 12px; border-bottom: 1px solid var(--border);
+  display: flex; align-items: flex-start; gap: 10px; font-size: 13px;
+}
+.checklist li:last-child { border-bottom: none; }
+.checklist li::before { content: '☐'; color: var(--navy); font-size: 16px; flex-shrink: 0; }
+.checklist li.done::before { content: '✅'; }
+
+/* ── MONTH TIMELINE ── */
+.month-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 14px; margin: 16px 0; }
+.week-card  { background: var(--bg); border-radius: 10px; padding: 14px; border: 1px solid var(--border); }
+.week-card h4 { color: var(--navy); font-size: 13px; margin-bottom: 8px; }
+.week-card ul { padding-right: 16px; }
+.week-card li { font-size: 12px; margin-bottom: 3px; }
+
+/* ── CASE STUDY TIMELINE ── */
+.cs-timeline { border-right: 3px solid var(--navy); padding-right: 20px; margin: 16px 0; }
+.cs-event {
+  position: relative; margin-bottom: 24px;
+}
+.cs-event::before {
+  content: '';
+  width: 14px; height: 14px;
+  background: var(--gold); border-radius: 50%;
+  position: absolute; right: -27px; top: 4px;
+  border: 3px solid var(--navy);
+}
+.cs-event .cs-month { font-size: 11px; color: var(--muted); font-weight: 600; }
+.cs-event h4 { margin: 2px 0 6px; font-size: 14px; color: var(--navy); }
+.cs-event p  { font-size: 13px; color: var(--text); margin: 0; }
+
+/* ── MISTAKES / BEST PRACTICES ── */
+.mistake-item, .bp-item {
+  display: flex; gap: 12px; align-items: flex-start;
+  padding: 12px 16px; border-radius: 8px; margin-bottom: 10px;
+  font-size: 13px;
+}
+.mistake-item { background: #fff5f5; border-right: 4px solid var(--red); }
+.bp-item      { background: #f0fdf4; border-right: 4px solid var(--green); }
+.mistake-item .icon, .bp-item .icon { font-size: 18px; flex-shrink: 0; }
+
+/* ── PRINT BUTTON ── */
+@media print {
+  .topbar, .sidebar-toc, .topbar-actions { display: none !important; }
+  .main-content { padding: 0; }
+  .section { box-shadow: none; }
+}
+
+/* ── SCROLL REVEAL ── */
+.section { opacity: 1; }
+
+/* ── PROGRESS BAR ── */
+.progress-bar-wrap {
+  position: fixed; top: 64px; right: 0; left: 0; height: 3px;
+  background: rgba(255,255,255,0.1); z-index: 998;
+}
+.progress-bar { height: 100%; background: var(--gold); width: 0; transition: width 0.1s; }
+
+/* ── SEARCH ── */
+.search-wrap {
+  background: rgba(255,255,255,0.1); border-radius: 8px;
+  display: flex; align-items: center; gap: 8px;
+  padding: 6px 12px;
+}
+.search-wrap input {
+  background: transparent; border: none; color: white;
+  font-size: 13px; outline: none; width: 200px;
+  direction: rtl;
+}
+.search-wrap input::placeholder { color: rgba(255,255,255,0.4); }
+
+/* Highlight search results */
+mark { background: var(--gold-l); color: var(--navy); border-radius: 3px; padding: 0 2px; }
+
+/* ── INTRO HERO ── */
+.hero {
+  background: linear-gradient(135deg, var(--navy) 0%, #0f172a 100%);
+  color: white; padding: 48px 32px;
+  text-align: center; margin-bottom: 32px;
+  border-radius: var(--radius);
+}
+.hero h1 { font-size: 36px; font-weight: 900; color: var(--gold); margin-bottom: 12px; }
+.hero p   { font-size: 16px; color: rgba(255,255,255,0.75); max-width: 700px; margin: 0 auto 24px; }
+.hero-badges { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
+.badge {
+  padding: 6px 16px; border-radius: 999px; font-size: 12px; font-weight: 600;
+}
+.badge-gold   { background: var(--gold); color: var(--navy); }
+.badge-teal   { background: var(--teal); color: white; }
+.badge-green  { background: var(--green); color: white; }
+.badge-purple { background: var(--purple); color: white; }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 900px) {
+  .sidebar-toc { display: none; }
+  .month-grid { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 600px) {
+  .main-content { padding: 16px; }
+  .hero h1 { font-size: 24px; }
+  .month-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- ══ TOP BAR ══ -->
+<header class="topbar">
+  <div class="topbar-brand">
+    <div class="topbar-logo">K</div>
+    <div>
+      <div class="topbar-title">📚 KNOWHOW!! — الدليل الفني الشامل</div>
+      <div class="topbar-sub">ERP-SYS V8 • Senior QS / Technical Office Edition</div>
+    </div>
+  </div>
+  <div class="topbar-actions">
+    <div class="search-wrap">
+      <span>🔍</span>
+      <input type="text" id="searchInput" placeholder="ابحث في الدليل..." oninput="searchGuide(this.value)">
+    </div>
+    <a href="index.html" class="btn btn-outline">↩ العودة للنظام</a>
+    <button onclick="window.print()" class="btn btn-gold">🖨️ طباعة</button>
+  </div>
+</header>
+
+<div class="progress-bar-wrap"><div class="progress-bar" id="progressBar"></div></div>
+
+<!-- ══ LAYOUT ══ -->
+<div class="layout">
+
+  <!-- ── SIDEBAR TOC ── -->
+  <nav class="sidebar-toc" id="sidebar">
+    <div class="toc-header"><h3>📑 فهرس المحتوى</h3></div>
+    <a href="#s0"  class="toc-item"><span class="num">★</span> مقدمة ونظرة عامة</a>
+    <a href="#s1"  class="toc-item"><span class="num">1</span> دورة حياة المشروع</a>
+    <a href="#s2"  class="toc-item"><span class="num">2</span> إعداد المشروع من الصفر</a>
+    <a href="#s3"  class="toc-item"><span class="num">3</span> هيكل WBS</a>
+    <a href="#s4"  class="toc-item"><span class="num">4</span> إدارة قائمة الكميات BOQ</a>
+    <a href="#s5"  class="toc-item"><span class="num">5</span> حصر الكميات (Takeoff)</a>
+    <a href="#s6"  class="toc-item"><span class="num">6</span> تحليل الأسعار</a>
+    <a href="#s7"  class="toc-item"><span class="num">7</span> قاعدة بيانات الموارد</a>
+    <a href="#s8"  class="toc-item"><span class="num">8</span> إعداد الميزانية</a>
+    <a href="#s9"  class="toc-item"><span class="num">9</span> سير المشتريات</a>
+    <a href="#s10" class="toc-item"><span class="num">10</span> إدارة عقود الباطن</a>
+    <a href="#s11" class="toc-item"><span class="num">11</span> مراقبة التكلفة EVM</a>
+    <a href="#s12" class="toc-item"><span class="num">12</span> متابعة التقدم</a>
+    <a href="#s13" class="toc-item"><span class="num">13</span> أوامر التغيير</a>
+    <a href="#s14" class="toc-item"><span class="num">14</span> روتين المكتب الفني الشهري</a>
+    <a href="#s15" class="toc-item"><span class="num">15</span> دراسة حالة كاملة</a>
+    <a href="#s16" class="toc-item"><span class="num">16</span> الأخطاء الشائعة</a>
+    <a href="#s17" class="toc-item"><span class="num">17</span> أفضل الممارسات</a>
+  </nav>
+
+  <!-- ── MAIN ── -->
+  <main class="main-content" id="mainContent">
+
+    <!-- ══ HERO ══ -->
+    <div class="hero" id="s0">
+      <h1>📚 KNOWHOW!!</h1>
+      <p>الدليل الفني الشامل لمهندس المكتب الفني ومهندس حصر الكميات والتحكم بالتكلفة — من إعداد المشروع حتى الإغلاق النهائي</p>
+      <div class="hero-badges">
+        <span class="badge badge-gold">🏗️ FIDIC Red Book 2017</span>
+        <span class="badge badge-teal">📐 Earned Value Management</span>
+        <span class="badge badge-green">📊 BOQ &amp; Rate Analysis</span>
+        <span class="badge badge-purple">🔄 17 قسماً تفصيلياً</span>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════════════════
+         SECTION 1: PROJECT LIFECYCLE OVERVIEW
+         ════════════════════════════════════════════════ -->
+    <div class="section" id="s1">
+      <div class="section-header">
+        <div class="section-num">1</div>
+        <div>
+          <div class="section-title">دورة حياة المشروع الكاملة</div>
+          <div class="section-subtitle">من الترسية حتى الإغلاق — نظرة شاملة على تسلسل العمل</div>
+        </div>
+      </div>
+      <div class="section-body">
+        <p>قبل الولوج إلى تفاصيل أي وحدة، يجب أن يفهم مهندس المكتب الفني الصورة الكاملة لدورة حياة المشروع داخل النظام:</p>
+
+        <div class="flowchart" style="flex-wrap:wrap; gap:6px;">
+          <div class="flow-step"><div class="flow-box navy">البيانات الرئيسية<br><small>Master Data</small></div></div>
+          <div class="flow-arrow">←</div>
+          <div class="flow-step"><div class="flow-box teal">إعداد المشروع<br><small>Project Setup</small></div></div>
+          <div class="flow-arrow">←</div>
+          <div class="flow-step"><div class="flow-box blue">هيكل WBS<br><small>WBS Structure</small></div></div>
+          <div class="flow-arrow">←</div>
+          <div class="flow-step"><div class="flow-box gold">قائمة الكميات BOQ<br><small>BOQ Creation</small></div></div>
+          <div class="flow-arrow">←</div>
+          <div class="flow-step"><div class="flow-box purple">حصر الكميات<br><small>Takeoff</small></div></div>
+        </div>
+        <div class="flowchart" style="flex-wrap:wrap; gap:6px; margin-top: -8px;">
+          <div class="flow-step"><div class="flow-box navy">قاعدة الموارد<br><small>Resources DB</small></div></div>
+          <div class="flow-arrow">←</div>
+          <div class="flow-step"><div class="flow-box teal">تحليل الأسعار<br><small>Rate Analysis</small></div></div>
+          <div class="flow-arrow">←</div>
+          <div class="flow-step"><div class="flow-box blue">الميزانية<br><small>Budget</small></div></div>
+          <div class="flow-arrow">←</div>
+          <div class="flow-step"><div class="flow-box gold">المشتريات<br><small>Procurement</small></div></div>
+          <div class="flow-arrow">←</div>
+          <div class="flow-step"><div class="flow-box purple">عقود الباطن<br><small>Subcontracts</small></div></div>
+        </div>
+        <div class="flowchart" style="flex-wrap:wrap; gap:6px; margin-top: -8px;">
+          <div class="flow-step"><div class="flow-box navy">مراقبة التكلفة<br><small>Cost Control</small></div></div>
+          <div class="flow-arrow">←</div>
+          <div class="flow-step"><div class="flow-box teal">شهادات الدفع IPC<br><small>IPC</small></div></div>
+          <div class="flow-arrow">←</div>
+          <div class="flow-step"><div class="flow-box blue">أوامر التغيير VO<br><small>Variations</small></div></div>
+          <div class="flow-arrow">←</div>
+          <div class="flow-step"><div class="flow-box gold">المطالبات Claims<br><small>FIDIC</small></div></div>
+          <div class="flow-arrow">←</div>
+          <div class="flow-step"><div class="flow-box green">الإغلاق النهائي<br><small>Closeout</small></div></div>
+        </div>
+
+        <div class="alert info" style="margin-top:20px;">
+          <div class="alert-icon">ℹ️</div>
+          <div><strong>مبدأ أساسي:</strong> كل سجل في النظام يجب أن يكون مرتبطاً بـ: الشركة ← الفرع ← المشروع ← المرحلة ← WBS ← بند BOQ ← كود التكلفة. لا يوجد سجل معزول.</div>
+        </div>
+
+        <h3>📋 مراحل المشروع الرئيسية الست</h3>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>#</th><th>المرحلة</th><th>المدة النموذجية</th><th>المسؤول الرئيسي</th><th>المخرج الرئيسي</th></tr></thead>
+            <tbody>
+              <tr><td class="td-num">1</td><td><strong>الإعداد والتأسيس</strong></td><td>الأسبوع 1-2</td><td>مدير المشروع + المكتب الفني</td><td>ملف المشروع، WBS، BOQ مُدخل</td></tr>
+              <tr><td class="td-num">2</td><td><strong>التخطيط والميزانية</strong></td><td>الأسبوع 2-4</td><td>مهندس التخطيط + مهندس التكلفة</td><td>Baseline Schedule، Approved Budget</td></tr>
+              <tr><td class="td-num">3</td><td><strong>التوريد والعقود</strong></td><td>مستمر</td><td>قسم المشتريات</td><td>POs موقعة، عقود باطن</td></tr>
+              <tr><td class="td-num">4</td><td><strong>التنفيذ والمتابعة</strong></td><td>مدة المشروع</td><td>مهندس التنفيذ + المكتب الفني</td><td>تقارير يومية/شهرية، IPC</td></tr>
+              <tr><td class="td-num">5</td><td><strong>مراقبة التكلفة</strong></td><td>مستمر</td><td>مهندس التحكم بالتكلفة</td><td>تقارير EVM، تحليل الانحرافات</td></tr>
+              <tr><td class="td-num">6</td><td><strong>الإغلاق النهائي</strong></td><td>الشهر الأخير</td><td>المكتب الفني + القانوني</td><td>Final Account، As-Built، تسليم</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════════════════
+         SECTION 2: PROJECT SETUP FROM SCRATCH
+         ════════════════════════════════════════════════ -->
+    <div class="section" id="s2">
+      <div class="section-header">
+        <div class="section-num">2</div>
+        <div>
+          <div class="section-title">إعداد المشروع من الصفر</div>
+          <div class="section-subtitle">افترض أن النظام فارغ تماماً — ابدأ من هنا</div>
+        </div>
+      </div>
+      <div class="section-body">
+        <div class="alert warning">
+          <div class="alert-icon">⚠️</div>
+          <div><strong>قاعدة ذهبية:</strong> البيانات الرئيسية (Master Data) يجب إدخالها أولاً قبل إنشاء أي مشروع. الترتيب: الشركة → الفروع → العملاء → المقاولون → الموردون → الأطراف.</div>
+        </div>
+
+        <h3>الخطوة 1 — إعداد الشركة</h3>
+        <p>اذهب إلى: <code>الإدارة → الإعدادات → بيانات الشركة</code></p>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>الحقل</th><th>مثال</th><th>ملاحظة</th></tr></thead>
+            <tbody>
+              <tr><td><strong>اسم الشركة</strong></td><td>شركة مِعمار للمقاولات</td><td>الاسم الرسمي كما في السجل</td></tr>
+              <tr><td><strong>رقم السجل التجاري</strong></td><td>1010123456</td><td>10 أرقام</td></tr>
+              <tr><td><strong>الرقم الضريبي (VAT)</strong></td><td>300123456700003</td><td>15 رقم — ZATCA Phase 2</td></tr>
+              <tr><td><strong>نسبة ضريبة القيمة المضافة</strong></td><td>15%</td><td>المعدل السعودي الحالي</td></tr>
+              <tr><td><strong>العملة الرئيسية</strong></td><td>SAR — ريال سعودي</td><td>لا تغيير بعد الحفظ</td></tr>
+              <tr><td><strong>السنة المالية</strong></td><td>يناير — ديسمبر</td><td>أو وفق الميزانية الحكومية</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>الخطوة 2 — إنشاء الفروع ومراكز التكلفة</h3>
+        <p>اذهب إلى: <code>الإدارة → الفروع → إضافة فرع</code></p>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>الحقل</th><th>مثال — فرع الرياض</th><th>مثال — فرع جدة</th></tr></thead>
+            <tbody>
+              <tr><td><strong>كود الفرع</strong></td><td>BR-001</td><td>BR-002</td></tr>
+              <tr><td><strong>اسم الفرع</strong></td><td>فرع الرياض</td><td>فرع جدة</td></tr>
+              <tr><td><strong>المدينة</strong></td><td>الرياض</td><td>جدة</td></tr>
+              <tr><td><strong>كود مركز التكلفة</strong></td><td>CC-RUH</td><td>CC-JED</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>الخطوة 3 — إنشاء المشروع</h3>
+        <p>اذهب إلى: <code>المشاريع → مشروع جديد</code> أو من الشريط الجانبي: <code>Projects → New</code></p>
+        <div class="steps-grid">
+          <div class="step-card">
+            <div class="step-card-num">A</div>
+            <h4>البيانات الأساسية</h4>
+            <p>كود المشروع: PRJ-XXXX<br>الاسم: وصف كامل بالعربية<br>قيمة العقد (BAC): بالريال</p>
+            <span class="nav-hint">Projects → Basic Info</span>
+          </div>
+          <div class="step-card">
+            <div class="step-card-num">B</div>
+            <h4>التواريخ</h4>
+            <p>تاريخ البدء المخطط<br>تاريخ الانتهاء المخطط<br>مدة العقد بالأيام</p>
+            <span class="nav-hint">Projects → Dates</span>
+          </div>
+          <div class="step-card">
+            <div class="step-card-num">C</div>
+            <h4>الأطراف</h4>
+            <p>العميل (Client)<br>الاستشاري (Consultant)<br>المقاول الرئيسي</p>
+            <span class="nav-hint">Projects → Parties</span>
+          </div>
+          <div class="step-card">
+            <div class="step-card-num">D</div>
+            <h4>نوع العقد والشروط</h4>
+            <p>نوع العقد: FIDIC Red Book<br>نسبة الاحتجاز: 10%<br>فترة الضمان: 12 شهراً</p>
+            <span class="nav-hint">Projects → Contract Terms</span>
+          </div>
+        </div>
+
+        <h3>الخطوة 4 — إعداد الصلاحيات</h3>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>الدور</th><th>الصلاحيات</th><th>القيود</th></tr></thead>
+            <tbody>
+              <tr><td><strong>مدير المشروع</strong></td><td>قراءة وكتابة كاملة للمشروع</td><td>لا يمكن حذف المشروع</td></tr>
+              <tr><td><strong>مهندس تحكم بالتكلفة</strong></td><td>BOQ، Budget، Cost Control</td><td>لا يوافق على فواتير</td></tr>
+              <tr><td><strong>مهندس مشتريات</strong></td><td>MR، RFQ، PO، GRN</td><td>حد اعتماد PO محدد</td></tr>
+              <tr><td><strong>مهندس تنفيذ</strong></td><td>قراءة فقط + إدخال تقارير يومية</td><td>لا يرى التكاليف</td></tr>
+              <tr><td><strong>محاسب</strong></td><td>الفواتير والمدفوعات فقط</td><td>لا يرى الميزانية التفصيلية</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════════════════
+         SECTION 3: WBS STRUCTURE
+         ════════════════════════════════════════════════ -->
+    <div class="section" id="s3">
+      <div class="section-header">
+        <div class="section-num">3</div>
+        <div>
+          <div class="section-title">هيكل تقسيم العمل WBS</div>
+          <div class="section-subtitle">Work Breakdown Structure — المعيار الاحترافي لتصنيف الأعمال</div>
+        </div>
+      </div>
+      <div class="section-body">
+        <div class="alert info">
+          <div class="alert-icon">📌</div>
+          <div><strong>قاعدة WBS:</strong> هيكل WBS يجب أن يكون على 4 مستويات على الأقل. الترميز الهرمي يسمح بالتلخيص التلقائي للتكاليف والكميات من الأسفل للأعلى.</div>
+        </div>
+
+        <h3>نظام الترميز الموصى به</h3>
+        <div class="code-block">
+<span class="label">المستوى 1 — التخصص الرئيسي (Discipline):</span>
+<span class="value">01</span>              → الأعمال المدنية والإنشائية
+<span class="value">02</span>              → الأعمال المعمارية
+<span class="value">03</span>              → الأعمال الكهربائية والميكانيكية (MEP)
+<span class="value">04</span>              → الأعمال الخارجية
+
+<span class="label">المستوى 2 — المجموعة (Group):</span>
+<span class="value">01.01</span>           → أعمال الحفريات والأساسات
+<span class="value">01.02</span>           → الأعمال الخرسانية
+<span class="value">01.03</span>           → أعمال الحديد والصلب
+<span class="value">02.01</span>           → أعمال الطابوق والبلوك
+<span class="value">02.02</span>           → أعمال اللياسة والتشطيبات
+
+<span class="label">المستوى 3 — العنصر (Element):</span>
+<span class="value">01.01.01</span>        → الحفر الكتلي Bulk Excavation
+<span class="value">01.01.02</span>        → الحفر اليدوي Manual Excavation
+<span class="value">02.02.01</span>        → اللياسة الداخلية Internal Plaster
+<span class="value">02.02.02</span>        → اللياسة الخارجية External Plaster
+
+<span class="label">المستوى 4 — البند التفصيلي (Detail Item):</span>
+<span class="value">02.02.01.01</span>     → لياسة داخلية سماكة 20مم بالطبقة الأولى (Scratch Coat)
+<span class="value">02.02.01.02</span>     → لياسة داخلية سماكة 10مم بالطبقة الثانية (Finish Coat)
+        </div>
+
+        <h3>مثال WBS كامل — مبنى سكني (G+3)</h3>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>كود WBS</th><th>الوصف</th><th>الوحدة</th><th>% من العقد</th></tr></thead>
+            <tbody>
+              <tr style="background:#f8fafc;"><td class="td-num"><strong>01</strong></td><td><strong>الأعمال المدنية والإنشائية</strong></td><td>—</td><td class="td-gold"><strong>45%</strong></td></tr>
+              <tr><td class="td-num">01.01</td><td>  أعمال الحفريات والأساسات</td><td>—</td><td>12%</td></tr>
+              <tr><td class="td-num">01.01.01</td><td>    الحفر الكتلي</td><td>م³</td><td>5%</td></tr>
+              <tr><td class="td-num">01.01.02</td><td>    تسوية الأرضية</td><td>م²</td><td>2%</td></tr>
+              <tr><td class="td-num">01.01.03</td><td>    خرسانة الأساسات</td><td>م³</td><td>5%</td></tr>
+              <tr><td class="td-num">01.02</td><td>  الأعمال الخرسانية</td><td>—</td><td>25%</td></tr>
+              <tr><td class="td-num">01.02.01</td><td>    خرسانة الأعمدة</td><td>م³</td><td>8%</td></tr>
+              <tr><td class="td-num">01.02.02</td><td>    خرسانة الكمرات</td><td>م³</td><td>8%</td></tr>
+              <tr><td class="td-num">01.02.03</td><td>    خرسانة البلاطات</td><td>م³</td><td>9%</td></tr>
+              <tr style="background:#f8fafc;"><td class="td-num"><strong>02</strong></td><td><strong>الأعمال المعمارية</strong></td><td>—</td><td class="td-gold"><strong>30%</strong></td></tr>
+              <tr><td class="td-num">02.01</td><td>  أعمال الطابوق والبلوك</td><td>م²</td><td>8%</td></tr>
+              <tr><td class="td-num">02.02</td><td>  أعمال اللياسة</td><td>م²</td><td>7%</td></tr>
+              <tr><td class="td-num">02.03</td><td>  البلاط والسيراميك</td><td>م²</td><td>8%</td></tr>
+              <tr><td class="td-num">02.04</td><td>  الدهانات</td><td>م²</td><td>4%</td></tr>
+              <tr><td class="td-num">02.05</td><td>  الأبواب والشبابيك</td><td>قطعة</td><td>3%</td></tr>
+              <tr style="background:#f8fafc;"><td class="td-num"><strong>03</strong></td><td><strong>الأعمال الميكانيكية والكهربائية (MEP)</strong></td><td>—</td><td class="td-gold"><strong>20%</strong></td></tr>
+              <tr><td class="td-num">03.01</td><td>  أعمال الصرف الصحي</td><td>م/ق</td><td>5%</td></tr>
+              <tr><td class="td-num">03.02</td><td>  أعمال الكهرباء</td><td>م/ق</td><td>8%</td></tr>
+              <tr><td class="td-num">03.03</td><td>  أعمال التكييف HVAC</td><td>وحدة</td><td>7%</td></tr>
+              <tr style="background:#f8fafc;"><td class="td-num"><strong>04</strong></td><td><strong>الأعمال الخارجية</strong></td><td>—</td><td class="td-gold"><strong>5%</strong></td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="alert tip">
+          <div class="alert-icon">💡</div>
+          <div><strong>نصيحة:</strong> في النظام، اذهب إلى: <code>المشاريع → WBS → إضافة مستوى</code>. يمكن استيراد WBS من Excel. دائماً ابدأ بالمستوى 1 ثم أضف المستويات الفرعية.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════════════════
+         SECTION 4: BOQ MANAGEMENT
+         ════════════════════════════════════════════════ -->
+    <div class="section" id="s4">
+      <div class="section-header">
+        <div class="section-num">4</div>
+        <div>
+          <div class="section-title">إدارة قائمة الكميات BOQ</div>
+          <div class="section-subtitle">Bill of Quantities — إنشاء وترميز وربط البنود</div>
+        </div>
+      </div>
+      <div class="section-body">
+        <h3>حقول بند BOQ الرئيسية</h3>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>الحقل</th><th>الوصف</th><th>مثال</th><th>إلزامي</th></tr></thead>
+            <tbody>
+              <tr><td><strong>كود البند</strong></td><td>الكود الهرمي الفريد</td><td>02.02.01.01</td><td>✅</td></tr>
+              <tr><td><strong>الوصف</strong></td><td>وصف تفصيلي للبند</td><td>لياسة داخلية سماكة 20مم أسمنتية</td><td>✅</td></tr>
+              <tr><td><strong>الوحدة</strong></td><td>وحدة القياس</td><td>م²</td><td>✅</td></tr>
+              <tr><td><strong>الكمية</strong></td><td>الكمية من حصر الكميات</td><td>1,250.00</td><td>✅</td></tr>
+              <tr><td><strong>سعر الوحدة</strong></td><td>من تحليل الأسعار</td><td>29.96 ريال</td><td>✅</td></tr>
+              <tr><td><strong>الإجمالي</strong></td><td>كمية × سعر (تلقائي)</td><td>37,450 ريال</td><td>تلقائي</td></tr>
+              <tr><td><strong>كود WBS</strong></td><td>الربط بالهيكل الهرمي</td><td>02.02.01</td><td>✅</td></tr>
+              <tr><td><strong>كود التكلفة</strong></td><td>للتحكم بالتكلفة</td><td>CC-02-LAB</td><td>✅</td></tr>
+              <tr><td><strong>النوع</strong></td><td>مادة / عمالة / معدات / باطن</td><td>عمالة + مواد</td><td>✅</td></tr>
+              <tr><td><strong>المرحلة</strong></td><td>الارتباط بمرحلة المشروع</td><td>Phase-02-تشطيبات</td><td>موصى به</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>البنود المركبة (Composite Items)</h3>
+        <p>البنود المركبة تجمع عدة موارد في بند واحد — مثلاً: "خرسانة مسلحة درجة C30" = خرسانة + حديد + قالب في بند واحد:</p>
+        <div class="code-block">
+<span class="label">البند المركب:</span> خرسانة مسلحة بلاطات درجة C30 — م³
+<span class="comment">├──</span> <span class="value">مادة: خرسانة جاهزة C30</span>    0.95 م³/م³   ×  280 ريال = 266.00 ريال
+<span class="comment">├──</span> <span class="value">مادة: حديد تسليح Ø10-16</span>  120 كجم/م³   ×  3.20 ريال = 384.00 ريال
+<span class="comment">├──</span> <span class="value">مادة: قالب خشبي</span>           6.00 م²/م³   ×  25 ريال  = 150.00 ريال
+<span class="comment">├──</span> <span class="value">عمالة: نجار + حداد</span>        0.5 يوم/م³   ×  200 ريال = 100.00 ريال
+<span class="comment">├──</span> <span class="value">معدات: مضخة خرسانة</span>       0.1 يوم/م³   ×  800 ريال = 80.00 ريال
+<span class="total">══════════════════════════════════════════════════════
+إجمالي سعر الوحدة:                                   980.00 ريال/م³</span>
+        </div>
+
+        <h3>استيراد BOQ من Excel</h3>
+        <p>اذهب إلى: <code>BOQ → استيراد → رفع ملف Excel</code></p>
+        <div class="alert success">
+          <div class="alert-icon">✅</div>
+          <div>قالب Excel متاح للتنزيل من النظام. الأعمدة الإلزامية: <strong>كود البند، الوصف، الوحدة، الكمية، سعر الوحدة، كود WBS</strong>. ملاحظة: تأكد من أن الكميات صافية بعد الخصومات.</div>
+        </div>
+
+        <h3>معايير الترميز الاحترافية</h3>
+        <ul>
+          <li>استخدم الأرقام فقط في الكود (بدون حروف) — <strong>02.02.01.01</strong> وليس <strong>AR-PL-INT-01</strong></li>
+          <li>احتفظ بفراغ للكودات المستقبلية — استخدم خطوات بـ 10 (01, 10, 20) وليس (01, 02, 03)</li>
+          <li>الوصف يجب أن يتضمن: النوع + المواصفة + الموقع + السماكة/الدرجة</li>
+          <li>وحدة القياس يجب أن تكون موحدة عبر المشروع — لا تخلط بين م² و متر مربع</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════════════════
+         SECTION 5: QUANTITY TAKEOFF
+         ════════════════════════════════════════════════ -->
+    <div class="section" id="s5">
+      <div class="section-header">
+        <div class="section-num">5</div>
+        <div>
+          <div class="section-title">حصر الكميات (Quantity Takeoff)</div>
+          <div class="section-subtitle">مثال محلول كامل — غرفة 5م × 4م × 3م</div>
+        </div>
+      </div>
+      <div class="section-body">
+        <div class="alert info">
+          <div class="alert-icon">📐</div>
+          <div><strong>مبدأ حصر الكميات:</strong> الكمية الصافية (Net Quantity) = الكمية الإجمالية (Gross) ـ الخصومات (Deductions). دائماً وثّق كيفية الحساب في خانة "ملاحظات الحصر".</div>
+        </div>
+
+        <h3>مثال 1 — حصر اللياسة الداخلية</h3>
+        <p>غرفة أبعادها: <strong>5م × 4م ارتفاع 3م</strong> — بها نافذتان (1.2م × 1.0م) وباب (0.9م × 2.1م)</p>
+
+        <div class="code-block">
+<span class="label">─── مساحة الجدران الإجمالية (Gross Wall Area) ───</span>
+محيط الغرفة        = 2 × (5.00 + 4.00) = <span class="value">18.00 م</span>
+مساحة جدران إجمالية = 18.00 × 3.00     = <span class="value">54.00 م²</span>
+
+<span class="label">─── الخصومات (Deductions) ───</span>
+نافذة (1) : 1.20 × 1.00 = <span class="value">1.20 م²</span>
+نافذة (2) : 1.20 × 1.00 = <span class="value">1.20 م²</span>
+باب (1)   : 0.90 × 2.10 = <span class="value">1.89 م²</span>
+<span class="comment">─────────────────────────────</span>
+إجمالي الخصومات    =            <span class="total">4.29 م²</span>
+
+<span class="label">─── المساحة الصافية ───</span>
+مساحة صافية للجدران = 54.00 − 4.29 = <span class="value">49.71 م²</span>
+
+<span class="label">─── السقف (Ceiling) ───</span>
+مساحة السقف         = 5.00 × 4.00 = <span class="value">20.00 م²</span>
+
+<span class="total">═══════════════════════════════════════════════
+إجمالي اللياسة (جدران + سقف) = 49.71 + 20.00 = 69.71 م²</span>
+        </div>
+
+        <h3>مثال 2 — حصر خرسانة الأعمدة</h3>
+        <div class="code-block">
+<span class="label">عمود مستطيل — قياس 400مم × 600مم — ارتفاع 3.5م</span>
+حجم عمود واحد = 0.40 × 0.60 × 3.50 = <span class="value">0.84 م³</span>
+عدد الأعمدة   = <span class="value">24 عمود</span>
+<span class="comment">─────────────────────────────</span>
+إجمالي الخرسانة  = 0.84 × 24 = <span class="value">20.16 م³</span>
+إضافة 5% هدر    = 20.16 × 1.05 = <span class="total">21.17 م³</span>
+
+<span class="label">حديد التسليح (بناءً على معدل الكثافة):</span>
+متوسط كثافة الحديد = <span class="value">120 كجم/م³</span>
+إجمالي الحديد      = 21.17 × 120 = <span class="value">2,540 كجم = 2.54 طن</span>
+        </div>
+
+        <h3>جدول حصر الكميات (Takeoff Sheet) في النظام</h3>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>كود البند</th><th>الوصف</th><th>الموقع</th><th>الطول</th><th>العرض</th><th>الارتفاع</th><th>العدد</th><th>الإجمالي</th><th>الخصم</th><th>الصافي</th><th>الوحدة</th></tr></thead>
+            <tbody>
+              <tr><td class="td-num">02.02.01.01</td><td>لياسة داخلية</td><td>غرفة 101</td><td>—</td><td>—</td><td>3.0</td><td>1</td><td>54.00</td><td class="td-red">4.29</td><td class="td-green">49.71</td><td>م²</td></tr>
+              <tr><td class="td-num">02.02.03.01</td><td>لياسة سقف</td><td>غرفة 101</td><td>5.0</td><td>4.0</td><td>—</td><td>1</td><td>20.00</td><td class="td-red">0.00</td><td class="td-green">20.00</td><td>م²</td></tr>
+              <tr><td class="td-num">02.02.01.01</td><td>لياسة داخلية</td><td>غرفة 102</td><td>—</td><td>—</td><td>3.0</td><td>1</td><td>54.00</td><td class="td-red">3.60</td><td class="td-green">50.40</td><td>م²</td></tr>
+              <tr style="background:#f0fdf4;"><td colspan="9"><strong>إجمالي اللياسة الداخلية:</strong></td><td class="td-green"><strong>120.11</strong></td><td>م²</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="alert tip">
+          <div class="alert-icon">💡</div>
+          <div><strong>في النظام:</strong> اذهب إلى <code>BOQ → Takeoff Sheet → إضافة حصر جديد</code>. كل سطر يحمل: الموقع + الأبعاد + العدد. النظام يحسب تلقائياً الإجمالي والصافي بعد الخصم.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════════════════
+         SECTION 6: RATE ANALYSIS
+         ════════════════════════════════════════════════ -->
+    <div class="section" id="s6">
+      <div class="section-header">
+        <div class="section-num">6</div>
+        <div>
+          <div class="section-title">تحليل الأسعار (Rate Analysis)</div>
+          <div class="section-subtitle">مثال محلول كامل — أعمال اللياسة الداخلية</div>
+        </div>
+      </div>
+      <div class="section-body">
+        <div class="alert info">
+          <div class="alert-icon">📌</div>
+          <div><strong>تعريف:</strong> تحليل السعر هو تحليل تكلفة إنجاز وحدة قياس واحدة من بند العمل، مقسمة إلى: مواد + عمالة + معدات + نفقات عامة + ربح.</div>
+        </div>
+
+        <h3>مثال كامل — اللياسة الداخلية سماكة 25مم</h3>
+        <div class="code-block">
+<span class="label">═══════════════════════════════════════════════════════════════
+ تحليل سعر: لياسة داخلية أسمنتية سماكة 25مم — الوحدة: م²
+═══════════════════════════════════════════════════════════════</span>
+
+<span class="label">──────────── أولاً: المواد (Materials) ────────────</span>
+أسمنت بورتلاندي          : 0.25 كيس/م²  × 18.00 ريال = <span class="value"> 4.50 ريال</span>
+رمل خشن مغسول            : 0.03 م³/م²   × 60.00 ريال = <span class="value"> 1.80 ريال</span>
+مياه (مياه شبكة)         : 0.01 م³/م²   ×  5.00 ريال = <span class="value"> 0.05 ريال</span>
+سلك الربط (تشبيك)        : 0.10 م/م²    ×  1.50 ريال = <span class="value"> 0.15 ريال</span>
+<span class="comment">──────────────────────────────────────────────────</span>
+<span class="formula">إجمالي المواد = </span>                                      <span class="value"> 6.50 ريال</span>
+
+<span class="label">──────────── ثانياً: العمالة (Labour) ────────────</span>
+مساح (Mason) — إنتاجية 15م²/يوم   : 1÷15 × 150 ريال = <span class="value">10.00 ريال</span>
+عامل مساعد — إنتاجية 20م²/يوم     : 1÷20 ×  80 ريال = <span class="value"> 4.00 ريال</span>
+<span class="comment">──────────────────────────────────────────────────</span>
+<span class="formula">إجمالي العمالة = </span>                                    <span class="value">14.00 ريال</span>
+
+<span class="label">──────────── ثالثاً: المعدات (Equipment) ────────</span>
+خلاطة كهربائية 150L — إنتاجية 50م²/يوم : 1÷50 × 200 ريال = <span class="value"> 4.00 ريال</span>
+<span class="comment">──────────────────────────────────────────────────</span>
+<span class="formula">إجمالي المعدات = </span>                                    <span class="value"> 4.00 ريال</span>
+
+<span class="label">──────────── الإجمالي والإضافات ─────────────────</span>
+إجمالي التكلفة المباشرة   :                              <span class="value">24.50 ريال</span>
+هدر مواد 5%               : 24.50 × 5%  =               <span class="value"> 1.23 ريال</span>
+<span class="comment">──────────────────────────────────────────────────</span>
+إجمالي بعد الهدر          :                             <span class="value">25.73 ريال</span>
+نفقات عامة وإدارة 10%     : 25.73 × 10% =               <span class="value"> 2.57 ريال</span>
+<span class="comment">──────────────────────────────────────────────────</span>
+التكلفة الإجمالية          :                             <span class="value">28.30 ريال</span>
+ربح 8%                    : 28.30 × 8%  =               <span class="value"> 2.26 ريال</span>
+<span class="total">══════════════════════════════════════════════════
+ سعر الوحدة النهائي = 30.56 ريال / م²</span>
+        </div>
+
+        <h3>جدول معدلات الإنتاجية المرجعية</h3>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>العمل</th><th>الوحدة</th><th>إنتاجية يومية (عامل)</th><th>المهنة</th></tr></thead>
+            <tbody>
+              <tr><td>لياسة داخلية 25مم</td><td>م²</td><td class="td-num">12–18 م²</td><td>مساح</td></tr>
+              <tr><td>لياسة خارجية 20مم</td><td>م²</td><td class="td-num">10–15 م²</td><td>مساح</td></tr>
+              <tr><td>بلاط أرضية سيراميك</td><td>م²</td><td class="td-num">8–12 م²</td><td>بلاط</td></tr>
+              <tr><td>حجر جرانيت 60×60</td><td>م²</td><td class="td-num">4–7 م²</td><td>بلاط</td></tr>
+              <tr><td>حديد تسليح تربيط</td><td>طن</td><td class="td-num">1.5–2.0 طن</td><td>حداد</td></tr>
+              <tr><td>قالب خشبي (شدة)</td><td>م²</td><td class="td-num">8–12 م²</td><td>نجار</td></tr>
+              <tr><td>صب خرسانة (مضخة)</td><td>م³</td><td class="td-num">40–80 م³</td><td>فريق</td></tr>
+              <tr><td>حفر يدوي</td><td>م³</td><td class="td-num">1.5–3 م³</td><td>عامل</td></tr>
+              <tr><td>حفر ميكانيكي (حفارة)</td><td>م³</td><td class="td-num">150–300 م³</td><td>آلة</td></tr>
+              <tr><td>دهان داخلي 2 طبقة</td><td>م²</td><td class="td-num">40–60 م²</td><td>دهان</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="alert tip">
+          <div class="alert-icon">💡</div>
+          <div><strong>في النظام:</strong> اذهب إلى <code>المكتب الفني → تحليل الأسعار → تحليل جديد</code>. أدخل كود البند ثم أضف المكونات (مواد/عمالة/معدات) واحداً تلو الآخر. النظام يحسب السعر النهائي ويربطه بـ BOQ تلقائياً.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════════════════
+         SECTION 7: RESOURCE DATABASE
+         ════════════════════════════════════════════════ -->
+    <div class="section" id="s7">
+      <div class="section-header">
+        <div class="section-num">7</div>
+        <div>
+          <div class="section-title">قاعدة بيانات الموارد</div>
+          <div class="section-subtitle">المواد • العمالة • المعدات — الحقول والمعايير</div>
+        </div>
+      </div>
+      <div class="section-body">
+        <h3>أ — قاعدة بيانات المواد</h3>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>الحقل</th><th>الوصف</th><th>مثال</th></tr></thead>
+            <tbody>
+              <tr><td><strong>كود المادة</strong></td><td>كود فريد (يفضل UNSPSC)</td><td>MAT-030101-CEM</td></tr>
+              <tr><td><strong>الاسم</strong></td><td>الاسم الكامل للمادة</td><td>أسمنت بورتلاندي OPC 42.5R</td></tr>
+              <tr><td><strong>الوحدة</strong></td><td>كيس/م³/طن/متر</td><td>كيس 50 كجم</td></tr>
+              <tr><td><strong>المواصفة</strong></td><td>المعيار والجودة</td><td>SASO 1046 / BS 12</td></tr>
+              <tr><td><strong>آخر سعر</strong></td><td>بالريال السعودي</td><td>18.00 ريال/كيس</td></tr>
+              <tr><td><strong>متوسط السعر</strong></td><td>متوسط 6 أشهر</td><td>17.50 ريال/كيس</td></tr>
+              <tr><td><strong>المورد الرئيسي</strong></td><td>مرتبط بقاعدة الموردين</td><td>شركة إعمار للأسمنت</td></tr>
+              <tr><td><strong>وقت التوريد</strong></td><td>أيام من طلب الشراء للاستلام</td><td>3 أيام</td></tr>
+              <tr><td><strong>الحد الأدنى للمخزون</strong></td><td>كمية التنبيه</td><td>500 كيس</td></tr>
+              <tr><td><strong>موقع التخزين</strong></td><td>مستودع / موقع</td><td>مستودع الموقع أ</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>ب — قاعدة بيانات العمالة</h3>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>الحقل</th><th>مثال — مساح</th><th>مثال — حداد</th><th>مثال — نجار</th></tr></thead>
+            <tbody>
+              <tr><td><strong>كود الحرفة</strong></td><td>LAB-MSN</td><td>LAB-IRN</td><td>LAB-CRP</td></tr>
+              <tr><td><strong>اسم الحرفة</strong></td><td>مساح</td><td>حداد تسليح</td><td>نجار قوالب</td></tr>
+              <tr><td><strong>الأجر اليومي</strong></td><td>150 ريال</td><td>180 ريال</td><td>160 ريال</td></tr>
+              <tr><td><strong>أجر العمل الإضافي</strong></td><td>×1.5 = 225 ريال</td><td>×1.5 = 270 ريال</td><td>×1.5 = 240 ريال</td></tr>
+              <tr><td><strong>الإنتاجية اليومية</strong></td><td>15 م² (لياسة)</td><td>1.8 طن (حديد)</td><td>10 م² (قالب)</td></tr>
+              <tr><td><strong>وحدة الإنتاجية</strong></td><td>م²/يوم</td><td>طن/يوم</td><td>م²/يوم</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>ج — قاعدة بيانات المعدات</h3>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>الحقل</th><th>حفارة 20 طن</th><th>مضخة خرسانة</th><th>رافعة 25 طن</th></tr></thead>
+            <tbody>
+              <tr><td><strong>كود المعدة</strong></td><td>EQP-EXC-20T</td><td>EQP-PMP-C</td><td>EQP-CRN-25T</td></tr>
+              <tr><td><strong>النوع</strong></td><td>مملوكة</td><td>مستأجرة</td><td>مستأجرة</td></tr>
+              <tr><td><strong>تكلفة الإهلاك اليومي</strong></td><td>850 ريال</td><td>—</td><td>—</td></tr>
+              <tr><td><strong>تكلفة الإيجار اليومي</strong></td><td>—</td><td>1,200 ريال</td><td>1,800 ريال</td></tr>
+              <tr><td><strong>استهلاك الوقود (ل/ساعة)</strong></td><td>18 ل/ساعة</td><td>8 ل/ساعة</td><td>12 ل/ساعة</td></tr>
+              <tr><td><strong>سعر الوقود</strong></td><td>1.1 ريال/لتر</td><td>1.1 ريال/لتر</td><td>1.1 ريال/لتر</td></tr>
+              <tr><td><strong>تكلفة الصيانة اليومية</strong></td><td>120 ريال</td><td>—</td><td>—</td></tr>
+              <tr><td><strong>الإنتاجية</strong></td><td>200 م³/يوم</td><td>60 م³/ساعة</td><td>—</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════════════════
+         SECTION 8: BUDGET DEVELOPMENT
+         ════════════════════════════════════════════════ -->
+    <div class="section" id="s8">
+      <div class="section-header">
+        <div class="section-num">8</div>
+        <div>
+          <div class="section-title">إعداد الميزانية (Budget Development)</div>
+          <div class="section-subtitle">Cost Breakdown Structure — ربط الميزانية بـ BOQ وكودات التكلفة</div>
+        </div>
+      </div>
+      <div class="section-body">
+        <h3>هيكل تقسيم التكلفة (CBS)</h3>
+        <div class="code-block">
+<span class="label">قيمة العقد الإجمالية (BAC) = 10,000,000 ريال</span>
+<span class="comment">│</span>
+<span class="value">├── 01 الأعمال المدنية والإنشائية</span>     = 4,000,000 ريال (40%)
+<span class="comment">│   ├──</span> مواد مباشرة (Materials)      = 2,000,000 ريال (50%)
+<span class="comment">│   ├──</span> عمالة مباشرة (Labour)        =   800,000 ريال (20%)
+<span class="comment">│   ├──</span> معدات (Equipment)            =   600,000 ريال (15%)
+<span class="comment">│   └──</span> مقاولو باطن (Subcontracts)   =   600,000 ريال (15%)
+<span class="comment">│</span>
+<span class="value">├── 02 الأعمال المعمارية</span>              = 3,000,000 ريال (30%)
+<span class="comment">│   ├──</span> مواد مباشرة                  = 1,500,000 ريال (50%)
+<span class="comment">│   ├──</span> عمالة مباشرة                 =   600,000 ريال (20%)
+<span class="comment">│   └──</span> مقاولو باطن                  =   900,000 ريال (30%)
+<span class="comment">│</span>
+<span class="value">├── 03 أعمال MEP</span>                      = 2,000,000 ريال (20%)
+<span class="comment">│   └──</span> مقاولو باطن (100% باطن)      = 2,000,000 ريال
+<span class="comment">│</span>
+<span class="value">└── 04 التكاليف الغير المباشرة</span>        = 1,000,000 ريال (10%)
+    <span class="comment">├──</span> إدارة الموقع                  =   400,000 ريال
+    <span class="comment">├──</span> مرافق الموقع                  =   200,000 ريال
+    <span class="comment">└──</span> تأمين + جماركة + غير متوقع    =   400,000 ريال
+        </div>
+
+        <h3>جدول ميزانية المشروع التفصيلية</h3>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>كود التكلفة</th><th>الوصف</th><th>ميزانية مواد</th><th>ميزانية عمالة</th><th>ميزانية معدات</th><th>ميزانية باطن</th><th>الإجمالي</th></tr></thead>
+            <tbody>
+              <tr><td class="td-num">CC-01-01</td><td>حفريات وأساسات</td><td class="td-num">200,000</td><td class="td-num">150,000</td><td class="td-num">300,000</td><td class="td-num">—</td><td class="td-gold">650,000</td></tr>
+              <tr><td class="td-num">CC-01-02</td><td>خرسانة هيكلية</td><td class="td-num">1,200,000</td><td class="td-num">400,000</td><td class="td-num">200,000</td><td class="td-num">—</td><td class="td-gold">1,800,000</td></tr>
+              <tr><td class="td-num">CC-01-03</td><td>حديد تسليح</td><td class="td-num">600,000</td><td class="td-num">250,000</td><td class="td-num">100,000</td><td class="td-num">—</td><td class="td-gold">950,000</td></tr>
+              <tr><td class="td-num">CC-02-01</td><td>بلوك وطابوق</td><td class="td-num">400,000</td><td class="td-num">200,000</td><td class="td-num">—</td><td class="td-num">—</td><td class="td-gold">600,000</td></tr>
+              <tr><td class="td-num">CC-02-02</td><td>لياسة وتشطيبات</td><td class="td-num">300,000</td><td class="td-num">200,000</td><td class="td-num">—</td><td class="td-num">500,000</td><td class="td-gold">1,000,000</td></tr>
+              <tr><td class="td-num">CC-03-01</td><td>كهرباء + ميكانيكا</td><td class="td-num">—</td><td class="td-num">—</td><td class="td-num">—</td><td class="td-num">2,000,000</td><td class="td-gold">2,000,000</td></tr>
+              <tr><td class="td-num">CC-04-01</td><td>غير مباشرة</td><td class="td-num">200,000</td><td class="td-num">400,000</td><td class="td-num">—</td><td class="td-num">400,000</td><td class="td-gold">1,000,000</td></tr>
+              <tr style="background:#1a2e44; color:white;"><td><strong>الإجمالي</strong></td><td></td><td class="td-num"><strong>2,900,000</strong></td><td class="td-num"><strong>1,600,000</strong></td><td class="td-num"><strong>600,000</strong></td><td class="td-num"><strong>2,900,000</strong></td><td style="color:#c9a84c;"><strong>10,000,000</strong></td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="alert warning">
+          <div class="alert-icon">⚠️</div>
+          <div><strong>مهم:</strong> الميزانية المعتمدة (Approved Budget) هي خط الأساس ولا تُعدَّل إلا بأمر تغيير رسمي موافق عليه. أي تعديل بدون VO سيتسبب في انحراف غير حقيقي في تقارير EVM.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════════════════
+         SECTION 9: PROCUREMENT WORKFLOW
+         ════════════════════════════════════════════════ -->
+    <div class="section" id="s9">
+      <div class="section-header">
+        <div class="section-num">9</div>
+        <div>
+          <div class="section-title">سير عملية المشتريات</div>
+          <div class="section-subtitle">MR → RFQ → Supplier Comparison → PO → GRN → 3-Way Match → Payment</div>
+        </div>
+      </div>
+      <div class="section-body">
+        <div class="flowchart" style="flex-wrap:wrap; gap:6px;">
+          <div class="flow-step"><div class="flow-box navy">طلب المواد<br><small>Material Request MR</small></div></div>
+          <div class="flow-arrow">←</div>
+          <div class="flow-step"><div class="flow-box teal">طلب عروض أسعار<br><small>RFQ</small></div></div>
+          <div class="flow-arrow">←</div>
+          <div class="flow-step"><div class="flow-box blue">مقارنة العروض<br><small>Comparison</small></div></div>
+          <div class="flow-arrow">←</div>
+          <div class="flow-step"><div class="flow-box gold">أمر الشراء<br><small>Purchase Order</small></div></div>
+          <div class="flow-arrow">←</div>
+          <div class="flow-step"><div class="flow-box green">استلام البضاعة<br><small>GRN</small></div></div>
+          <div class="flow-arrow">←</div>
+          <div class="flow-step"><div class="flow-box purple">3-Way Match<br><small>PO+GRN+Invoice</small></div></div>
+          <div class="flow-arrow">←</div>
+          <div class="flow-step"><div class="flow-box teal">الدفع<br><small>Payment</small></div></div>
+        </div>
+
+        <h3>الخطوة 1 — طلب المواد (Material Request)</h3>
+        <p>اذهب إلى: <code>المشتريات → طلبات المواد → طلب جديد</code></p>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>الحقل</th><th>مثال</th></tr></thead>
+            <tbody>
+              <tr><td><strong>رقم الطلب</strong></td><td>MR-2025-001</td></tr>
+              <tr><td><strong>المشروع</strong></td><td>PRJ-2001 — فلل الغروب</td></tr>
+              <tr><td><strong>كود WBS</strong></td><td>02.02.01 — اللياسة الداخلية</td></tr>
+              <tr><td><strong>كود التكلفة</strong></td><td>CC-02-02-MAT</td></tr>
+              <tr><td><strong>المادة المطلوبة</strong></td><td>أسمنت OPC 42.5R</td></tr>
+              <tr><td><strong>الكمية المطلوبة</strong></td><td>500 كيس</td></tr>
+              <tr><td><strong>تاريخ الحاجة</strong></td><td>2025-03-15</td></tr>
+              <tr><td><strong>موقع التسليم</strong></td><td>موقع المشروع — مستودع أ</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>الخطوة 2 — طلب عروض الأسعار (RFQ)</h3>
+        <p>اذهب إلى: <code>المشتريات → طلبات عروض الأسعار → إرسال لـ 3 موردين على الأقل</code></p>
+        <div class="alert warning">
+          <div class="alert-icon">⚠️</div>
+          <div><strong>سياسة الشراء:</strong> أي شراء فوق 10,000 ريال يتطلب 3 عروض أسعار على الأقل. فوق 50,000 ريال يتطلب لجنة عروض.</div>
+        </div>
+
+        <h3>الخطوة 3 — جدول مقارنة العروض</h3>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>البند</th><th>المورد أ<br>شركة الصمود</th><th>المورد ب<br>شركة الإعمار</th><th>المورد ج<br>شركة البناء</th><th>التوصية</th></tr></thead>
+            <tbody>
+              <tr><td>سعر الوحدة (ريال/كيس)</td><td class="td-num">17.50</td><td class="td-num td-green">16.80</td><td class="td-num">18.20</td><td>المورد ب</td></tr>
+              <tr><td>وقت التوريد (يوم)</td><td class="td-num">5</td><td class="td-num td-green">3</td><td class="td-num">7</td><td>المورد ب</td></tr>
+              <tr><td>شروط الدفع</td><td>30 يوم</td><td>45 يوم</td><td class="td-green">60 يوم</td><td>المورد ج</td></tr>
+              <tr><td>الإجمالي (500 كيس)</td><td class="td-num">8,750</td><td class="td-num td-green">8,400</td><td class="td-num">9,100</td><td>المورد ب</td></tr>
+              <tr><td>التقييم الكلي</td><td class="td-num">82/100</td><td class="td-gold"><strong>89/100 ✅</strong></td><td class="td-num">76/100</td><td><strong>المورد ب</strong></td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>الخطوة 4 — أمر الشراء PO</h3>
+        <p>بعد الموافقة على المورد → أنشئ PO من <code>المشتريات → أوامر الشراء → PO جديد</code></p>
+
+        <h3>الخطوة 5 — استلام البضاعة (GRN)</h3>
+        <p>عند وصول البضاعة → أنشئ GRN من <code>المشتريات → إيصالات الاستلام → GRN جديد</code></p>
+        <ul>
+          <li>تحقق من المطابقة: كمية GRN = كمية PO</li>
+          <li>تحقق من المواصفة: أخذ عينة وفحص إذا لزم</li>
+          <li>وقّع إيصال الاستلام وارفعه على النظام</li>
+        </ul>
+
+        <h3>الخطوة 6 — المطابقة الثلاثية (3-Way Match)</h3>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>المستند</th><th>الكمية</th><th>السعر</th><th>الحالة</th></tr></thead>
+            <tbody>
+              <tr><td><strong>PO-2025-001</strong></td><td>500 كيس</td><td>8,400 ريال</td><td class="td-green">✅ مُعتمد</td></tr>
+              <tr><td><strong>GRN-2025-001</strong></td><td>500 كيس</td><td>—</td><td class="td-green">✅ مستلم</td></tr>
+              <tr><td><strong>INV-SUP-00123</strong></td><td>500 كيس</td><td>8,400 ريال</td><td class="td-green">✅ متطابق</td></tr>
+              <tr style="background:#d1fae5;"><td colspan="3"><strong>نتيجة المطابقة</strong></td><td class="td-green"><strong>✅ تطابق تام — جاهز للدفع</strong></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════════════════
+         SECTION 10: SUBCONTRACT MANAGEMENT
+         ════════════════════════════════════════════════ -->
+    <div class="section" id="s10">
+      <div class="section-header">
+        <div class="section-num">10</div>
+        <div>
+          <div class="section-title">إدارة عقود الباطن</div>
+          <div class="section-subtitle">إنشاء العقد → القياس → شهادة الدفع IPC → الاحتجاز → الحساب النهائي</div>
+        </div>
+      </div>
+      <div class="section-body">
+        <h3>إنشاء عقد الباطن</h3>
+        <p>اذهب إلى: <code>المقاولون → عقود الباطن → عقد جديد</code></p>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>الحقل</th><th>مثال — عقد اللياسة</th></tr></thead>
+            <tbody>
+              <tr><td><strong>رقم العقد</strong></td><td>SC-2025-003</td></tr>
+              <tr><td><strong>اسم المقاول الفرعي</strong></td><td>شركة الإتقان للتشطيبات</td></tr>
+              <tr><td><strong>نطاق العمل</strong></td><td>أعمال اللياسة الداخلية والخارجية</td></tr>
+              <tr><td><strong>قيمة العقد</strong></td><td>500,000 ريال</td></tr>
+              <tr><td><strong>نسبة الاحتجاز</strong></td><td>10% من كل شهادة دفع</td></tr>
+              <tr><td><strong>الحد الأقصى للاحتجاز</strong></td><td>50,000 ريال (10% من العقد)</td></tr>
+              <tr><td><strong>شروط دفع الاحتجاز</strong></td><td>50% عند الإنجاز، 50% نهاية فترة الضمان</td></tr>
+              <tr><td><strong>تاريخ البدء</strong></td><td>2025-03-01</td></tr>
+              <tr><td><strong>تاريخ الانتهاء</strong></td><td>2025-08-31</td></tr>
+              <tr><td><strong>نوع العقد</strong></td><td>بسعر وحدة (Unit Rate)</td></tr>
+              <tr><td><strong>الغرامات اليومية</strong></td><td>500 ريال/يوم تأخير</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>حساب شهادة الدفع الشهرية (IPC)</h3>
+        <div class="code-block">
+<span class="label">═══════════════════════════════════════════════════════
+ شهادة الدفع الشهرية رقم 1 — SC-2025-003
+ مقاول الباطن: شركة الإتقان للتشطيبات
+ الفترة: 1 مارس 2025 — 31 مارس 2025
+═══════════════════════════════════════════════════════</span>
+
+<span class="label">المنجز خلال الشهر:</span>
+اللياسة الداخلية  = 800 م²  × 200 ريال/م² = <span class="value">160,000 ريال</span>
+اللياسة الخارجية  = 200 م²  × 240 ريال/م² = <span class="value"> 48,000 ريال</span>
+<span class="comment">─────────────────────────────────────────────</span>
+إجمالي المنجز (Gross IPC)                  = <span class="value">208,000 ريال</span>
+
+<span class="label">خصومات:</span>
+احتجاز الضمان 10%  : 208,000 × 10%         = <span class="total">(20,800) ريال</span>
+<span class="comment">─────────────────────────────────────────────</span>
+<span class="formula">صافي المبلغ المستحق للدفع                  = 187,200 ريال</span>
+
+<span class="label">المتراكم من بداية العقد:</span>
+إجمالي منجز متراكم                         = <span class="value">208,000 ريال</span>
+إجمالي احتجاز متراكم                       = <span class="value"> 20,800 ريال</span>
+إجمالي مدفوع متراكم                        = <span class="value">187,200 ريال</span>
+نسبة الإنجاز من العقد                      = <span class="formula">208,000 ÷ 500,000 = 41.6%</span>
+        </div>
+
+        <h3>جدول متابعة عقد الباطن</h3>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>IPC#</th><th>الفترة</th><th>المنجز</th><th>احتجاز 10%</th><th>صافي الدفع</th><th>متراكم منجز</th><th>% إنجاز</th></tr></thead>
+            <tbody>
+              <tr><td class="td-num">IPC-01</td><td>مارس 2025</td><td class="td-num">208,000</td><td class="td-num td-red">20,800</td><td class="td-num td-green">187,200</td><td class="td-num">208,000</td><td class="td-num">41.6%</td></tr>
+              <tr><td class="td-num">IPC-02</td><td>أبريل 2025</td><td class="td-num">180,000</td><td class="td-num td-red">18,000</td><td class="td-num td-green">162,000</td><td class="td-num">388,000</td><td class="td-num">77.6%</td></tr>
+              <tr><td class="td-num">IPC-03</td><td>مايو 2025</td><td class="td-num">112,000</td><td class="td-num td-red">11,200</td><td class="td-num td-green">100,800</td><td class="td-num">500,000</td><td class="td-num">100%</td></tr>
+              <tr><td class="td-num">احتجاز</td><td>بعد الاكتمال</td><td class="td-num">25,000</td><td>—</td><td class="td-num td-green">25,000</td><td>—</td><td>—</td></tr>
+              <tr><td class="td-num">ضمان</td><td>بعد 12 شهر</td><td class="td-num">25,000</td><td>—</td><td class="td-num td-green">25,000</td><td>—</td><td>—</td></tr>
+              <tr style="background:#1a2e44;color:white;"><td><strong>الإجمالي</strong></td><td></td><td class="td-num"><strong>500,000</strong></td><td style="color:#f87171;"><strong>50,000</strong></td><td style="color:#34d399;"><strong>500,000</strong></td><td></td><td></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════════════════
+         SECTION 11: COST CONTROL EVM
+         ════════════════════════════════════════════════ -->
+    <div class="section" id="s11">
+      <div class="section-header">
+        <div class="section-num">11</div>
+        <div>
+          <div class="section-title">مراقبة التكلفة — Earned Value Management</div>
+          <div class="section-subtitle">الصيغ الكاملة مع مثال محلول من المشاريع الحقيقية</div>
+        </div>
+      </div>
+      <div class="section-body">
+        <h3>المقاييس الأساسية الثلاثة</h3>
+        <div class="kpi-row">
+          <div class="kpi-card">
+            <div class="kpi-label">PV — Planned Value</div>
+            <div class="kpi-formula">BAC × نسبة الإنجاز المخطط</div>
+            <div class="kpi-meaning">ما كان يجب إنجازه</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">EV — Earned Value</div>
+            <div class="kpi-formula">BAC × نسبة الإنجاز الفعلي</div>
+            <div class="kpi-meaning">قيمة ما أُنجز فعلياً</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">AC — Actual Cost</div>
+            <div class="kpi-formula">مجموع التكاليف الفعلية</div>
+            <div class="kpi-meaning">ما أُنفق فعلاً</div>
+          </div>
+        </div>
+
+        <h3>صيغ التحليل (Analysis Formulas)</h3>
+        <div class="code-block">
+<span class="label">─── مؤشرات الأداء ───</span>
+CPI = EV ÷ AC          <span class="comment">// Cost Performance Index: &gt;1 ممتاز, &lt;1 تجاوز</span>
+SPI = EV ÷ PV          <span class="comment">// Schedule Performance Index: &gt;1 متقدم, &lt;1 متأخر</span>
+
+<span class="label">─── الانحرافات (Variances) ───</span>
+CV  = EV − AC          <span class="comment">// Cost Variance: سالب = تجاوز ميزانية</span>
+SV  = EV − PV          <span class="comment">// Schedule Variance: سالب = تأخر</span>
+
+<span class="label">─── توقعات الإتمام (Forecasts) ───</span>
+EAC = BAC ÷ CPI        <span class="comment">// Estimate at Completion: التكلفة المتوقعة للإتمام</span>
+ETC = EAC − AC         <span class="comment">// Estimate to Complete: ما يلزم لإتمام المشروع</span>
+VAC = BAC − EAC        <span class="comment">// Variance at Completion: سالب = خسارة متوقعة</span>
+TCPI = (BAC−EV)÷(BAC−AC) <span class="comment">// كفاءة مطلوبة لإتمام في الميزانية</span>
+        </div>
+
+        <h3>مثال محلول — مشروع فلل الغروب (PRJ-2001)</h3>
+        <p>بعد <strong>6 أشهر</strong> من إجمالي 18 شهراً:</p>
+        <div class="code-block">
+<span class="label">البيانات:</span>
+BAC (قيمة العقد)       =  8,500,000 ريال
+نسبة الإنجاز المخطط   =  33.3%  (6÷18 شهر)
+نسبة الإنجاز الفعلي   =  28.0%  (وفق التقرير الشهري)
+التكلفة الفعلية (AC)  =  2,800,000 ريال
+
+<span class="label">الحسابات:</span>
+PV  = 8,500,000 × 33.3% = <span class="value">2,830,500 ريال</span>
+EV  = 8,500,000 × 28.0% = <span class="value">2,380,000 ريال</span>
+AC  =                     <span class="value">2,800,000 ريال</span>
+
+CV  = EV − AC = 2,380,000 − 2,800,000 = <span class="total">-420,000 ريال (تجاوز!)</span>
+SV  = EV − PV = 2,380,000 − 2,830,500 = <span class="total">-450,500 ريال (تأخر!)</span>
+
+CPI = EV ÷ AC = 2,380,000 ÷ 2,800,000 = <span class="total">0.85 (تجاوز تكلفة 15%)</span>
+SPI = EV ÷ PV = 2,380,000 ÷ 2,830,500 = <span class="total">0.84 (تأخر جدول 16%)</span>
+
+EAC = BAC ÷ CPI = 8,500,000 ÷ 0.85   = <span class="total">10,000,000 ريال</span>
+ETC = EAC − AC  = 10,000,000 − 2,800,000 = <span class="value">7,200,000 ريال</span>
+VAC = BAC − EAC = 8,500,000 − 10,000,000 = <span class="total">-1,500,000 ريال (خسارة متوقعة!)</span>
+        </div>
+
+        <div class="alert danger">
+          <div class="alert-icon">🚨</div>
+          <div><strong>قرارات مطلوبة فوراً:</strong> المشروع يتجه نحو خسارة 1.5 مليون ريال. يجب: (1) مراجعة أسباب تجاوز التكلفة، (2) تقديم VO للأعمال الإضافية، (3) مراجعة أسعار المقاولين الفرعيين، (4) تقديم تقرير للإدارة خلال 72 ساعة.</div>
+        </div>
+
+        <h3>جدول متابعة EVM الشهرية</h3>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>الشهر</th><th>PV</th><th>EV</th><th>AC</th><th>CPI</th><th>SPI</th><th>EAC</th><th>الحالة</th></tr></thead>
+            <tbody>
+              <tr><td>شهر 1</td><td class="td-num">472,222</td><td class="td-num">480,000</td><td class="td-num">460,000</td><td class="td-green">1.04</td><td class="td-green">1.02</td><td class="td-num">8,173,077</td><td class="td-green">✅ جيد</td></tr>
+              <tr><td>شهر 2</td><td class="td-num">944,444</td><td class="td-num">920,000</td><td class="td-num">950,000</td><td class="td-gold">0.97</td><td class="td-gold">0.97</td><td class="td-num">8,762,887</td><td class="td-gold">⚠ تنبيه</td></tr>
+              <tr><td>شهر 3</td><td class="td-num">1,416,667</td><td class="td-num">1,350,000</td><td class="td-num">1,480,000</td><td class="td-gold">0.91</td><td class="td-gold">0.95</td><td class="td-num">9,340,659</td><td class="td-gold">⚠ تنبيه</td></tr>
+              <tr><td>شهر 6</td><td class="td-num">2,830,500</td><td class="td-num">2,380,000</td><td class="td-num">2,800,000</td><td class="td-red">0.85</td><td class="td-red">0.84</td><td class="td-num">10,000,000</td><td class="td-red">🚨 خطر</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════════════════
+         SECTION 12: PROGRESS MONITORING
+         ════════════════════════════════════════════════ -->
+    <div class="section" id="s12">
+      <div class="section-header">
+        <div class="section-num">12</div>
+        <div>
+          <div class="section-title">متابعة التقدم</div>
+          <div class="section-subtitle">التقارير اليومية والأسبوعية والشهرية • منحنى S-Curve</div>
+        </div>
+      </div>
+      <div class="section-body">
+        <h3>أ — التقرير اليومي (Daily Progress Report)</h3>
+        <p>اذهب إلى: <code>التخطيط → التقارير → تقرير يومي → تقرير جديد</code></p>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>البيان</th><th>مثال</th></tr></thead>
+            <tbody>
+              <tr><td>التاريخ</td><td>2025-03-15</td></tr>
+              <tr><td>الطقس</td><td>صحو، 28°م، رياح خفيفة</td></tr>
+              <tr><td>العمالة</td><td>مساح: 8، حداد: 12، عامل: 20، مشرف: 2</td></tr>
+              <tr><td>المعدات</td><td>حفارة: 1، شاحنة: 2، رافعة: 1</td></tr>
+              <tr><td>المنجز اليوم</td><td>اللياسة الداخلية — الطابق 1: 85 م²</td></tr>
+              <tr><td>المواد المستهلكة</td><td>أسمنت: 22 كيس، رمل: 0.6 م³</td></tr>
+              <tr><td>الحوادث / ملاحظات</td><td>لا حوادث — تأخر توريد رمل بعد الظهر</td></tr>
+              <tr><td>الصور</td><td>ارفع 3-5 صور موثقة</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>ب — جدول S-Curve (منحنى التقدم)</h3>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>الشهر</th><th>% مخطط تراكمي</th><th>% فعلي تراكمي</th><th>الانحراف</th><th>التقييم</th></tr></thead>
+            <tbody>
+              <tr><td>شهر 1</td><td class="td-num">5.6%</td><td class="td-num">5.6%</td><td class="td-green">0.0%</td><td class="td-green">✅</td></tr>
+              <tr><td>شهر 2</td><td class="td-num">11.1%</td><td class="td-num">10.8%</td><td class="td-gold">-0.3%</td><td class="td-gold">⚠</td></tr>
+              <tr><td>شهر 3</td><td class="td-num">16.7%</td><td class="td-num">15.9%</td><td class="td-gold">-0.8%</td><td class="td-gold">⚠</td></tr>
+              <tr><td>شهر 6</td><td class="td-num">33.3%</td><td class="td-num">28.0%</td><td class="td-red">-5.3%</td><td class="td-red">🚨</td></tr>
+              <tr><td>شهر 9</td><td class="td-num">50.0%</td><td class="td-num">42.0%</td><td class="td-red">-8.0%</td><td class="td-red">🚨</td></tr>
+              <tr><td>شهر 12</td><td class="td-num">66.7%</td><td class="td-num">60.0%</td><td class="td-red">-6.7%</td><td class="td-red">🚨</td></tr>
+              <tr><td>شهر 18</td><td class="td-num">100%</td><td class="td-num">100%</td><td class="td-green">0.0%</td><td class="td-green">✅</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="alert info">
+          <div class="alert-icon">📊</div>
+          <div><strong>في النظام:</strong> اذهب إلى <code>التحكم بالتكلفة → S-Curve → تحديث شهري</code>. أدخل نسبة الإنجاز الفعلي لكل شهر. النظام يرسم منحنى S تلقائياً ويحسب الانحرافات.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════════════════
+         SECTION 13: VARIATION ORDERS
+         ════════════════════════════════════════════════ -->
+    <div class="section" id="s13">
+      <div class="section-header">
+        <div class="section-num">13</div>
+        <div>
+          <div class="section-title">أوامر التغيير والمطالبات</div>
+          <div class="section-subtitle">Variation Orders (VO) • FIDIC Claims — الإجراءات والأثر المالي</div>
+        </div>
+      </div>
+      <div class="section-body">
+        <h3>أنواع التغييرات</h3>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>النوع</th><th>الوصف</th><th>مادة FIDIC</th><th>مدة الإشعار</th></tr></thead>
+            <tbody>
+              <tr><td><strong>VO — Variation Order</strong></td><td>تغيير في النطاق بناءً على أمر من العميل/الاستشاري</td><td>المادة 13</td><td>فوراً</td></tr>
+              <tr><td><strong>Claim — مطالبة وقت</strong></td><td>المطالبة بتمديد المدة</td><td>المادة 20.1</td><td>28 يوم</td></tr>
+              <tr><td><strong>Claim — مطالبة تكلفة</strong></td><td>المطالبة بتعويض إضافي</td><td>المادة 20.1</td><td>28 يوم</td></tr>
+              <tr><td><strong>Force Majeure</strong></td><td>قوة قاهرة (جائحة، حرب...)</td><td>المادة 19</td><td>14 يوم</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="alert danger">
+          <div class="alert-icon">⏰</div>
+          <div><strong>قاعدة ذهبية FIDIC 20.1:</strong> يجب إشعار المهندس المشرف كتابياً خلال <strong>28 يوماً</strong> من تاريخ ظهور الحدث المُسبِّب للمطالبة، وإلا فقدت حقك في المطالبة نهائياً.</div>
+        </div>
+
+        <h3>سير إجراء أمر التغيير (VO Workflow)</h3>
+        <div class="steps-grid">
+          <div class="step-card">
+            <div class="step-card-num">1</div>
+            <h4>تحديد نطاق التغيير</h4>
+            <p>وثّق التغيير: الوصف + السبب + الكميات المتأثرة + الصور</p>
+            <span class="nav-hint">Documents → VO Request</span>
+          </div>
+          <div class="step-card">
+            <div class="step-card-num">2</div>
+            <h4>تقييم التأثير المالي</h4>
+            <p>احسب: تكلفة إضافية أو خصم من BOQ + أثر على الجدول الزمني</p>
+            <span class="nav-hint">Cost Control → VO Pricing</span>
+          </div>
+          <div class="step-card">
+            <div class="step-card-num">3</div>
+            <h4>موافقة المهندس</h4>
+            <p>أرسل VO Request للمهندس المشرف مع التسعير والجدول</p>
+            <span class="nav-hint">Approvals → Engineer</span>
+          </div>
+          <div class="step-card">
+            <div class="step-card-num">4</div>
+            <h4>اعتماد العميل</h4>
+            <p>بعد موافقة المهندس، يُعتمد من العميل ثم يُضاف للعقد</p>
+            <span class="nav-hint">Approvals → Client</span>
+          </div>
+          <div class="step-card">
+            <div class="step-card-num">5</div>
+            <h4>تحديث الميزانية</h4>
+            <p>أضف بنود VO للـ BOQ وحدّث الميزانية المعتمدة</p>
+            <span class="nav-hint">BOQ → Update + Budget</span>
+          </div>
+        </div>
+
+        <h3>مثال — أمر تغيير VO-001</h3>
+        <div class="code-block">
+<span class="label">VO-001: إضافة عزل حراري للأسقف</span>
+<span class="comment">الوصف:</span> طلب العميل إضافة عزل حراري من البوليستيرين 50مم للأسقف
+<span class="comment">الكمية:</span> 1,200 م²
+
+<span class="label">التسعير:</span>
+مواد (البوليستيرين 50مم) : 1,200 م² × 45 ريال = <span class="value"> 54,000 ريال</span>
+عمالة تركيب             : 1,200 م² ×  8 ريال = <span class="value">  9,600 ريال</span>
+نفقات عامة 10%          :                        <span class="value">  6,360 ريال</span>
+ربح 8%                  :                        <span class="value">  5,597 ريال</span>
+<span class="total">══════════════════════════════════════════════════
+إجمالي قيمة VO-001 = 75,557 ريال</span>
+
+<span class="label">الأثر الزمني:</span> <span class="value">+7 أيام</span> تمديد مدة عقد مقابل هذا العمل الإضافي
+        </div>
+
+        <div class="alert tip">
+          <div class="alert-icon">💡</div>
+          <div><strong>في النظام:</strong> اذهب إلى <code>المطالبات والتغييرات → أمر تغيير جديد</code>. بعد الاعتماد الكامل، اضغط "تحديث BOQ والميزانية" لإضافة VO تلقائياً.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════════════════
+         SECTION 14: MONTHLY TECHNICAL OFFICE WORKFLOW
+         ════════════════════════════════════════════════ -->
+    <div class="section" id="s14">
+      <div class="section-header">
+        <div class="section-num">14</div>
+        <div>
+          <div class="section-title">روتين المكتب الفني الشهري</div>
+          <div class="section-subtitle">مهام أسبوع بأسبوع — حسب الدور الوظيفي</div>
+        </div>
+      </div>
+      <div class="section-body">
+
+        <h3>🏗️ مهندس حصر الكميات (Quantity Surveyor)</h3>
+        <div class="month-grid">
+          <div class="week-card">
+            <h4>الأسبوع 1 (1–7)</h4>
+            <ul>
+              <li>مراجعة IPC الشهر الماضي</li>
+              <li>حصر كميات المنجز الجديد</li>
+              <li>تسوية أي خلافات قياس</li>
+              <li>تحديث Takeoff Sheet</li>
+            </ul>
+          </div>
+          <div class="week-card">
+            <h4>الأسبوع 2 (8–14)</h4>
+            <ul>
+              <li>قياس أعمال مقاولي الباطن</li>
+              <li>إعداد مسودة IPC الشهر الحالي</li>
+              <li>مراجعة بنود BOQ المتغيرة</li>
+              <li>تحضير جداول القياس</li>
+            </ul>
+          </div>
+          <div class="week-card">
+            <h4>الأسبوع 3 (15–21)</h4>
+            <ul>
+              <li>إرسال IPC للاستشاري</li>
+              <li>تتبع عمليات الموافقة</li>
+              <li>تحضير VO أي تغييرات</li>
+              <li>مراجعة تقرير التقدم</li>
+            </ul>
+          </div>
+          <div class="week-card">
+            <h4>الأسبوع 4 (22–31)</h4>
+            <ul>
+              <li>استلام IPC معتمد</li>
+              <li>رفع IPC لقسم المحاسبة</li>
+              <li>حصر كميات الشهر القادم</li>
+              <li>تقرير نسبة الإنجاز</li>
+            </ul>
+          </div>
+        </div>
+
+        <h3>📊 مهندس التحكم بالتكلفة (Cost Control Engineer)</h3>
+        <div class="month-grid">
+          <div class="week-card">
+            <h4>الأسبوع 1</h4>
+            <ul>
+              <li>تجميع التكاليف الفعلية</li>
+              <li>مراجعة فواتير الموردين</li>
+              <li>مطابقة PO مع فواتير</li>
+              <li>تسوية الحسابات</li>
+            </ul>
+          </div>
+          <div class="week-card">
+            <h4>الأسبوع 2</h4>
+            <ul>
+              <li>حساب CPI وSPI</li>
+              <li>تحديث تقرير EVM</li>
+              <li>تحليل الانحرافات</li>
+              <li>تحديث EAC وETC</li>
+            </ul>
+          </div>
+          <div class="week-card">
+            <h4>الأسبوع 3</h4>
+            <ul>
+              <li>إعداد تقرير التكلفة الشهري</li>
+              <li>تحليل Cash Flow الفعلي</li>
+              <li>مراجعة التزامات المشتريات</li>
+              <li>رفع تقرير للإدارة</li>
+            </ul>
+          </div>
+          <div class="week-card">
+            <h4>الأسبوع 4</h4>
+            <ul>
+              <li>تحديث الميزانية بـ VO</li>
+              <li>توقعات التكلفة للشهر القادم</li>
+              <li>مراجعة Risk Register</li>
+              <li>تحضير تقرير CEO</li>
+            </ul>
+          </div>
+        </div>
+
+        <h3>📅 مهندس التخطيط (Planning Engineer)</h3>
+        <div class="month-grid">
+          <div class="week-card">
+            <h4>الأسبوع 1</h4>
+            <ul>
+              <li>تحديث الجدول الزمني</li>
+              <li>رصد التأخيرات</li>
+              <li>حساب المسار الحرج</li>
+              <li>تحديث Baseline</li>
+            </ul>
+          </div>
+          <div class="week-card">
+            <h4>الأسبوع 2</h4>
+            <ul>
+              <li>مراجعة انحرافات الجدول</li>
+              <li>تحديث SPI لكل نشاط</li>
+              <li>خطة التعافي (إذا لزم)</li>
+              <li>تحديث Gantt Chart</li>
+            </ul>
+          </div>
+          <div class="week-card">
+            <h4>الأسبوع 3</h4>
+            <ul>
+              <li>إعداد تقرير الجدول الشهري</li>
+              <li>اجتماع مراجعة التقدم</li>
+              <li>تحديث Look-Ahead 4 أسابيع</li>
+              <li>تنسيق مع التنفيذ</li>
+            </ul>
+          </div>
+          <div class="week-card">
+            <h4>الأسبوع 4</h4>
+            <ul>
+              <li>تقرير التقدم للاستشاري</li>
+              <li>تقييم Float المتبقي</li>
+              <li>خطة موارد الشهر القادم</li>
+              <li>تحديث Milestones</li>
+            </ul>
+          </div>
+        </div>
+
+        <h3>📌 مهام نهاية الشهر الإلزامية</h3>
+        <ul class="checklist">
+          <li>إقفال جميع الحركات المحاسبية للشهر</li>
+          <li>رفع جميع تقارير EVM المعتمدة</li>
+          <li>تحديث سجل المخاطر</li>
+          <li>إرسال IPC معتمدة لقسم المالية</li>
+          <li>مراجعة ومطابقة المخزون</li>
+          <li>تحديث سجل أوامر التغيير</li>
+          <li>حفظ نسخة أرشيف من جميع التقارير</li>
+          <li>اجتماع مراجعة شهرية مع الإدارة</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════════════════
+         SECTION 15: COMPLETE CASE STUDY
+         ════════════════════════════════════════════════ -->
+    <div class="section" id="s15">
+      <div class="section-header">
+        <div class="section-num">15</div>
+        <div>
+          <div class="section-title">دراسة حالة كاملة — مبنى سكني (G+3)</div>
+          <div class="section-subtitle">من إنشاء المشروع حتى الإغلاق النهائي — خطوة بخطوة</div>
+        </div>
+      </div>
+      <div class="section-body">
+        <div class="alert info">
+          <div class="alert-icon">🏢</div>
+          <div><strong>المشروع:</strong> مبنى سكني (G+3) — 10 شقق — الرياض | <strong>قيمة العقد:</strong> 8,500,000 ريال | <strong>المدة:</strong> 18 شهراً | <strong>العميل:</strong> شركة الواحة للتطوير | <strong>الاستشاري:</strong> مكتب البنيان للاستشارات</div>
+        </div>
+
+        <div class="cs-timeline">
+
+          <div class="cs-event">
+            <div class="cs-month">اليوم 1-7 — الإعداد</div>
+            <h4>⚙️ إنشاء المشروع في النظام</h4>
+            <p>أنشئ: كود PRJ-2001، قيمة العقد 8.5M ريال، مدة 18 شهراً. أضف: العميل (شركة الواحة)، الاستشاري (مكتب البنيان). اختر نوع العقد: FIDIC Red Book. حدد الفرع: BR-001 الرياض.</p>
+          </div>
+
+          <div class="cs-event">
+            <div class="cs-month">اليوم 8-14 — WBS</div>
+            <h4>📊 بناء هيكل WBS</h4>
+            <p>أنشئ 4 مستويات: 01-مدني (40%)، 02-معماري (35%)، 03-MEP (20%)، 04-خارجي (5%). ادخل 48 عنصراً فرعياً مع الكودات الهرمية حسب المعيار الموصى به.</p>
+          </div>
+
+          <div class="cs-event">
+            <div class="cs-month">اليوم 15-21 — BOQ</div>
+            <h4>📋 إدخال قائمة الكميات</h4>
+            <p>استورد BOQ المناقصة (120 بند) من Excel. راجع الكميات الرئيسية: خرسانة 850م³، حديد 85 طن، لياسة 2,400م²، بلاط 1,200م². تحقق من كل بند وارتباطه بـ WBS وكود التكلفة.</p>
+          </div>
+
+          <div class="cs-event">
+            <div class="cs-month">اليوم 22-28 — Rate Analysis</div>
+            <h4>💰 تحليل الأسعار للبنود الرئيسية</h4>
+            <p>حلل سعر 15 بند رئيسي: خرسانة 1,050 ريال/م³، حديد تسليح 3.80 ريال/كجم، لياسة 31 ريال/م²، بلاط 85 ريال/م². احفظ التحليلات في النظام وافرد النظام يربطها بـ BOQ.</p>
+          </div>
+
+          <div class="cs-event">
+            <div class="cs-month">الأسبوع 5 — Budget</div>
+            <h4>📈 اعتماد الميزانية</h4>
+            <p>أنشئ ميزانية المشروع: مواد 3.4M، عمالة 1.7M، معدات 0.85M، باطن 1.7M، غير مباشرة 0.85M. احصل على اعتماد مدير المشروع والإدارة. هذه هي الميزانية الأساسية (BAC).</p>
+          </div>
+
+          <div class="cs-event">
+            <div class="cs-month">الشهر 1 — أول شهر تنفيذ</div>
+            <h4>🚧 بدء التنفيذ: الحفريات والأساسات</h4>
+            <p>أنشئ أول MR: 500 م³ خرسانة + 50 طن حديد. أرسل RFQ لـ 3 موردين. اختر الأفضل. أنشئ PO-2025-001. ابدأ تقارير التقدم اليومية. في نهاية الشهر: IPC-01 للعميل بقيمة 420,000 ريال.</p>
+          </div>
+
+          <div class="cs-event">
+            <div class="cs-month">الشهر 2 — عقد باطن اللياسة</div>
+            <h4>📄 إبرام عقد باطن التشطيبات</h4>
+            <p>أنشئ SC-2025-003 مع شركة الإتقان: قيمة 500,000 ريال، 10% احتجاز. أدخل BOQ الباطن: لياسة 2,400م² × 200 ريال. ابدأ قياسات شهرية.</p>
+          </div>
+
+          <div class="cs-event">
+            <div class="cs-month">الشهر 3 — أمر تغيير</div>
+            <h4>📝 VO-001: عزل حراري إضافي</h4>
+            <p>طلب العميل إضافة عزل حراري للأسقف. وثّق الطلب، سعّر VO: 75,557 ريال + 7 أيام تمديد. أرسل للاستشاري. بعد الاعتماد: حدّث BOQ والميزانية.</p>
+          </div>
+
+          <div class="cs-event">
+            <div class="cs-month">الشهر 6 — مراجعة EVM</div>
+            <h4>⚠️ تقرير التكلفة — إنذار مبكر</h4>
+            <p>CPI = 0.85 → تجاوز تكلفة 15%. SPI = 0.84 → تأخر جدولي 16%. EAC = 10M ريال. رفع تقرير للإدارة. إجراءات تصحيحية: ضغط على المقاولين الفرعيين، مراجعة أسعار المواد، تقديم مطالبة FIDIC للأعمال الإضافية.</p>
+          </div>
+
+          <div class="cs-event">
+            <div class="cs-month">الشهر 12 — منتصف الطريق</div>
+            <h4>📊 تقرير المراجعة النصفية</h4>
+            <p>نسبة الإنجاز: 65%. CPI تحسّن إلى 0.92 بعد الإجراءات التصحيحية. EAC تراجع إلى 9.2M. تحديث Baseline المتبقي. مراجعة المخاطر الكبرى.</p>
+          </div>
+
+          <div class="cs-event">
+            <div class="cs-month">الشهر 17 — اقتراب الانتهاء</div>
+            <h4>✅ اختبارات القبول والتسليم</h4>
+            <p>أنشئ قائمة الأعمال المتبقية (Snagging List). راجع جميع اشتراطات QA/QC. تحضير وثائق As-Built. إعداد Final Account الأولي.</p>
+          </div>
+
+          <div class="cs-event">
+            <div class="cs-month">الشهر 18 — الإغلاق النهائي</div>
+            <h4>🎉 الحساب النهائي والتسليم</h4>
+            <p>Final Account: قيمة الأعمال الأصلية 8.5M + VO 475,000 = 8,975,000 ريال. استرداد الاحتجاز: 50% عند التسليم = 448,750 ريال. إغلاق جميع POs، تسوية مقاولي الباطن، أرشفة المستندات.</p>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════════════════
+         SECTION 16: COMMON MISTAKES
+         ════════════════════════════════════════════════ -->
+    <div class="section" id="s16">
+      <div class="section-header">
+        <div class="section-num">16</div>
+        <div>
+          <div class="section-title">الأخطاء الشائعة وكيفية تجنبها</div>
+          <div class="section-subtitle">أكثر الأخطاء وقوعاً من المهندسين الجدد في المكتب الفني</div>
+        </div>
+      </div>
+      <div class="section-body">
+
+        <div class="mistake-item">
+          <div class="icon">❌</div>
+          <div><strong>خطأ 1: WBS مسطح بدون هرمية</strong><br>كثير من المهندسين يدخلون WBS بمستوى واحد فقط (مثل: "أعمال مدنية" فقط). هذا يمنع التلخيص التلقائي للتكاليف.<br><strong>الصواب:</strong> استخدم 4 مستويات على الأقل. المستوى 4 هو الذي يحمل الكميات والتكاليف.</div>
+        </div>
+
+        <div class="mistake-item">
+          <div class="icon">❌</div>
+          <div><strong>خطأ 2: كميات BOQ بدون خصومات</strong><br>إدخال مساحة الجدران الإجمالية بدون خصم فتحات الأبواب والنوافذ يُضخّم الكميات ويُفسد تقارير التكلفة.<br><strong>الصواب:</strong> دائماً احسب الكمية الصافية (Net). وثّق جدول الخصومات في Takeoff Sheet.</div>
+        </div>
+
+        <div class="mistake-item">
+          <div class="icon">❌</div>
+          <div><strong>خطأ 3: تعديل الميزانية الأصلية بدون VO</strong><br>مباشرة تعديل Budget في النظام لتغطية التجاوز بدلاً من إصدار VO رسمي. هذا يُخفي التجاوز الحقيقي.<br><strong>الصواب:</strong> أي تغيير في نطاق العمل → VO رسمي معتمد → ثم تحديث الميزانية.</div>
+        </div>
+
+        <div class="mistake-item">
+          <div class="icon">❌</div>
+          <div><strong>خطأ 4: PO بدون ربط بكود التكلفة</strong><br>إصدار أمر شراء بدون تحديد كود WBS وكود التكلفة يجعل التقارير الإدارية غير دقيقة.<br><strong>الصواب:</strong> كل PO يجب أن يحمل: المشروع + WBS + كود التكلفة + البند.</div>
+        </div>
+
+        <div class="mistake-item">
+          <div class="icon">❌</div>
+          <div><strong>خطأ 5: IPC الباطن بدون احتجاز</strong><br>دفع كامل شهادة الباطن بدون خصم الاحتجاز 10%. هذا يُفقد الشركة حق الاحتجاز ومسؤولية ضمان العمل.<br><strong>الصواب:</strong> دائماً طبّق نسبة الاحتجاز المتفق عليها في العقد.</div>
+        </div>
+
+        <div class="mistake-item">
+          <div class="icon">❌</div>
+          <div><strong>خطأ 6: تفويت مهلة الإشعار FIDIC 28 يوماً</strong><br>الانتظار لاستيفاء كل الوثائق قبل إرسال الإشعار. في FIDIC، يكفي الإشعار المبدئي خلال 28 يوماً.<br><strong>الصواب:</strong> أرسل إشعاراً مبدئياً خلال 28 يوماً، ثم أكمل التفاصيل والتسعير لاحقاً.</div>
+        </div>
+
+        <div class="mistake-item">
+          <div class="icon">❌</div>
+          <div><strong>خطأ 7: الموافقة الشفهية على أعمال إضافية</strong><br>البدء في أعمال إضافية بناءً على توجيهات شفهية من المهندس المشرف. هذا لا يُلزم العميل بالدفع.<br><strong>الصواب:</strong> لا تبدأ أي عمل إضافي إلا بعد الحصول على تأكيد كتابي (VO موقع).</div>
+        </div>
+
+        <div class="mistake-item">
+          <div class="icon">❌</div>
+          <div><strong>خطأ 8: نسبة إنجاز بالنشاط الواحد</strong><br>استخدام نسبة إنجاز واحدة للمشروع كله بدلاً من حساب EV لكل نشاط/بند.<br><strong>الصواب:</strong> حساب EV = Σ(BAC × % إنجاز) لكل نشاط منفصل، ثم تجميعهم.</div>
+        </div>
+
+        <div class="mistake-item">
+          <div class="icon">❌</div>
+          <div><strong>خطأ 9: إهمال تحديث Baseline</strong><br>عدم تحديث Baseline بعد الحصول على VO معتمد يُفقد منطقية مقارنة المخطط بالفعلي.<br><strong>الصواب:</strong> كل VO معتمد → تحديث Baseline فوراً مع توثيق تاريخ التعديل وسببه.</div>
+        </div>
+
+        <div class="mistake-item">
+          <div class="icon">❌</div>
+          <div><strong>خطأ 10: الفاتورة بدون 3-Way Match</strong><br>الموافقة على فاتورة المورد قبل التحقق من تطابقها مع PO وGRN. هذا يُعرّض الشركة للدفع الزائد.<br><strong>الصواب:</strong> لا تعتمد أي فاتورة بدون إتمام المطابقة الثلاثية (PO + GRN + Invoice).</div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════════════════
+         SECTION 17: BEST PRACTICES
+         ════════════════════════════════════════════════ -->
+    <div class="section" id="s17">
+      <div class="section-header">
+        <div class="section-num">17</div>
+        <div>
+          <div class="section-title">أفضل الممارسات المهنية</div>
+          <div class="section-subtitle">ما يميز مهندس المكتب الفني المحترف عن المبتدئ</div>
+        </div>
+      </div>
+      <div class="section-body">
+
+        <h3>🏆 ممارسات إدارة البيانات</h3>
+        <div class="bp-item"><div class="icon">✅</div><div><strong>استخدم WBS بـ 4 مستويات على الأقل.</strong> المستوى الرابع هو المستوى الذي يُخصص له الميزانية ويُتابع فيه التقدم والتكلفة بدقة.</div></div>
+        <div class="bp-item"><div class="icon">✅</div><div><strong>اربط كل PO بكود التكلفة والـ WBS.</strong> هذا يجعل تقارير التكلفة دقيقة 100% وتُظهر التجاوز في الموقع الصحيح.</div></div>
+        <div class="bp-item"><div class="icon">✅</div><div><strong>استخدم قالب Takeoff Sheet موحد.</strong> كل الأرقام في جدول واحد مع توثيق المصدر (رقم اللوحة، رقم التنقيح، التاريخ).</div></div>
+
+        <h3>⏱️ ممارسات الجدول الزمني</h3>
+        <div class="bp-item"><div class="icon">✅</div><div><strong>حدّث الجدول الزمني كل أسبوعين على الأقل.</strong> تجميع التحديثات لشهر كامل يفقد قيمة المتابعة ويُخفي المشاكل حتى تتفاقم.</div></div>
+        <div class="bp-item"><div class="icon">✅</div><div><strong>احتفظ بـ Baseline لا يُعدَّل إلا بـ VO معتمد.</strong> قارن دائماً الفعلي بالأصل، وليس بما تمنياه.</div></div>
+        <div class="bp-item"><div class="icon">✅</div><div><strong>ضع Look-Ahead Schedule لـ 4 أسابيع قادمة.</strong> هذا يتيح لك تحديد عقبات الموارد قبل ظهورها.</div></div>
+
+        <h3>📋 ممارسات الجودة والتوثيق</h3>
+        <div class="bp-item"><div class="icon">✅</div><div><strong>لا تبدأ صبّ خرسانة بدون WIR (Inspection Request) معتمد.</strong> هذا يحمي الشركة من المطالبات بإعادة أعمال بدون مستندات.</div></div>
+        <div class="bp-item"><div class="icon">✅</div><div><strong>وثّق كل إشعار FIDIC بالبريد الرسمي المُختوم.</strong> البريد الإلكتروني وحده لا يكفي في النزاعات التعاقدية الكبرى.</div></div>
+        <div class="bp-item"><div class="icon">✅</div><div><strong>احتفظ بسجل أوامر التغيير (Change Log) محدثاً يومياً.</strong> في أي نزاع مع العميل، هذا السجل هو سلاحك الأول.</div></div>
+
+        <h3>💰 ممارسات التكلفة والمالية</h3>
+        <div class="bp-item"><div class="icon">✅</div><div><strong>أطبق 3-Way Match قبل اعتماد أي فاتورة.</strong> هذا يمنع الدفع المزدوج والمبالغ الزائدة ويحمي الشركة.</div></div>
+        <div class="bp-item"><div class="icon">✅</div><div><strong>رفع تقرير EVM شهرياً بغض النظر عن الوضع.</strong> حتى لو المشروع جيد، توثيق الأداء الجيد مفيد في تقييم الفريق وتسويق الشركة.</div></div>
+        <div class="bp-item"><div class="icon">✅</div><div><strong>حافظ على هامش Contingency 5-10% في الميزانية.</strong> المشاريع دائماً تخبئ مفاجآت — بند الطوارئ هو خط الدفاع الأول.</div></div>
+
+        <h3>🤝 ممارسات العلاقات التعاقدية</h3>
+        <div class="bp-item"><div class="icon">✅</div><div><strong>أرسل الإشعار المبدئي خلال 28 يوماً حتماً (FIDIC 20.1).</strong> حتى لو لم تكتمل التفاصيل — الإشعار المبدئي يحفظ حقك القانوني.</div></div>
+        <div class="bp-item"><div class="icon">✅</div><div><strong>وثّق كل اجتماع بمحضر موقّع.</strong> المواقف الشفهية لا قيمة لها تعاقدياً — اطلب دائماً توقيع المحضر من جميع الحاضرين.</div></div>
+        <div class="bp-item"><div class="icon">✅</div><div><strong>اقرأ نصوص العقد الأصلي (بما في ذلك الملاحق) قبل المطالبة.</strong> معظم حالات الخسارة تعود لعدم معرفة بنود العقد بشكل صحيح.</div></div>
+
+        <h3>🎓 ممارسات التطوير المهني</h3>
+        <div class="bp-item"><div class="icon">✅</div><div><strong>حدّث معرفتك بأسعار السوق شهرياً.</strong> أسعار الأسمنت والحديد والعمالة تتغير — تحليل أسعار قديم يُفسد تقديراتك الجديدة.</div></div>
+        <div class="bp-item"><div class="icon">✅</div><div><strong>احتفظ بمكتبة تحليل أسعار لكل المشاريع السابقة.</strong> هذه الخبرة المتراكمة هي الفارق بين مهندس محترف ومبتدئ.</div></div>
+        <div class="bp-item"><div class="icon">✅</div><div><strong>استخدم نظام ERP باتساق — أدخل البيانات في الوقت الفعلي.</strong> البيانات المُدخلة بعد أسابيع تفقد الدقة وتُضعف قرارات الإدارة.</div></div>
+
+        <!-- QUICK REFERENCE CARD -->
+        <div style="background: linear-gradient(135deg,#1a2e44,#243d5c); color:white; border-radius:12px; padding:24px; margin-top:28px;">
+          <h3 style="color:#c9a84c; margin-top:0;">📌 بطاقة المرجع السريع — أرقام يجب حفظها</h3>
+          <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px,1fr)); gap:14px; margin-top:16px;">
+            <div style="background:rgba(255,255,255,0.08); border-radius:8px; padding:12px;">
+              <div style="font-size:11px; color:rgba(255,255,255,0.5); margin-bottom:4px;">FIDIC Notice</div>
+              <div style="font-size:22px; font-weight:900; color:#c9a84c;">28 يوماً</div>
+              <div style="font-size:11px; color:rgba(255,255,255,0.6);">مهلة إشعار المطالبة</div>
+            </div>
+            <div style="background:rgba(255,255,255,0.08); border-radius:8px; padding:12px;">
+              <div style="font-size:11px; color:rgba(255,255,255,0.5); margin-bottom:4px;">نسبة الاحتجاز</div>
+              <div style="font-size:22px; font-weight:900; color:#c9a84c;">10%</div>
+              <div style="font-size:11px; color:rgba(255,255,255,0.6);">من كل شهادة دفع</div>
+            </div>
+            <div style="background:rgba(255,255,255,0.08); border-radius:8px; padding:12px;">
+              <div style="font-size:11px; color:rgba(255,255,255,0.5); margin-bottom:4px;">ضريبة القيمة المضافة</div>
+              <div style="font-size:22px; font-weight:900; color:#c9a84c;">15%</div>
+              <div style="font-size:11px; color:rgba(255,255,255,0.6);">VAT السعودية</div>
+            </div>
+            <div style="background:rgba(255,255,255,0.08); border-radius:8px; padding:12px;">
+              <div style="font-size:11px; color:rgba(255,255,255,0.5); margin-bottom:4px;">CPI مقبول</div>
+              <div style="font-size:22px; font-weight:900; color:#10b981;">&gt; 0.95</div>
+              <div style="font-size:11px; color:rgba(255,255,255,0.6);">دون هذا → تنبيه</div>
+            </div>
+            <div style="background:rgba(255,255,255,0.08); border-radius:8px; padding:12px;">
+              <div style="font-size:11px; color:rgba(255,255,255,0.5); margin-bottom:4px;">مستويات WBS</div>
+              <div style="font-size:22px; font-weight:900; color:#c9a84c;">4+</div>
+              <div style="font-size:11px; color:rgba(255,255,255,0.6);">الحد الأدنى الموصى</div>
+            </div>
+            <div style="background:rgba(255,255,255,0.08); border-radius:8px; padding:12px;">
+              <div style="font-size:11px; color:rgba(255,255,255,0.5); margin-bottom:4px;">عروض الأسعار</div>
+              <div style="font-size:22px; font-weight:900; color:#c9a84c;">3+</div>
+              <div style="font-size:11px; color:rgba(255,255,255,0.6);">الحد الأدنى لكل شراء</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ══ FOOTER ══ -->
+    <div style="text-align:center; padding:32px 0; color:var(--muted); font-size:13px;">
+      <p>📚 <strong>KNOWHOW!! — ERP-SYS V8</strong> | دليل المكتب الفني الشامل</p>
+      <p>بناءً على: FIDIC Red Book 2017 • PMBOK 7th Edition • Saudi Building Code (SBC)</p>
+      <p style="margin-top:8px;">
+        <a href="index.html" style="color:var(--teal); text-decoration:none;">↩ العودة للنظام</a>
+        &nbsp;|&nbsp;
+        <a href="#s0" style="color:var(--teal); text-decoration:none;">↑ أعلى الصفحة</a>
+      </p>
+    </div>
+
+  </main>
+</div>
+
+<script>
+// ── PROGRESS BAR ──
+window.addEventListener('scroll', () => {
+  const docH   = document.documentElement.scrollHeight - window.innerHeight;
+  const pct    = docH > 0 ? (window.scrollY / docH) * 100 : 0;
+  document.getElementById('progressBar').style.width = pct + '%';
+});
+
+// ── ACTIVE TOC HIGHLIGHTING ──
+const tocLinks = document.querySelectorAll('.toc-item');
+const sections = document.querySelectorAll('.section, .hero');
+const obs = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      tocLinks.forEach(l => l.classList.remove('active'));
+      const link = document.querySelector('.toc-item[href="#' + e.target.id + '"]');
+      if (link) link.classList.add('active');
+    }
+  });
+}, { rootMargin: '-20% 0px -70% 0px' });
+sections.forEach(s => obs.observe(s));
+
+// ── SEARCH ──
+function searchGuide(query) {
+  if (!query || query.trim().length < 2) {
+    clearHighlights();
+    return;
+  }
+  clearHighlights();
+  const q = query.trim();
+  const re = new RegExp('(' + escapeRegex(q) + ')', 'gi');
+  const main = document.getElementById('mainContent');
+  highlightText(main, re);
+
+  // scroll to first match
+  const first = document.querySelector('mark');
+  if (first) first.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+function escapeRegex(s) {
+  return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+function highlightText(node, re) {
+  if (node.nodeType === 3) {
+    const m = node.nodeValue.match(re);
+    if (m) {
+      const frag = document.createDocumentFragment();
+      let last = 0, match;
+      re.lastIndex = 0;
+      const text = node.nodeValue;
+      while ((match = re.exec(text)) !== null) {
+        frag.appendChild(document.createTextNode(text.slice(last, match.index)));
+        const mark = document.createElement('mark');
+        mark.textContent = match[0];
+        frag.appendChild(mark);
+        last = re.lastIndex;
+      }
+      frag.appendChild(document.createTextNode(text.slice(last)));
+      node.parentNode.replaceChild(frag, node);
+    }
+  } else if (
+    node.nodeType === 1 &&
+    node.nodeName !== 'SCRIPT' &&
+    node.nodeName !== 'STYLE' &&
+    node.nodeName !== 'INPUT'
+  ) {
+    for (let child of Array.from(node.childNodes)) {
+      highlightText(child, re);
+    }
+  }
+}
+
+function clearHighlights() {
+  document.querySelectorAll('mark').forEach(m => {
+    m.replaceWith(m.textContent);
+  });
+}
+</script>
+</body>
+</html>

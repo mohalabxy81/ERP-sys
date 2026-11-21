@@ -176,6 +176,28 @@ test('KNOWHOW 8 lifecycle stages documented', () => {
   assert(html.includes('المرحلة 1 من 8') && html.includes('المرحلة 8 من 8'), 'Lifecycle stages incomplete');
 });
 
+console.log('\n📚 7. KNOWHOW!! 17-Section Senior QS & Technical Office Guide (knowhow.html)');
+test('knowhow.html file exists and size > 50KB', () => {
+  assert(fs.existsSync('knowhow.html'), 'knowhow.html missing');
+  const size = fs.statSync('knowhow.html').size;
+  assert(size > 50000, `knowhow.html size is ${size} bytes, expected > 50KB`);
+});
+test('knowhow.html covers all 17 sections', () => {
+  const kh = fs.readFileSync('knowhow.html', 'utf8');
+  for (let i = 1; i <= 17; i++) {
+    assert(kh.includes(`id="s${i}"`), `Section ${i} (id="s${i}") missing in knowhow.html`);
+  }
+});
+test('knowhow.html includes solved QS Takeoff and Rate Analysis calculations', () => {
+  const kh = fs.readFileSync('knowhow.html', 'utf8');
+  assert(kh.includes('49.71') || kh.includes('69.71'), 'Room takeoff numbers missing');
+  assert(kh.includes('30.56') || kh.includes('29.96') || kh.includes('Rate Analysis'), 'Rate analysis missing');
+  assert(kh.includes('CPI = EV ÷ AC') || kh.includes('CPI = EV / AC'), 'EVM formulas missing');
+});
+test('knowhow.html links from index.html view-knowhow & topbar', () => {
+  assert(html.includes('href="knowhow.html"'), 'Link to knowhow.html missing in index.html');
+});
+
 // --- Summary ---
 console.log(`\n${'='.repeat(40)}`);
 console.log(`PASSED: ${pass}  |  FAILED: ${fail}  |  TOTAL: ${pass + fail}`);
