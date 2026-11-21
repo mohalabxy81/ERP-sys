@@ -129,6 +129,13 @@ function switchView(viewId) {
   });
 
   if (viewId === "dashboard") drawSCurve();
+  if (viewId === "scheduling") {
+    renderScheduleTable();
+    if (typeof renderGanttChart === 'function') setTimeout(renderGanttChart, 50);
+  }
+  if (viewId === "billing") renderBillingTable();
+  if (viewId === "qa-qc") renderInspectionsTable();
+  if (viewId === "doc-control") renderDrawingsTable();
 }
 
 function toggleNavGroup(headerEl) {
@@ -979,8 +986,12 @@ function renderSubcontractsTable() {
     const tr = document.createElement("tr");
     tr.innerHTML = `
       <td class="text-num"><strong style="color:var(--purple)">${s.sub_id}</strong></td>
-      <td><strong>${s.contractor_name}</strong></td>
-      <td>${s.scope}</td>
+      <td>
+        <strong>${s.contractor_name}</strong>
+        ${s.contractor_id ? `<span class="badge badge-subtle" style="font-size:10px; margin-right:4px;">${s.contractor_id}</span>` : ''}
+        ${s.performance_rating ? `<span class="badge ${s.performance_rating >= 90 ? 'badge-green' : s.performance_rating >= 80 ? 'badge-amber' : 'badge-red'}" style="font-size:10px; margin-right:4px;" title="مؤشر تقييم الأداء">${s.performance_rating}%</span>` : ''}
+      </td>
+      <td>${s.scope} <span class="badge badge-purple" style="font-size:9px;">FIDIC 2017</span></td>
       <td class="text-num">${s.original_value.toLocaleString("ar-SA", {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
       <td class="text-num">${(s.approved_vos || 0).toLocaleString("ar-SA", {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
       <td class="text-num" style="font-weight:700;">${(s.executed_measured || 0).toLocaleString("ar-SA", {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
@@ -1049,62 +1060,135 @@ function renderScheduleTable() {
 function renderBillingTable() {
   const tbody = document.querySelector("#tbl-billing-ipcs tbody");
   if (!tbody) return;
-  tbody.innerHTML = `
-    <tr>
-      <td class="text-num"><strong>IPC-01</strong></td><td>مستخلص مالك (Client)</td>
-      <td>شركة إينوفست</td><td class="text-num">2026-05-01 / 2026-05-15</td>
-      <td class="text-num">28,450.00</td><td class="text-num">0.00</td>
-      <td class="text-num">28,450.00</td><td class="text-num">2,845.00</td>
-      <td class="text-num">25,605.00</td><td class="text-num">3,840.75</td>
-      <td class="text-num" style="font-weight:800; color:var(--green);">29,445.75</td>
-      <td><span class="badge badge-green">معتمد ومصروف</span></td>
-    </tr>
-    <tr>
-      <td class="text-num"><strong>IPC-02</strong></td><td>مستخلص مالك (Client)</td>
-      <td>شركة إينوفست</td><td class="text-num">2026-05-16 / 2026-05-31</td>
-      <td class="text-num">62,570.00</td><td class="text-num">28,450.00</td>
-      <td class="text-num">34,120.00</td><td class="text-num">3,412.00</td>
-      <td class="text-num">30,708.00</td><td class="text-num">4,606.20</td>
-      <td class="text-num" style="font-weight:800; color:var(--green);">35,314.20</td>
-      <td><span class="badge badge-green">معتمد ومصروف</span></td>
-    </tr>
-  `;
+  tbody.innerHTML = "";
+
+  const prj = getActiveProject();
+  const billings = (MimarERP.financeBillings || []).filter(b => !prj || b.project_id === prj.project_id);
+  const data = billings.length > 0 ? billings : (MimarERP.financeBillings || []);
+
+  let totGross = 0;
+  let totPrev = 0;
+  let totCurr = 0;
+  let totRet = 0;
+  let totNet = 0;
+  let totVat = 0;
+  let totFinal = 0;
+
+  data.forEach((b, idx) => {
+    const gross = b.gross_amount || b.amount || 0;
+    const prev = b.previous_amount !== undefined ? b.previous_amount : (idx > 0 ? (data[idx-1].gross_amount || data[idx-1].amount || 0) : 0);
+    const curr = b.current_works || Math.max(0, gross - prev);
+    const ret = b.retention_amount || (curr * 0.1);
+    const adv = b.advance_recovery || 0;
+    const netBeforeVat = b.net_before_vat || (curr - ret - adv);
+    const vat = b.vat_amount || (netBeforeVat * 0.15);
+    const totalInclVat = b.net_amount || (netBeforeVat + vat);
+
+    totGross += gross;
+    totPrev += prev;
+    totCurr += curr;
+    totRet += ret;
+    totNet += netBeforeVat;
+    totVat += vat;
+    totFinal += totalInclVat;
+
+    const statusBadge = b.status === "محصل" ? "badge-green" : b.status === "موافق عليه" ? "badge-blue" : "badge-amber";
+
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td class="text-num"><strong style="color:var(--teal)">${b.billing_id}</strong></td>
+      <td><span class="badge badge-purple">مستخلص مالك (Client IPC)</span></td>
+      <td><strong>${b.owner || 'الجهة المالكة'}</strong> <div style="font-size:11px; color:var(--muted)">${b.project || ''}</div></td>
+      <td class="text-num" style="font-size:11px;">${b.submission_date} / ${b.approval_date || "قيد التدقيق"}</td>
+      <td class="text-num font-mono">${gross.toLocaleString("ar-SA", {minimumFractionDigits:2, maximumFractionDigits:2})}</td>
+      <td class="text-num font-mono">${prev.toLocaleString("ar-SA", {minimumFractionDigits:2, maximumFractionDigits:2})}</td>
+      <td class="text-num font-mono" style="font-weight:700;">${curr.toLocaleString("ar-SA", {minimumFractionDigits:2, maximumFractionDigits:2})}</td>
+      <td class="text-num font-mono" style="color:var(--amber); font-weight:700;">${ret.toLocaleString("ar-SA", {minimumFractionDigits:2, maximumFractionDigits:2})}</td>
+      <td class="text-num font-mono">${netBeforeVat.toLocaleString("ar-SA", {minimumFractionDigits:2, maximumFractionDigits:2})}</td>
+      <td class="text-num font-mono">${vat.toLocaleString("ar-SA", {minimumFractionDigits:2, maximumFractionDigits:2})}</td>
+      <td class="text-num font-mono" style="font-weight:800; color:var(--green);">${totalInclVat.toLocaleString("ar-SA", {minimumFractionDigits:2, maximumFractionDigits:2})}</td>
+      <td>
+        <span class="badge ${statusBadge}">${b.status}</span>
+        <button class="btn btn-outline btn-xs" style="margin-top:4px; font-size:10px; padding:2px 6px; display:inline-flex; align-items:center; gap:4px;" onclick="showZatcaModal({invoice_id:'${b.billing_id}', supplier:'${b.owner}', amount:${totalInclVat}, issue_date:'${b.submission_date}'})">
+          <i class="fas fa-qrcode"></i> ZATCA QR
+        </button>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+
+  // Ensure table footer exists or update it
+  const table = document.querySelector("#tbl-billing-ipcs");
+  if (table) {
+    let tfoot = table.querySelector("tfoot");
+    if (!tfoot) {
+      tfoot = document.createElement("tfoot");
+      table.appendChild(tfoot);
+    }
+    tfoot.innerHTML = `
+      <tr style="background:var(--subtle); font-weight:800; border-top:2px solid var(--line);">
+        <td colspan="4" class="text-center" style="color:var(--navy);">الإجمالي التراكمي لكافة المستخلصات</td>
+        <td class="text-num font-mono">${totGross.toLocaleString("ar-SA", {maximumFractionDigits:0})}</td>
+        <td class="text-num font-mono">${totPrev.toLocaleString("ar-SA", {maximumFractionDigits:0})}</td>
+        <td class="text-num font-mono" style="color:var(--blue);">${totCurr.toLocaleString("ar-SA", {maximumFractionDigits:0})}</td>
+        <td class="text-num font-mono" style="color:var(--amber);">${totRet.toLocaleString("ar-SA", {maximumFractionDigits:0})}</td>
+        <td class="text-num font-mono">${totNet.toLocaleString("ar-SA", {maximumFractionDigits:0})}</td>
+        <td class="text-num font-mono">${totVat.toLocaleString("ar-SA", {maximumFractionDigits:0})}</td>
+        <td class="text-num font-mono" style="color:var(--green);">${totFinal.toLocaleString("ar-SA", {maximumFractionDigits:0})}</td>
+        <td></td>
+      </tr>
+    `;
+  }
 }
 
 function renderInspectionsTable() {
   const tbody = document.querySelector("#tbl-inspections tbody");
   if (!tbody) return;
-  tbody.innerHTML = `
-    <tr>
-      <td class="text-num"><strong>WIR-01</strong></td><td><span class="badge badge-blue">WIR أعمال</span></td>
-      <td>لياسة داخلية - الطرطشة والبؤج والأوتار</td><td class="text-num">BOQ-01</td>
-      <td>الدور الأرضي</td><td class="text-num">2026-05-03</td>
-      <td><span class="badge badge-green">Code A (معتمد)</span></td><td><span class="badge badge-green">مغلق</span></td>
-    </tr>
-    <tr>
-      <td class="text-num"><strong>MIR-01</strong></td><td><span class="badge badge-purple">MIR مواد</span></td>
-      <td>فحص عينات بورسلان وسيراميك هضاب الخليج</td><td class="text-num">BOQ-04</td>
-      <td>الموقع العام</td><td class="text-num">2026-05-04</td>
-      <td><span class="badge badge-green">Code A (معتمد)</span></td><td><span class="badge badge-green">مغلق</span></td>
-    </tr>
-  `;
+  tbody.innerHTML = "";
+
+  const prj = getActiveProject();
+  const allInsps = MimarERP.qaqcInspections || [];
+  const list = allInsps.filter(i => !prj || i.project_id === prj.project_id);
+  const data = list.length > 0 ? list : allInsps;
+
+  data.forEach(ins => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td class="text-num"><strong style="color:var(--teal)">${ins.inspection_id}</strong></td>
+      <td><span class="badge ${ins.type_badge || 'badge-blue'}">${ins.type}</span></td>
+      <td><strong>${ins.activity}</strong></td>
+      <td class="text-num"><span class="badge badge-subtle">${ins.boq_code || 'BOQ-01'}</span></td>
+      <td>${ins.location}</td>
+      <td class="text-num">${ins.date}</td>
+      <td><span class="badge ${ins.decision_badge || 'badge-green'}">${ins.consultant_decision}</span></td>
+      <td><span class="badge ${ins.status_badge || 'badge-green'}">${ins.status}</span></td>
+    `;
+    tbody.appendChild(tr);
+  });
 }
 
 function renderDrawingsTable() {
   const tbody = document.querySelector("#tbl-drawings tbody");
   if (!tbody) return;
-  tbody.innerHTML = `
-    <tr>
-      <td class="text-num"><strong>A101</strong></td><td>مسقط الدور الأرضي المعماري والأبعاد التنفيذية</td>
-      <td>Architectural</td><td class="text-center">Rev 02</td>
-      <td class="text-num">2026-04-10</td><td><span class="badge badge-green">IFC (صالح للتنفيذ)</span></td>
-    </tr>
-    <tr>
-      <td class="text-num"><strong>A301</strong></td><td>القطاعات الرأسية وتفاصيل عزل الأسطح</td>
-      <td>Architectural</td><td class="text-center">Rev 02</td>
-      <td class="text-num">2026-04-12</td><td><span class="badge badge-green">IFC (محدث وفق خيار PU)</span></td>
-    </tr>
-  `;
+  tbody.innerHTML = "";
+
+  const prj = getActiveProject();
+  const allDwgs = MimarERP.engineeringDrawings || [];
+  const list = allDwgs.filter(d => !prj || d.project_id === prj.project_id);
+  const data = list.length > 0 ? list : allDwgs;
+
+  data.forEach(dwg => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td class="text-num"><strong style="color:var(--teal)">${dwg.drawing_no}</strong></td>
+      <td><strong>${dwg.title}</strong></td>
+      <td><span class="badge badge-purple">${dwg.discipline}</span></td>
+      <td class="text-center"><span class="badge badge-subtle">${dwg.revision}</span></td>
+      <td class="text-num">${dwg.issue_date}</td>
+      <td><span class="badge ${dwg.status_badge || 'badge-green'}">${dwg.status}</span></td>
+    `;
+    tbody.appendChild(tr);
+  });
 }
 
 function renderSelectedReport(repType) {
@@ -1572,6 +1656,7 @@ function calculateCPM() {
 
   const res = window.CpmEngine.computeCPM(activities);
   renderScheduleTable();
+  if (typeof renderGanttChart === 'function') renderGanttChart();
   const critList = res.criticalPath.join(' ➔ ');
   showToast(`تم حساب المسار الحرج (CPM)! مدة المشروع: ${res.projectDuration} يوم. الأنشطة الحرجة: [${critList}]`);
 }
@@ -2070,13 +2155,18 @@ function renderFinanceBillings() {
     const tr = document.createElement("tr");
     tr.innerHTML = `
       <td><strong style="color:var(--teal)">${r.billing_id}</strong></td>
-      <td>${r.project}</td>
+      <td><strong>${r.project}</strong> <small style="color:var(--muted)">(${r.project_id || ''})</small></td>
       <td>${r.owner}</td>
-      <td class="text-num">${Number(r.amount).toLocaleString("ar-SA")}</td>
+      <td class="text-num font-mono">${Number(r.amount).toLocaleString("ar-SA")}</td>
       <td>${r.submission_date}</td>
       <td>${r.approval_date || "—"}</td>
-      <td><span class="badge ${statusBadge}">${r.status}</span></td>
-      <td class="text-num" style="color:var(--green)">${Number(r.collected||0).toLocaleString("ar-SA")}</td>
+      <td>
+        <span class="badge ${statusBadge}">${r.status}</span>
+        <button class="btn btn-outline btn-xs" style="margin-right:4px; font-size:10px; padding:1px 5px;" onclick="showZatcaModal({invoice_id:'${r.billing_id}', supplier:'${r.owner}', amount:${r.amount}, issue_date:'${r.submission_date}'})">
+          <i class="fas fa-qrcode"></i> ZATCA
+        </button>
+      </td>
+      <td class="text-num font-mono" style="color:var(--green); font-weight:700;">${Number(r.collected||0).toLocaleString("ar-SA")}</td>
     `;
     tbody.appendChild(tr);
   });
@@ -2098,8 +2188,12 @@ function renderFinanceAP() {
     const tr = document.createElement("tr");
     tr.innerHTML = `
       <td><strong style="color:var(--teal)">${r.invoice_id}</strong></td>
-      <td>${r.supplier}</td>
-      <td class="text-num">${Number(r.amount).toLocaleString("ar-SA")}</td>
+      <td>
+        <strong>${r.supplier}</strong>
+        ${r.cost_code ? `<span class="badge badge-subtle" style="font-size:10px; margin-right:4px;">${r.cost_code}</span>` : ''}
+        ${r.project_id ? `<span class="badge badge-blue" style="font-size:10px; margin-right:4px;">${r.project_id}</span>` : ''}
+      </td>
+      <td class="text-num font-mono">${Number(r.amount).toLocaleString("ar-SA")}</td>
       <td>${r.due_date}</td>
       <td><span class="badge ${statusBadge}">${r.status}</span></td>
     `;

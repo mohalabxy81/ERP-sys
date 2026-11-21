@@ -31,9 +31,78 @@ const SAVE_KEYS = [
   'inventoryLedger','subcontractsMaster','bimElements','siteDiaryLogs',
   'punchListItems','rfiList','submittalsList','rebarBBSItems',
   'variationsMaster','cvrLedgerMaster','bimClashesMaster','cdeContainersMaster',
-  'safetyIncidents','safetyTrainings','purchaseOrders','scheduleTasks','auditLogs',
+  'safetyIncidents','safetyTrainings','purchaseOrders','scheduleTasks','scheduleMaster','qaqcInspections','engineeringDrawings','auditLogs',
   'currentCompanyId','currentProjectId','currentRole'
 ];
+
+
+// =============================================================================
+// 1.1 ENTERPRISE INDEXEDDB PERSISTENCE (100,000+ RECORDS / NO 5MB LIMIT)
+// =============================================================================
+const MimarEcoStorage = {
+  dbName: 'MimarECOS_v8',
+  dbVersion: 1,
+  storeName: 'ecos_data',
+  _db: null,
+
+  init: function() {
+    if (typeof window === 'undefined' || !window.indexedDB) return Promise.resolve(null);
+    if (this._db) return Promise.resolve(this._db);
+
+    return new Promise((resolve) => {
+      try {
+        const req = window.indexedDB.open(this.dbName, this.dbVersion);
+        req.onupgradeneeded = function(e) {
+          const db = e.target.result;
+          if (!db.objectStoreNames.contains('ecos_data')) {
+            db.createObjectStore('ecos_data', { keyPath: 'id' });
+          }
+        };
+        req.onsuccess = (e) => {
+          this._db = e.target.result;
+          resolve(this._db);
+        };
+        req.onerror = () => resolve(null);
+      } catch (err) {
+        resolve(null);
+      }
+    });
+  },
+
+  saveSnapshot: async function(snap) {
+    try {
+      const db = await this.init();
+      if (!db) return false;
+      const tx = db.transaction([this.storeName], 'readwrite');
+      const store = tx.objectStore(this.storeName);
+      store.put({ id: 'primary_snapshot', timestamp: Date.now(), data: snap });
+      return true;
+    } catch (e) {
+      console.warn('IndexedDB save failed:', e);
+      return false;
+    }
+  },
+
+  loadSnapshot: async function() {
+    try {
+      const db = await this.init();
+      if (!db) return null;
+      return new Promise((resolve) => {
+        const tx = db.transaction([this.storeName], 'readonly');
+        const store = tx.objectStore(this.storeName);
+        const req = store.get('primary_snapshot');
+        req.onsuccess = (e) => {
+          const res = e.target.result;
+          resolve(res ? res.data : null);
+        };
+        req.onerror = () => resolve(null);
+      });
+    } catch (e) {
+      return null;
+    }
+  }
+};
+if (typeof window !== 'undefined') window.MimarEcoStorage = MimarEcoStorage;
 
 function saveToLocalStorage() {
   try {
@@ -42,7 +111,18 @@ function saveToLocalStorage() {
     SAVE_KEYS.forEach(k => {
       if (MimarERP[k] !== undefined) snap[k] = MimarERP[k];
     });
-    localStorage.setItem('MimarERPData_v6', JSON.stringify(snap));
+
+    // Unlimited Async IndexedDB store
+    if (typeof MimarEcoStorage !== 'undefined' && MimarEcoStorage.saveSnapshot) {
+      MimarEcoStorage.saveSnapshot(snap);
+    }
+
+    // Synchronous LocalStorage backup with safe quota try/catch
+    try {
+      localStorage.setItem('MimarERPData_v6', JSON.stringify(snap));
+    } catch(quotaErr) {
+      console.info('LocalStorage quota reached, persisted safely in IndexedDB (MimarEcoStorage)');
+    }
     saveUIState();
   } catch(e) {
     console.warn('saveToLocalStorage failed:', e);

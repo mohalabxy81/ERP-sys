@@ -123,6 +123,9 @@
       <div class="nav-group-items">
         <a class="nav-item" onclick="switchView('scheduling')">
           <i class="fas fa-network-wired"></i><span class="nav-text">الجدول الزمني والمسار الحرج CPM</span>
+        </a>
+        <a class="nav-item" onclick="switchView('roadmap')">
+          <i class="fas fa-diagram-project"></i><span class="nav-text">خارطة الطريق الهرمية (Roadmap)</span>
           <span class="badge-pill" style="background:rgba(16,185,129,0.25)">P6 XER</span>
         </a>
         <a class="nav-item" onclick="switchView('site-diary')">
@@ -566,6 +569,9 @@
         </div>
       </div>
       <div class="nav-group-items">
+        <a class="nav-item" onclick="switchView('pmo')">
+          <i class="fas fa-chess-rook"></i><span class="nav-text">لوحة حوكمة المشاريع (PMO Cockpit)</span>
+        </a>
         <a class="nav-item" onclick="switchView('reports')">
           <i class="fas fa-chart-column"></i><span class="nav-text">مؤشرات حوكمة المحفظة</span>
         </a>
@@ -588,6 +594,9 @@
         </div>
       </div>
       <div class="nav-group-items">
+        <a class="nav-item" onclick="switchView('ai-center')">
+          <i class="fas fa-microchip"></i><span class="nav-text">مركز عمليات AI (AI Operations)</span>
+        </a>
         <a class="nav-item" onclick="openAiCopilotModal('fidic')">
           <i class="fas fa-scale-balanced" style="color:var(--gold)"></i><span class="nav-text">محلل بنود FIDIC والعقود</span>
         </a>
@@ -2440,7 +2449,30 @@
           </div>
         </div>
       </div>
-    </section>
+    
+      <!-- Interactive Gantt & Critical Path Chart -->
+      <div class="card" style="margin-top:20px;">
+        <div class="card-header" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+          <div style="display:flex; align-items:center; gap:10px;">
+            <h3><i class="fas fa-stream" style="color:var(--teal)"></i> المخطط الزمني التفاعلي وجانت شارت (Interactive Gantt & Critical Path)</h3>
+            <span class="badge badge-purple">طريقة المسار الحرج (CPM)</span>
+          </div>
+          <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+            <div style="display:flex; gap:6px; font-size:11px;">
+              <span class="badge badge-red"><i class="fas fa-fire"></i> مسار حرج (Critical)</span>
+              <span class="badge badge-blue"><i class="fas fa-clock"></i> نشاط اعتيادي (Normal)</span>
+              <span class="badge badge-green"><i class="fas fa-check"></i> مكتمل (Complete)</span>
+            </div>
+            <button class="btn btn-outline btn-xs" onclick="renderGanttChart()"><i class="fas fa-rotate"></i> تحديث جانت</button>
+          </div>
+        </div>
+        <div class="card-body" style="padding:16px;">
+          <div id="gantt-chart-container" style="overflow-x:auto; width:100%; border:1px solid var(--line); border-radius:6px; background:#ffffff;">
+            <canvas id="ganttCanvas" style="display:block; min-width:850px; width:100%; height:380px;"></canvas>
+          </div>
+        </div>
+      </div>
+</section>
 
     <!-- VIEW 12: BILLING & ZATCA IPC -->
     <section class="page-view" id="view-billing">
@@ -3234,7 +3266,302 @@
       </div>
     </section>
 
-  </main>
+  
+    <!-- VIEW: AI CENTER OPERATIONS & PREDICTIVE COPILOTS -->
+    <section class="page-view" id="view-ai-center">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; flex-wrap:wrap; gap:12px;">
+        <div>
+          <h2 style="font-size:22px; font-weight:800; color:var(--navy);"><i class="fas fa-brain" style="color:var(--gold); margin-left:8px;"></i> مركز عمليات الذكاء الاصطناعي الإنشائي (AI Copilot Operations Center)</h2>
+          <p style="color:var(--muted); font-size:13px;">شبكة من 8 وكلاء ذكاء اصطناعي متخصصين في FIDIC، القيمة المكتسبة EVM، المسار الحرج CPM، والمشتريات الذكية</p>
+        </div>
+        <div style="display:flex; gap:10px;">
+          <span class="badge badge-purple" style="font-size:12px; padding:6px 12px;"><i class="fas fa-microchip"></i> 8 Copilot Engines Active</span>
+          <button class="btn btn-primary btn-sm" onclick="openAiCopilotModal('fidic')"><i class="fas fa-bolt"></i> تشغيل المساعد الفوري</button>
+        </div>
+      </div>
+
+      <!-- AI KPIs -->
+      <div class="kpi-grid" style="margin-bottom:24px;">
+        <div class="kpi-card purple">
+          <div class="kpi-header"><span class="kpi-label">الوكلاء المتخصصون النشطون</span><div class="kpi-icon-wrap" style="background:var(--purple-bg); color:var(--purple);"><i class="fas fa-robot"></i></div></div>
+          <div class="kpi-value text-num">8 / 8</div>
+          <div class="kpi-footer">جاهزية تشغيلية كاملة 100%</div>
+        </div>
+        <div class="kpi-card green">
+          <div class="kpi-header"><span class="kpi-label">الوفر التقديري المحقق بالذكاء الاصطناعي</span><div class="kpi-icon-wrap" style="background:var(--green-bg); color:var(--green);"><i class="fas fa-coins"></i></div></div>
+          <div class="kpi-value text-num">1,480,000</div>
+          <div class="kpi-footer">ر.س · هندسة القيمة والمطالبات</div>
+        </div>
+        <div class="kpi-card blue">
+          <div class="kpi-header"><span class="kpi-label">التوصيات التنبؤية المعتمدة</span><div class="kpi-icon-wrap" style="background:var(--blue-bg); color:var(--blue);"><i class="fas fa-lightbulb"></i></div></div>
+          <div class="kpi-value text-num">42</div>
+          <div class="kpi-footer">تم تطبيقها في المشاريع الحية</div>
+        </div>
+        <div class="kpi-card gold">
+          <div class="kpi-header"><span class="kpi-label">دقة التنبؤ بالجدول والتكاليف</span><div class="kpi-icon-wrap" style="background:var(--gold-bg); color:var(--gold);"><i class="fas fa-bullseye"></i></div></div>
+          <div class="kpi-value text-num">96.8%</div>
+          <div class="kpi-footer">معايرة بالذكاء الاصطناعي</div>
+        </div>
+      </div>
+
+      <!-- 8 Copilot Agent Grid -->
+      <h3 style="margin-bottom:14px; font-weight:800; color:var(--navy);"><i class="fas fa-users-gear" style="color:var(--teal)"></i> منصات وكلاء الذكاء الاصطناعي المتخصصة (Specialized Copilot Agents)</h3>
+      <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(280px, 1fr)); gap:16px; margin-bottom:24px;">
+        <div class="card" style="border-top:3px solid var(--purple); padding:16px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+            <strong style="color:var(--purple);"><i class="fas fa-scale-balanced"></i> وكيل FIDIC والمطالبات</strong>
+            <span class="badge badge-green">مفعل</span>
+          </div>
+          <p style="font-size:12px; color:var(--muted); line-height:1.6; min-height:48px;">صياغة إشعارات البند 20.1، مطالبات تمديد المدة EOT، وتحليل مخاطر التباينات وفق FIDIC Red Book 2017.</p>
+          <button class="btn btn-outline btn-sm" style="width:100%; margin-top:10px;" onclick="openAiCopilotModal('fidic')"><i class="fas fa-play"></i> تشغيل وكيل FIDIC</button>
+        </div>
+        <div class="card" style="border-top:3px solid var(--blue); padding:16px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+            <strong style="color:var(--blue);"><i class="fas fa-chart-line"></i> وكيل القيمة المكتسبة EVM</strong>
+            <span class="badge badge-green">مفعل</span>
+          </div>
+          <p style="font-size:12px; color:var(--muted); line-height:1.6; min-height:48px;">حساب مؤشرات CPI/SPI، التنبؤ بالتكلفة عند الاكتمال EAC، وتحليل تباين الميزانية التراكمي VAC.</p>
+          <button class="btn btn-outline btn-sm" style="width:100%; margin-top:10px;" onclick="openAiCopilotModal('evm')"><i class="fas fa-play"></i> تشغيل وكيل EVM</button>
+        </div>
+        <div class="card" style="border-top:3px solid var(--red); padding:16px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+            <strong style="color:var(--red);"><i class="fas fa-fire"></i> مهندس المسار الحرج CPM</strong>
+            <span class="badge badge-green">مفعل</span>
+          </div>
+          <p style="font-size:12px; color:var(--muted); line-height:1.6; min-height:48px;">كشف اختناقات المسار الحرج، حساب التعويم الكلي والحر، واقتراح خطط المعالجة والضغط Crashing.</p>
+          <button class="btn btn-outline btn-sm" style="width:100%; margin-top:10px;" onclick="openAiCopilotModal('cpm')"><i class="fas fa-play"></i> تشغيل مهندس CPM</button>
+        </div>
+        <div class="card" style="border-top:3px solid var(--teal); padding:16px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+            <strong style="color:var(--teal);"><i class="fas fa-truck-ramp-box"></i> وكيل المشتريات والتوريد</strong>
+            <span class="badge badge-green">مفعل</span>
+          </div>
+          <p style="font-size:12px; color:var(--muted); line-height:1.6; min-height:48px;">تحليل عروض الأسعار، تصنيف UNSPSC، كشف فروقات الأسعار للمواد والتنبؤ بفترات التوريد Lead Time.</p>
+          <button class="btn btn-outline btn-sm" style="width:100%; margin-top:10px;" onclick="openAiCopilotModal('procurement')"><i class="fas fa-play"></i> تشغيل وكيل المشتريات</button>
+        </div>
+        <div class="card" style="border-top:3px solid var(--green); padding:16px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+            <strong style="color:var(--green);"><i class="fas fa-clipboard-check"></i> مستشار الجودة QA/QC</strong>
+            <span class="badge badge-green">مفعل</span>
+          </div>
+          <p style="font-size:12px; color:var(--muted); line-height:1.6; min-height:48px;">مطابقة مواصفات كود البناء السعودي SBC، تحليل عدم المطابقة NCR، ومراقبة نسب اعتماد طلبات WIR/MIR.</p>
+          <button class="btn btn-outline btn-sm" style="width:100%; margin-top:10px;" onclick="openAiCopilotModal('qaqc')"><i class="fas fa-play"></i> تشغيل مستشار الجودة</button>
+        </div>
+        <div class="card" style="border-top:3px solid var(--amber); padding:16px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+            <strong style="color:var(--amber);"><i class="fas fa-shield-halved"></i> ضابط السلامة والصحة HSE</strong>
+            <span class="badge badge-green">مفعل</span>
+          </div>
+          <p style="font-size:12px; color:var(--muted); line-height:1.6; min-height:48px;">تقييم المخاطر، حساب مؤشرات الحوادث LTIFR وفق ISO 45001، ومتابعة تصاريح العمل الحرجة PTW.</p>
+          <button class="btn btn-outline btn-sm" style="width:100%; margin-top:10px;" onclick="openAiCopilotModal('hse')"><i class="fas fa-play"></i> تشغيل ضابط السلامة</button>
+        </div>
+        <div class="card" style="border-top:3px solid var(--navy); padding:16px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+            <strong style="color:var(--navy);"><i class="fas fa-ruler-combined"></i> مساح الكميات الذكي BOQ</strong>
+            <span class="badge badge-green">مفعل</span>
+          </div>
+          <p style="font-size:12px; color:var(--muted); line-height:1.6; min-height:48px;">حصر كميات تفاعلي، مضاهاة جدول الكميات بالمخططات التنفيذية، وكشف بنود الهدر والتجاوز.</p>
+          <button class="btn btn-outline btn-sm" style="width:100%; margin-top:10px;" onclick="openAiCopilotModal('boq')"><i class="fas fa-play"></i> تشغيل مساح الكميات</button>
+        </div>
+        <div class="card" style="border-top:3px solid var(--gold); padding:16px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+            <strong style="color:var(--gold);"><i class="fas fa-money-bill-wave"></i> متنبئ التدفقات النقدية</strong>
+            <span class="badge badge-green">مفعل</span>
+          </div>
+          <p style="font-size:12px; color:var(--muted); line-height:1.6; min-height:48px;">توليد منحنى التدفق النقدي S-Curve، التنبؤ بفجوات السيولة ومواعيد صرف مستخلصات المالك والمقاولين.</p>
+          <button class="btn btn-outline btn-sm" style="width:100%; margin-top:10px;" onclick="openAiCopilotModal('cashflow')"><i class="fas fa-play"></i> تشغيل متنبئ السيولة</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW: PMO ENTERPRISE GOVERNANCE COCKPIT -->
+    <section class="page-view" id="view-pmo">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; flex-wrap:wrap; gap:12px;">
+        <div>
+          <h2 style="font-size:22px; font-weight:800; color:var(--navy);"><i class="fas fa-chess-rook" style="color:var(--teal); margin-left:8px;"></i> مكتب إدارة المشاريع وحوكمة المحفظة (PMO Governance Cockpit)</h2>
+          <p style="color:var(--muted); font-size:13px;">الرقابة المركزية على محفظة المشاريع، الحوكمة المؤسسية، وتتبع بوابات المراحل Stage-Gates</p>
+        </div>
+        <div style="display:flex; gap:10px;">
+          <span class="badge badge-blue" style="font-size:12px; padding:6px 12px;"><i class="fas fa-shield"></i> Stage-Gate Framework</span>
+          <button class="btn btn-primary btn-sm" onclick="exportPrimaveraXER()"><i class="fas fa-file-export"></i> تصدير تقرير المحفظة</button>
+        </div>
+      </div>
+
+      <!-- PMO KPIs -->
+      <div class="kpi-grid" style="margin-bottom:24px;">
+        <div class="kpi-card purple">
+          <div class="kpi-header"><span class="kpi-label">إجمالي القيمة التعاقدية للمحفظة</span><div class="kpi-icon-wrap" style="background:var(--purple-bg); color:var(--purple);"><i class="fas fa-vault"></i></div></div>
+          <div class="kpi-value text-num">125,000,000</div>
+          <div class="kpi-footer">ر.س · عبر 4 مشاريع كبرى</div>
+        </div>
+        <div class="kpi-card green">
+          <div class="kpi-header"><span class="kpi-label">مؤشر صحة المحفظة الإجمالي (PHI)</span><div class="kpi-icon-wrap" style="background:var(--green-bg); color:var(--green);"><i class="fas fa-heart-pulse"></i></div></div>
+          <div class="kpi-value text-num">89.4%</div>
+          <div class="kpi-footer">حالة ممتازة · ضمن الحدود المستهدفة</div>
+        </div>
+        <div class="kpi-card blue">
+          <div class="kpi-header"><span class="kpi-label">بوابات المراحل المعتمدة (Stage-Gates)</span><div class="kpi-icon-wrap" style="background:var(--blue-bg); color:var(--blue);"><i class="fas fa-door-open"></i></div></div>
+          <div class="kpi-value text-num">18 / 24</div>
+          <div class="kpi-footer">75% نسبة العبور المرحلي</div>
+        </div>
+        <div class="kpi-card gold">
+          <div class="kpi-header"><span class="kpi-label">مؤشر المخاطر المؤسسية للمحفظة</span><div class="kpi-icon-wrap" style="background:var(--gold-bg); color:var(--gold);"><i class="fas fa-triangle-exclamation"></i></div></div>
+          <div class="kpi-value" style="font-size:22px; font-weight:800; color:var(--green);">منخفض (Low)</div>
+          <div class="kpi-footer">تحت السيطرة الرقابية الكاملة</div>
+        </div>
+      </div>
+
+      <!-- Stage Gate Governance Table -->
+      <div class="card" style="margin-bottom:24px;">
+        <div class="card-header" style="display:flex; justify-content:space-between; align-items:center;">
+          <h3><i class="fas fa-diagram-project" style="color:var(--teal)"></i> مصفوفة حوكمة بوابات المراحل (Stage-Gate Governance Matrix)</h3>
+          <span class="badge badge-purple">معايير PMI / PMBOK 7th Ed.</span>
+        </div>
+        <div class="card-body" style="padding:0;">
+          <div class="table-wrapper">
+            <table>
+              <thead>
+                <tr>
+                  <th>المشروع</th>
+                  <th>بوابة 1: الترسية والعقد</th>
+                  <th>بوابة 2: المخططات والاعتمادات</th>
+                  <th>بوابة 3: التنفيذ والإنشاء</th>
+                  <th>بوابة 4: الفحص والاختبار</th>
+                  <th>بوابة 5: التسليم الابتدائي</th>
+                  <th>الحالة العامة</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>فلل الغروب السكنية (PRJ-2001)</strong></td>
+                  <td><span class="badge badge-green"><i class="fas fa-check"></i> مكتمل</span></td>
+                  <td><span class="badge badge-green"><i class="fas fa-check"></i> مكتمل</span></td>
+                  <td><span class="badge badge-blue"><i class="fas fa-spinner fa-spin"></i> قيد التنفيذ (65%)</span></td>
+                  <td><span class="badge badge-subtle">مجدول</span></td>
+                  <td><span class="badge badge-subtle">مجدول</span></td>
+                  <td><span class="badge badge-green">صحي (Green)</span></td>
+                </tr>
+                <tr>
+                  <td><strong>برج الصحافة التجاري (PRJ-2002)</strong></td>
+                  <td><span class="badge badge-green"><i class="fas fa-check"></i> مكتمل</span></td>
+                  <td><span class="badge badge-green"><i class="fas fa-check"></i> مكتمل</span></td>
+                  <td><span class="badge badge-amber"><i class="fas fa-clock"></i> حرج (42%)</span></td>
+                  <td><span class="badge badge-subtle">مجدول</span></td>
+                  <td><span class="badge badge-subtle">مجدول</span></td>
+                  <td><span class="badge badge-amber">تنبيه (Amber)</span></td>
+                </tr>
+                <tr>
+                  <td><strong>مستودعات الخمرة اللوجستية (PRJ-2003)</strong></td>
+                  <td><span class="badge badge-green"><i class="fas fa-check"></i> مكتمل</span></td>
+                  <td><span class="badge badge-green"><i class="fas fa-check"></i> مكتمل</span></td>
+                  <td><span class="badge badge-blue"><i class="fas fa-spinner fa-spin"></i> مرحلة مبكرة (19%)</span></td>
+                  <td><span class="badge badge-subtle">مجدول</span></td>
+                  <td><span class="badge badge-subtle">مجدول</span></td>
+                  <td><span class="badge badge-green">صحي (Green)</span></td>
+                </tr>
+                <tr>
+                  <td><strong>كمباوند الملقا ريزيدنس (PRJ-2004)</strong></td>
+                  <td><span class="badge badge-green"><i class="fas fa-check"></i> مكتمل</span></td>
+                  <td><span class="badge badge-green"><i class="fas fa-check"></i> مكتمل</span></td>
+                  <td><span class="badge badge-blue"><i class="fas fa-spinner fa-spin"></i> جاري (38%)</span></td>
+                  <td><span class="badge badge-subtle">مجدول</span></td>
+                  <td><span class="badge badge-subtle">مجدول</span></td>
+                  <td><span class="badge badge-green">صحي (Green)</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW: 7-LEVEL HIERARCHICAL ROADMAP ENGINE -->
+    <section class="page-view" id="view-roadmap">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; flex-wrap:wrap; gap:12px;">
+        <div>
+          <h2 style="font-size:22px; font-weight:800; color:var(--navy);"><i class="fas fa-diagram-project" style="color:var(--teal); margin-left:8px;"></i> خارطة الطريق الهرمية للمشاريع (Hierarchical 7-Level Roadmap)</h2>
+          <p style="color:var(--muted); font-size:13px;">مؤسسة ← محفظة ← مشروع ← مرحلة ← تخصص ← حزمة عمل ← نشاط مع تتبع المسار الحرج وتاريخ الإنجاز المتوقع</p>
+        </div>
+        <div style="display:flex; gap:10px;">
+          <span class="badge badge-gold" style="font-size:12px; padding:6px 12px;"><i class="fas fa-layer-group"></i> 7 Levels of WBS</span>
+          <button class="btn btn-primary btn-sm" onclick="exportPrimaveraXER()"><i class="fas fa-download"></i> تصدير XER</button>
+        </div>
+      </div>
+
+      <div class="card" style="margin-bottom:24px;">
+        <div class="card-header" style="display:flex; justify-content:space-between; align-items:center;">
+          <h3><i class="fas fa-sitemap" style="color:var(--teal)"></i> التسلسل الهرمي التفاعلي لخارطة الطريق (Interactive Roadmap Hierarchy)</h3>
+          <div style="display:flex; gap:6px;">
+            <span class="badge badge-blue">مستوى المؤسسة (Corporate)</span>
+            <span class="badge badge-purple">مستوى المحفظة (Portfolio)</span>
+            <span class="badge badge-green">مستوى المشروع (Project)</span>
+          </div>
+        </div>
+        <div class="card-body" style="padding:20px;">
+          <div style="display:flex; flex-direction:column; gap:16px;">
+            <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:16px;">
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <div style="display:flex; align-items:center; gap:10px;">
+                  <span class="badge badge-blue" style="font-weight:700;">L1/L2</span>
+                  <strong style="font-size:15px; color:var(--navy);">مجموعة شركات إعمار وعمران القابضة — محفظة مشاريع 2026</strong>
+                </div>
+                <div style="display:flex; gap:12px; align-items:center;">
+                  <span class="text-num" style="font-weight:700; color:var(--green);">42.8% إنجاز المحفظة</span>
+                  <span class="badge badge-green">On Schedule</span>
+                </div>
+              </div>
+            </div>
+
+            <div style="background:#ffffff; border:1px solid #cbd5e1; border-right:4px solid var(--blue); border-radius:8px; padding:16px; margin-right:20px;">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                <div>
+                  <span class="badge badge-purple" style="font-size:10px;">L3: Project</span>
+                  <strong style="margin-right:8px; color:var(--navy);">فلل الغروب السكنية (PRJ-2001)</strong>
+                  <span style="font-size:12px; color:var(--muted);">الرياض - حي النرجس</span>
+                </div>
+                <div>
+                  <span class="text-num" style="font-weight:700; color:var(--green);">64.9%</span>
+                  <span class="badge badge-green" style="margin-right:8px;">CPI: 1.05 | SPI: 0.98</span>
+                </div>
+              </div>
+              <div style="background:#e2e8f0; height:8px; border-radius:4px; overflow:hidden; margin-bottom:10px;">
+                <div style="background:var(--green); width:64.9%; height:100%;"></div>
+              </div>
+              <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:10px; font-size:12px; color:var(--muted);">
+                <div><strong>L4 المرحلة:</strong> الهيكل والتشطيبات الأولية</div>
+                <div><strong>L5 التخصص:</strong> أعمال إنشائية ومعمارية</div>
+                <div><strong>L6 حزمة WBS:</strong> WBS-01 عظم + WBS-02 تشطيب</div>
+                <div><strong>L7 النشاط الحرج:</strong> صب سقف الدور الأول</div>
+              </div>
+            </div>
+
+            <div style="background:#ffffff; border:1px solid #cbd5e1; border-right:4px solid var(--amber); border-radius:8px; padding:16px; margin-right:20px;">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                <div>
+                  <span class="badge badge-purple" style="font-size:10px;">L3: Project</span>
+                  <strong style="margin-right:8px; color:var(--navy);">برج الصحافة التجاري (PRJ-2002)</strong>
+                  <span style="font-size:12px; color:var(--muted);">الرياض - طريق الملك فهد</span>
+                </div>
+                <div>
+                  <span class="text-num" style="font-weight:700; color:var(--amber);">42.0%</span>
+                  <span class="badge badge-amber" style="margin-right:8px;">CPI: 0.92 | SPI: 0.88</span>
+                </div>
+              </div>
+              <div style="background:#e2e8f0; height:8px; border-radius:4px; overflow:hidden; margin-bottom:10px;">
+                <div style="background:var(--amber); width:42%; height:100%;"></div>
+              </div>
+              <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:10px; font-size:12px; color:var(--muted);">
+                <div><strong>L4 المرحلة:</strong> الهيكل الخرساني والواجهات</div>
+                <div><strong>L5 التخصص:</strong> خرسانة مسلحة وMEP</div>
+                <div><strong>L6 حزمة WBS:</strong> WBS-03 أعمال خرسانية</div>
+                <div><strong>L7 النشاط الحرج:</strong> خرسانة الكمرة B4 المحور 4-8</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+</main>
 </div>
 
 

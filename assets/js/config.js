@@ -9457,4 +9457,184 @@ window.MimarERP = {
       "status": "مخطط"
     }
   ]
+,
+  qaqcInspections: [
+  {
+    "inspection_id": "WIR-2026-001",
+    "type": "WIR أعمال",
+    "type_badge": "badge-blue",
+    "activity": "لياسة داخلية - الطرطشة والبؤج والأوتار",
+    "boq_code": "BOQ-01",
+    "project_id": "PRJ-2001",
+    "project_name": "فلل الغروب السكنية",
+    "location": "الدور الأرضي - المجلس والصالون الرئيسي",
+    "date": "2026-03-12",
+    "consultant_decision": "Code A (معتمد دون ملاحظات)",
+    "decision_badge": "badge-green",
+    "status": "مغلق",
+    "status_badge": "badge-green"
+  },
+  {
+    "inspection_id": "WIR-2026-002",
+    "type": "WIR أعمال",
+    "type_badge": "badge-blue",
+    "activity": "استلام حديد تسليح بلاطة سقف الدور الأول ونظافة النجارة",
+    "boq_code": "BOQ-02",
+    "project_id": "PRJ-2001",
+    "project_name": "فلل الغروب السكنية",
+    "location": "سقف الدور الأول - زون A",
+    "date": "2026-03-15",
+    "consultant_decision": "Code A (معتمد صب الخرسانة)",
+    "decision_badge": "badge-green",
+    "status": "مغلق",
+    "status_badge": "badge-green"
+  },
+  {
+    "inspection_id": "MIR-2026-001",
+    "type": "MIR مواد",
+    "type_badge": "badge-purple",
+    "activity": "فحص وتوريد حديد تسليح سابك عالي الإجهاد Gr.60 مطابقة لـ SASO",
+    "boq_code": "BOQ-02",
+    "project_id": "PRJ-2001",
+    "project_name": "فلل الغروب السكنية",
+    "location": "الموقع العام - تشوين حديد التسليح",
+    "date": "2026-03-16",
+    "consultant_decision": "Code A (معتمد)",
+    "decision_badge": "badge-green",
+    "status": "مغلق",
+    "status_badge": "badge-green"
+  },
+  {
+    "inspection_id": "MIR-2026-002",
+    "type": "MIR مواد",
+    "type_badge": "badge-purple",
+    "activity": "عينات واعتماد بورسلان وسيراميك إسباني نخب أول للأرضيات",
+    "boq_code": "BOQ-04",
+    "project_id": "PRJ-2002",
+    "project_name": "برج الصحافة التجاري",
+    "location": "الموقع العام - مستودع التشطيبات",
+    "date": "2026-03-17",
+    "consultant_decision": "Code B (معتمد بملاحظات طفيفة)",
+    "decision_badge": "badge-blue",
+    "status": "مغلق",
+    "status_badge": "badge-green"
+  },
+  {
+    "inspection_id": "NCR-2026-001",
+    "type": "NCR عدم مطابقة",
+    "type_badge": "badge-red",
+    "activity": "هبوط نتائج كسر مكعبات الخرسانة بعمر 7 أيام للكمرة B4 زون C",
+    "boq_code": "BOQ-02",
+    "project_id": "PRJ-2002",
+    "project_name": "برج الصحافة التجاري",
+    "location": "الدور الثاني - المحاور 4 إلى 8",
+    "date": "2026-03-18",
+    "consultant_decision": "Code C (مرفوض - يلزم Core Test)",
+    "decision_badge": "badge-red",
+    "status": "قيد المعالجة",
+    "status_badge": "badge-amber"
+  },
+  {
+    "inspection_id": "WIR-2026-003",
+    "type": "WIR أعمال",
+    "type_badge": "badge-blue",
+    "activity": "عزل مائي إيجابي للأساسات ورقاب الأعمدة بمادة بيتومينية معدلة SBS",
+    "boq_code": "BOQ-03",
+    "project_id": "PRJ-2004",
+    "project_name": "كمباوند الملقا ريزيدنس",
+    "location": "منسوب التأسيس - مبنى الإدارة والمسبح",
+    "date": "2026-03-19",
+    "consultant_decision": "Code A (معتمد مع اختبار الغمر 48h)",
+    "decision_badge": "badge-green",
+    "status": "مغلق",
+    "status_badge": "badge-green"
+  },
+  {
+    "inspection_id": "WIR-2026-004",
+    "type": "WIR أعمال",
+    "type_badge": "badge-blue",
+    "activity": "تمديدات شبكة مكافحة الحريق الرطبة واختبار الضغط الهيدروستاتيكي 200 PSI",
+    "boq_code": "BOQ-05",
+    "project_id": "PRJ-2003",
+    "project_name": "مستودعات الخمرة اللوجستية",
+    "location": "القبو 1 - منطقة المضخات والموزعات",
+    "date": "2026-03-20",
+    "consultant_decision": "Code A (ناجح ومعتمد NFPA)",
+    "decision_badge": "badge-green",
+    "status": "مغلق",
+    "status_badge": "badge-green"
+  }
+],
+  engineeringDrawings: [
+  {
+    "drawing_no": "ARC-A101",
+    "title": "مسقط الدور الأرضي المعماري والمناسيب والأبعاد التنفيذية",
+    "discipline": "معماري (Architectural)",
+    "revision": "Rev 02",
+    "issue_date": "2026-03-10",
+    "project_id": "PRJ-2001",
+    "status": "IFC (صالح للتنفيذ)",
+    "status_badge": "badge-green"
+  },
+  {
+    "drawing_no": "ARC-A301",
+    "title": "القطاعات الرأسية وتفاصيل عزل الأسطح وتصريف مياه الأمطار",
+    "discipline": "معماري (Architectural)",
+    "revision": "Rev 02",
+    "issue_date": "2026-03-12",
+    "project_id": "PRJ-2001",
+    "status": "IFC (صالح للتنفيذ)",
+    "status_badge": "badge-green"
+  },
+  {
+    "drawing_no": "STR-S101",
+    "title": "المسقط الأفقي للقواعد المنفصلة والمشتركة والميد والشناجات",
+    "discipline": "إنشائي (Structural)",
+    "revision": "Rev 03",
+    "issue_date": "2026-02-15",
+    "project_id": "PRJ-2001",
+    "status": "As-Built (كما نُفذ)",
+    "status_badge": "badge-blue"
+  },
+  {
+    "drawing_no": "STR-S204",
+    "title": "تفاصيل تفريد وتكريب حديد تسليح بلاطة السقف الهوردي والكمرات الساقطة",
+    "discipline": "إنشائي (Structural)",
+    "revision": "Rev 01",
+    "issue_date": "2026-03-01",
+    "project_id": "PRJ-2002",
+    "status": "IFC (صالح للتنفيذ)",
+    "status_badge": "badge-green"
+  },
+  {
+    "drawing_no": "MEP-M101",
+    "title": "مخطط مسارات مجاري التكييف المركزي HVAC ومخارج الهواء والدنابر",
+    "discipline": "ميكانيك (Mechanical)",
+    "revision": "Rev 02",
+    "issue_date": "2026-03-05",
+    "project_id": "PRJ-2002",
+    "status": "IFC (صالح للتنفيذ)",
+    "status_badge": "badge-green"
+  },
+  {
+    "drawing_no": "MEP-E201",
+    "title": "مسارات كابلات الجهد المنخفض ولوحات التوزيع الفرعية DB وتأريض المبنى",
+    "discipline": "كهرباء (Electrical)",
+    "revision": "Rev 01",
+    "issue_date": "2026-03-08",
+    "project_id": "PRJ-2003",
+    "status": "معتمد بملاحظات (Code B)",
+    "status_badge": "badge-amber"
+  },
+  {
+    "drawing_no": "PLU-P102",
+    "title": "شبكة الصرف الصحي المعلق وتغذية المياه بمواسير PPR المعزولة",
+    "discipline": "صحي (Plumbing)",
+    "revision": "Rev 02",
+    "issue_date": "2026-03-14",
+    "project_id": "PRJ-2004",
+    "status": "IFC (صالح للتنفيذ)",
+    "status_badge": "badge-green"
+  }
+]
 };

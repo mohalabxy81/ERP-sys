@@ -785,4 +785,399 @@
 
   window.showZatcaModal = showZatcaModal;
 
+
+  // =========================================================================
+  // 9. PRIMAVERA-GRADE GANTT CHART VISUALIZATION ENGINE
+  // =========================================================================
+  function renderGanttChart() {
+    const canvas = document.getElementById("ganttCanvas");
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    const prj = (typeof getActiveProject === 'function') ? getActiveProject() : null;
+    const rawActs = (window.MimarERP && window.MimarERP.scheduleMaster)
+      ? window.MimarERP.scheduleMaster.filter(a => !prj || a.project_id === prj.project_id)
+      : [];
+    const activities = rawActs.length > 0 ? rawActs : ((window.MimarERP && window.MimarERP.scheduleMaster) ? window.MimarERP.scheduleMaster.slice(0, 6) : []);
+
+    if (activities.length === 0) return;
+
+    // Calculate CPM
+    const cpmRes = (window.CpmEngine && window.CpmEngine.computeCPM)
+      ? window.CpmEngine.computeCPM(activities)
+      : { activities, criticalPath: [] };
+    const acts = cpmRes.activities;
+
+    // Date range
+    let minTime = Infinity, maxTime = -Infinity;
+    acts.forEach(a => {
+      const s = a.planned_start ? new Date(a.planned_start).getTime() : Date.now();
+      const f = a.planned_finish ? new Date(a.planned_finish).getTime() : s + (a.duration || 5) * 86400000;
+      if (s < minTime) minTime = s;
+      if (f > maxTime) maxTime = f;
+    });
+
+    if (minTime === Infinity || maxTime === -Infinity || minTime >= maxTime) {
+      minTime = Date.now() - 5 * 86400000;
+      maxTime = Date.now() + 60 * 86400000;
+    }
+
+    minTime -= 2 * 86400000;
+    maxTime += 5 * 86400000;
+    const totalDays = Math.max(10, Math.round((maxTime - minTime) / 86400000));
+
+    // HiDPI Scaling
+    const dpr = window.devicePixelRatio || 1;
+    const rect = canvas.getBoundingClientRect();
+    const width = Math.max(850, rect.width || 850);
+    const rowHeight = 44;
+    const headerHeight = 54;
+    const height = headerHeight + acts.length * rowHeight + 20;
+
+    canvas.style.height = height + "px";
+    canvas.width = Math.round(width * dpr);
+    canvas.height = Math.round(height * dpr);
+    if (ctx.resetTransform) ctx.resetTransform();
+    ctx.scale(dpr, dpr);
+
+    // Canvas background
+    ctx.fillStyle = "#ffffff";
+    ctx.fillRect(0, 0, width, height);
+
+    // Layout margins
+    const labelColWidth = 260;
+    const timelineWidth = width - labelColWidth - 25;
+    const timelineLeft = 15;
+
+    // Header background
+    ctx.fillStyle = "#f8fafc";
+    ctx.fillRect(0, 0, width, headerHeight);
+    ctx.strokeStyle = "#e2e8f0";
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(0, headerHeight);
+    ctx.lineTo(width, headerHeight);
+    ctx.stroke();
+
+    // Separator between timeline and activity names
+    ctx.beginPath();
+    ctx.moveTo(timelineLeft + timelineWidth, 0);
+    ctx.lineTo(timelineLeft + timelineWidth, height);
+    ctx.stroke();
+
+    // Header label
+    ctx.fillStyle = "#1e293b";
+    ctx.font = "bold 13px Tajawal, sans-serif";
+    ctx.textAlign = "right";
+    ctx.fillText("النشاط الإنشائي / الحزمة (WBS)", width - 20, 32);
+
+    // Time scale ticks
+    const dayWidth = timelineWidth / totalDays;
+    ctx.font = "11px Tajawal, sans-serif";
+    ctx.textAlign = "center";
+    ctx.fillStyle = "#64748b";
+
+    let curDate = new Date(minTime);
+    for (let d = 0; d < totalDays; d++) {
+      const x = timelineLeft + d * dayWidth;
+      const isWeekStart = curDate.getDay() === 0;
+      if (isWeekStart || d === 0) {
+        ctx.strokeStyle = "#f1f5f9";
+        ctx.beginPath();
+        ctx.moveTo(x, headerHeight);
+        ctx.lineTo(x, height);
+        ctx.stroke();
+
+        ctx.fillStyle = "#64748b";
+        const dateLabel = (curDate.getMonth() + 1) + "/" + curDate.getDate();
+        ctx.fillText(dateLabel, x + dayWidth * 3, 30);
+      }
+      curDate.setDate(curDate.getDate() + 1);
+    }
+
+    // Today marker line
+    const now = Date.now();
+    if (now >= minTime && now <= maxTime) {
+      const todayX = timelineLeft + ((now - minTime) / 86400000) * dayWidth;
+      ctx.strokeStyle = "#f59e0b";
+      ctx.lineWidth = 2;
+      ctx.setLineDash([4, 4]);
+      ctx.beginPath();
+      ctx.moveTo(todayX, headerHeight);
+      ctx.lineTo(todayX, height);
+      ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.fillStyle = "#d97706";
+      ctx.font = "bold 11px Tajawal, sans-serif";
+      ctx.textAlign = "center";
+      ctx.fillText("اليوم (Today)", todayX, headerHeight - 8);
+    }
+
+    // Draw Activity Rows
+    acts.forEach((a, idx) => {
+      const y = headerHeight + idx * rowHeight;
+
+      // Alternating row background
+      if (idx % 2 === 1) {
+        ctx.fillStyle = "#fcfdfd";
+        ctx.fillRect(0, y, width, rowHeight);
+      }
+
+      // Row divider
+      ctx.strokeStyle = "#f1f5f9";
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(0, y + rowHeight);
+      ctx.lineTo(width, y + rowHeight);
+      ctx.stroke();
+
+      // Right column: Activity Name & code
+      ctx.fillStyle = a.isCritical ? "#dc2626" : "#0f172a";
+      ctx.font = a.isCritical ? "bold 12px Tajawal, sans-serif" : "12px Tajawal, sans-serif";
+      ctx.textAlign = "right";
+      const actTitle = (a.act_code ? a.act_code + " " : "") + a.act_name;
+      const truncatedTitle = actTitle.length > 30 ? actTitle.slice(0, 28) + "..." : actTitle;
+      ctx.fillText(truncatedTitle, width - 20, y + 26);
+
+      // Duration & float badge
+      ctx.fillStyle = a.isCritical ? "#dc2626" : "#64748b";
+      ctx.font = "10px monospace";
+      ctx.textAlign = "left";
+      const floatText = a.isCritical ? "CRITICAL (TF=0)" : ("TF: " + (a.totalFloat || 0) + "d");
+      ctx.fillText(a.duration + "d | " + floatText, timelineLeft + timelineWidth + 12, y + 26);
+
+      // Timeline Bar
+      const actStart = a.planned_start ? new Date(a.planned_start).getTime() : minTime;
+      const actFinish = a.planned_finish ? new Date(a.planned_finish).getTime() : actStart + (a.duration || 5) * 86400000;
+
+      const barStartDays = Math.max(0, (actStart - minTime) / 86400000);
+      const barDurationDays = Math.max(1, (actFinish - actStart) / 86400000);
+
+      const barX = timelineLeft + barStartDays * dayWidth;
+      const barW = Math.max(14, barDurationDays * dayWidth);
+      const barY = y + 11;
+      const barH = 22;
+
+      // Bar container
+      ctx.beginPath();
+      if (ctx.roundRect) {
+        ctx.roundRect(barX, barY, barW, barH, 4);
+      } else {
+        ctx.rect(barX, barY, barW, barH);
+      }
+
+      if (a.isCritical) {
+        ctx.fillStyle = "#fee2e2";
+        ctx.fill();
+        ctx.strokeStyle = "#ef4444";
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+      } else if (a.actual_progress_pct >= 100) {
+        ctx.fillStyle = "#dcfce7";
+        ctx.fill();
+        ctx.strokeStyle = "#16a34a";
+        ctx.lineWidth = 1;
+        ctx.stroke();
+      } else {
+        ctx.fillStyle = "#e0f2fe";
+        ctx.fill();
+        ctx.strokeStyle = "#0284c7";
+        ctx.lineWidth = 1;
+        ctx.stroke();
+      }
+
+      // Progress Fill inside bar
+      const progress = Math.min(100, Math.max(0, a.actual_progress_pct || 0));
+      if (progress > 0) {
+        const fillW = Math.max(4, barW * (progress / 100));
+        ctx.beginPath();
+        if (ctx.roundRect) {
+          ctx.roundRect(barX, barY, fillW, barH, 4);
+        } else {
+          ctx.rect(barX, barY, fillW, barH);
+        }
+        ctx.fillStyle = a.isCritical ? "#ef4444" : (progress >= 100 ? "#22c55e" : "#0284c7");
+        ctx.fill();
+      }
+
+      // Text inside or beside bar
+      if (barW > 40) {
+        ctx.fillStyle = (progress >= 40) ? "#ffffff" : "#1e293b";
+        ctx.font = "bold 10px Tajawal, sans-serif";
+        ctx.textAlign = "center";
+        ctx.fillText(progress + "%", barX + (barW / 2), barY + 15);
+      }
+    });
+  }
+
+  // =========================================================================
+  // 10. ENTERPRISE PRINT & DOCUMENT GENERATION ENGINE
+  // =========================================================================
+  const PrintEngine = {
+    printIPC: function(billingId) {
+      const billings = (window.MimarERP && window.MimarERP.financeBillings) ? window.MimarERP.financeBillings : [];
+      const b = billings.find(x => x.billing_id === billingId) || billings[0] || {
+        billing_id: "IPC-001",
+        project: "برج الصحافة التجاري",
+        owner: "الهيئة الملكية",
+        amount: 8500000,
+        submission_date: "2026-03-01",
+        approval_date: "2026-03-15",
+        gross_amount: 8500000,
+        retention_amount: 850000,
+        advance_recovery: 425000,
+        vat_amount: 1275000,
+        net_amount: 8500000
+      };
+
+      const gross = b.gross_amount || b.amount;
+      const ret = b.retention_amount || (gross * 0.1);
+      const adv = b.advance_recovery || 0;
+      const netBeforeVat = gross - ret - adv;
+      const vat = b.vat_amount || (netBeforeVat * 0.15);
+      const totalPayable = netBeforeVat + vat;
+
+      // ZATCA QR
+      const qrSvg = (window.ZatcaEngine && window.ZatcaEngine.generateQrSvg)
+        ? window.ZatcaEngine.generateQrSvg("شركة إعمار وعمران للإنشاءات", "310123456700003", b.submission_date, totalPayable, vat)
+        : '<div style="border:1px solid #ccc; padding:20px;">[ZATCA QR]</div>';
+
+      const printHtml = `
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>شهادة الدفع المرحلية - ${b.billing_id}</title>
+  <style>
+    body { font-family: 'Tajawal', sans-serif; margin: 20px 40px; color: #1e293b; direction: rtl; }
+    .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 3px double #0f172a; padding-bottom: 15px; margin-bottom: 25px; }
+    .header-title h1 { margin: 0; font-size: 22px; color: #0f172a; }
+    .header-title p { margin: 4px 0 0; color: #64748b; font-size: 13px; }
+    .meta-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 15px; margin-bottom: 25px; font-size: 13px; }
+    .meta-row { display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px dashed #cbd5e1; }
+    .meta-label { color: #64748b; font-weight: 600; }
+    .meta-val { font-weight: 700; color: #0f172a; }
+    table { width: 100%; border-collapse: collapse; margin-bottom: 25px; font-size: 13px; }
+    th { background: #0f172a; color: #ffffff; padding: 10px; border: 1px solid #0f172a; text-align: right; }
+    td { padding: 9px; border: 1px solid #cbd5e1; }
+    .num { text-align: left; font-family: monospace; font-size: 14px; }
+    .total-row { background: #f1f5f9; font-weight: 800; font-size: 14px; }
+    .signatures { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; margin-top: 40px; text-align: center; }
+    .sig-box { border-top: 1px solid #0f172a; padding-top: 10px; font-size: 12px; }
+    @media print {
+      body { margin: 0; }
+      .no-print { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="no-print" style="margin-bottom:20px; text-align:left;">
+    <button onclick="window.print()" style="padding:8px 16px; background:#0f172a; color:#fff; border:none; border-radius:4px; cursor:pointer; font-family:inherit; font-weight:700;">طباعة المستند (Print A4)</button>
+  </div>
+  <div class="header">
+    <div class="header-title">
+      <h1>شهادة الدفع المرحلية للمشروع (Interim Payment Certificate - IPC)</h1>
+      <p>عقد مقاولة إنشاءات عامة وفق الشروط العامة لعقود الفيديك (FIDIC Red Book 2017)</p>
+    </div>
+    <div style="width:110px; height:110px;">
+      ${qrSvg}
+    </div>
+  </div>
+
+  <div class="meta-grid">
+    <div>
+      <div class="meta-row"><span class="meta-label">رقم المستخلص:</span><span class="meta-val">${b.billing_id}</span></div>
+      <div class="meta-row"><span class="meta-label">المشروع:</span><span class="meta-val">${b.project}</span></div>
+      <div class="meta-row"><span class="meta-label">الجهة المالكة (المخدوم):</span><span class="meta-val">${b.owner}</span></div>
+    </div>
+    <div>
+      <div class="meta-row"><span class="meta-label">المقاول العام:</span><span class="meta-val">شركة إعمار وعمران للمقاولات</span></div>
+      <div class="meta-row"><span class="meta-label">تاريخ التقديم:</span><span class="meta-val">${b.submission_date}</span></div>
+      <div class="meta-row"><span class="meta-label">تاريخ اعتماد المهندس:</span><span class="meta-val">${b.approval_date || 'قيد التدقيق'}</span></div>
+    </div>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>البند والبيان المالي</th>
+        <th style="width:30%;">المبلغ (ريال سعودي SAR)</th>
+        <th style="width:25%;">السند التعاقدي</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>1. إجمالي الأعمال المنفذة والمقاسة تراكمياً حتى تاريخه</td>
+        <td class="num">${gross.toLocaleString("ar-SA", {minimumFractionDigits:2, maximumFractionDigits:2})}</td>
+        <td>بند 14.3 (FIDIC)</td>
+      </tr>
+      <tr>
+        <td>2. حسم: محتجز الضمان وحسن التنفيذ (10% Retention)</td>
+        <td class="num" style="color:#b45309;">(${ret.toLocaleString("ar-SA", {minimumFractionDigits:2, maximumFractionDigits:2})})</td>
+        <td>بند 14.3(أ)</td>
+      </tr>
+      <tr>
+        <td>3. حسم: استرداد الدفعة المقدمة (Advance Payment Recovery)</td>
+        <td class="num" style="color:#b45309;">(${adv.toLocaleString("ar-SA", {minimumFractionDigits:2, maximumFractionDigits:2})})</td>
+        <td>بند 14.2</td>
+      </tr>
+      <tr style="font-weight:700;">
+        <td>4. صافي المستحق المرحلي قبل الضريبة</td>
+        <td class="num">${netBeforeVat.toLocaleString("ar-SA", {minimumFractionDigits:2, maximumFractionDigits:2})}</td>
+        <td>صافي شهادة الدفع</td>
+      </tr>
+      <tr>
+        <td>5. ضريبة القيمة المضافة (15% VAT)</td>
+        <td class="num">${vat.toLocaleString("ar-SA", {minimumFractionDigits:2, maximumFractionDigits:2})}</td>
+        <td>هيئة الزكاة والضريبة والجمارك</td>
+      </tr>
+      <tr class="total-row">
+        <td>الإجمالي الصافي المعتمد للصرف شاملاً ضريبة القيمة المضافة</td>
+        <td class="num" style="color:#15803d; font-size:16px;">${totalPayable.toLocaleString("ar-SA", {minimumFractionDigits:2, maximumFractionDigits:2})}</td>
+        <td>المبلغ المستحق النهائي</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="signatures">
+    <div class="sig-box">
+      <strong>مدير مشروع المقاول</strong>
+      <p style="margin-top:40px;">الاسم والتوقيع والختم</p>
+    </div>
+    <div class="sig-box">
+      <strong>المهندس الاستشاري المشرف</strong>
+      <p style="margin-top:40px;">الاسم والتوقيع والختم</p>
+    </div>
+    <div class="sig-box">
+      <strong>مدير المشروع لممثل المالك</strong>
+      <p style="margin-top:40px;">الاعتماد النهائي للصرف</p>
+    </div>
+  </div>
+</body>
+</html>
+`;
+      const win = window.open("", "_blank", "width=900,height=800");
+      if (win) {
+        win.document.write(printHtml);
+        win.document.close();
+      }
+    },
+
+    printPO: function(poId) {
+      alert("جاري تجهيز أمر الشراء التوريدي المعتمد: " + (poId || "PO-2026-001"));
+    },
+
+    printNCR: function(ncrId) {
+      alert("جاري تجهيز تقرير عدم المطابقة الفني المعتمد: " + (ncrId || "NCR-2026-001"));
+    },
+
+    printCVR: function() {
+      alert("جاري تصدير تقرير تسوية التكلفة والقيمة (CVR Ledger AACE RP 20R)");
+    }
+  };
+
+  window.renderGanttChart = renderGanttChart;
+  window.PrintEngine = PrintEngine;
+
 })(window);
