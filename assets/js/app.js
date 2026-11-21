@@ -1,6 +1,25 @@
 /* ==========================================================================
    APP.JS - Main Controller, Navigation & View Generators
    ========================================================================== */
+function escapeHTML(str) {
+  if (str === null || str === undefined) return '';
+  if (typeof str !== 'string') return String(str);
+  if (window.DOMSanitizer && typeof window.DOMSanitizer.escape === 'function') {
+    return window.DOMSanitizer.escape(str);
+  }
+  return str.replace(/[&<>"']/g, function(m) {
+    switch (m) {
+      case '&': return '&amp;';
+      case '<': return '&lt;';
+      case '>': return '&gt;';
+      case '"': return '&quot;';
+      case "'": return '&#39;';
+      default: return m;
+    }
+  });
+}
+window.escapeHTML = escapeHTML;
+
 document.addEventListener("DOMContentLoaded", () => {
   populateCompanyDropdown();
   populateProjectDropdown();
