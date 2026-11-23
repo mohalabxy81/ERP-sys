@@ -53,7 +53,7 @@ function getProjectPlannedValue(prj) {
     const acts = MimarERP.scheduleMaster.filter(a => a.project_id === prjId);
     if (acts.length > 0) {
       let planned = 0;
-      const today = new Date('2026-03-20');
+      const today = (prj && prj.status_date) ? new Date(prj.status_date) : new Date();
       acts.forEach(a => {
         const itemBudget = a.budget || (BAC * (a.weight_pct || 10) / 100);
         const start = new Date(a.planned_start);
@@ -65,7 +65,7 @@ function getProjectPlannedValue(prj) {
           planned += itemBudget * Math.min(Math.max(ratio, 0), 1);
         }
       });
-      return planned > 0 ? planned : BAC * 0.5;
+      return planned > 0 ? planned : (BAC * ((prj.planned_progress_pct || 0) / 100));
     }
   }
   const pct = prj.planned_progress_pct !== undefined 
@@ -91,7 +91,7 @@ function calculatePortfolioEVM() {
     const bac = p.direct_cost_budget || (p.contract_value * 0.75);
     totalBAC += bac;
     const ac = getProjectActualCost(p.project_id);
-    totalAC += (ac > 0 ? ac : bac * 0.45);
+    totalAC += ac;
     totalEV += getProjectEarnedValue(p);
     totalPV += getProjectPlannedValue(p);
     if (p.status === 'Active' || p.status === 'جاري التنفيذ' || p.status === 'نشط') {
@@ -135,8 +135,8 @@ function calculateEVM(prj) {
 
   const BAC = prj.direct_cost_budget || (prj.contract_value * 0.75);
   let AC = getProjectActualCost(prj.project_id);
-  if (AC <= 0) {
-    AC = BAC * ((prj.physical_progress_pct || 50) / 100) * 0.95;
+  if (AC <= 0 && prj.actual_cost_direct) {
+    AC = Number(prj.actual_cost_direct);
   }
   const EV = getProjectEarnedValue(prj);
   const PV = getProjectPlannedValue(prj);
@@ -186,10 +186,13 @@ function calculateEVM(prj) {
   if (cardSpi) {
     if (SPI >= 1.0) {
       cardSpi.className = "kpi-card green";
-      setEl("kpi-spi-desc", "المشروع متقدم عن الجدول الزمني");
-    } else {
+      setEl("kpi-spi-desc", "المشروع متقدم أو متطابق مع الجدول الزمني");
+    } else if (SPI >= 0.85) {
       cardSpi.className = "kpi-card amber";
-      setEl("kpi-spi-desc", "المشروع يعاني من تأخير طفيف");
+      setEl("kpi-spi-desc", "تحذير: تأخير معتدل عن الجدول الزمني (" + ((1 - SPI) * 100).toFixed(1) + "% انحراف)");
+    } else {
+      cardSpi.className = "kpi-card red";
+      setEl("kpi-spi-desc", "إنذار حرج: تأخير جسيم يستوجب خطة استدراك (Recovery Schedule)");
     }
   }
 

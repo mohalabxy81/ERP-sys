@@ -252,6 +252,39 @@ test('ERP_PERSIST_KEYS contains complete entity keys', () => {
   assert(appCode.includes('scheduleMaster') && appCode.includes('qaqcInspections') && appCode.includes('claimsMaster'), 'ERP_PERSIST_KEYS incomplete');
 });
 
+console.log('\n🔒 10. Audit Remediation & Integrity Verification');
+test('start-erp.bat binds server to 127.0.0.1 and switches dir', () => {
+  const bat = fs.readFileSync('start-erp.bat', 'utf8');
+  assert(bat.includes('--bind 127.0.0.1'), 'start-erp.bat binds server to 127.0.0.1');
+  assert(bat.includes('cd /d "%~dp0"'), 'start-erp.bat switches directory correctly');
+});
+test('crud-engine uses textContent and safe net_paid coalescing', () => {
+  const crud = fs.readFileSync('assets/js/crud-engine.js', 'utf8');
+  assert(crud.includes('toast.textContent = msg'), 'crud-engine.js uses textContent for toast messages');
+  assert(crud.includes('net_paid !== undefined'), 'crud-engine.js safely handles net_paid nullish checks');
+});
+test('evm-calculator has no hardcoded cutoff date', () => {
+  const evm = fs.readFileSync('assets/js/evm-calculator.js', 'utf8');
+  assert(!evm.includes("'2026-03-20'"), 'evm-calculator.js has no hardcoded evaluation cut-off date');
+});
+test('state-store defines rehydrateFromMimarERP', () => {
+  const store = fs.readFileSync('assets/js/core/state-store.js', 'utf8');
+  assert(store.includes('rehydrateFromMimarERP'), 'state-store.js defines rehydrateFromMimarERP');
+});
+test('Foreign keys normalized in config.js', () => {
+  const cfg = fs.readFileSync('assets/js/config.js', 'utf8');
+  assert(cfg.includes('"SUP-0001"') || cfg.includes("'SUP-0001'"), 'config.js contains normalized 4-digit supplier IDs');
+  assert(cfg.includes('"SUB-0001"') || cfg.includes("'SUB-0001'"), 'config.js contains normalized subcontract IDs');
+});
+test('Document control input sanitization', () => {
+  const doc = fs.readFileSync('modules/document-control/document-control.js', 'utf8');
+  assert(doc.includes('escapeHtml'), 'document-control.js implements HTML escaping for inputs');
+});
+test('3-Way Match logic flags financial variance', () => {
+  const app = fs.readFileSync('assets/js/app.js', 'utf8');
+  assert(app.includes('موقوف — تباين مالي'), 'app.js includes 3-way match variance stoppage condition');
+});
+
 // --- Summary ---
 console.log(`\n${'='.repeat(40)}`);
 console.log(`PASSED: ${pass}  |  FAILED: ${fail}  |  TOTAL: ${pass + fail}`);

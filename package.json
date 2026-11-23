@@ -1,0 +1,21 @@
+{
+  "name": "mimar-erp-ecos",
+  "version": "8.0.0",
+  "description": "Mimar Enterprise Construction Operating System (ECOS) - Client-Side Technical Office Simulator",
+  "main": "index.html",
+  "scripts": {
+    "test": "node scripts/v8_validation.js",
+    "audit": "node scripts/project_audit.js",
+    "start": "start start-erp.bat"
+  },
+  "keywords": [
+    "construction-erp",
+    "technical-office",
+    "evm",
+    "cpm",
+    "fidic",
+    "zatca"
+  ],
+  "author": "Mimar ERP Team",
+  "license": "MIT"
+}

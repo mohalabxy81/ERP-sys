@@ -1,29 +1,13 @@
-# Mimar Enterprise Construction ERP - .gitignore
+# Dependencies & runtime
+node_modules/
+package-lock.json
 
-# Python & Runtime
-__pycache__/
-*.pyc
-*.pyo
-*.pyd
-.Python
-env/
-venv/
-.venv/
+# Environment & credentials
+.env
+.env.*
 
-# Editor & System Files
-.vscode/
-.idea/
-*.swp
-*.swo
-Thumbs.db
-ehthumbs.db
-Desktop.ini
-$RECYCLE.BIN/
-
-# Large Raw Source Backups
-*.bak
-source-documents/*.zip
-source-documents/*.bak
-
-# Temporary & Log files
+# Logs & scratch
 *.log
+scratch/
+temp/
+.cache/

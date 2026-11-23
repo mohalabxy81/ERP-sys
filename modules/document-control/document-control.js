@@ -1,3 +1,16 @@
+function escapeHtml(str) {
+  if (str === null || str === undefined) return '';
+  return String(str).replace(/[&<>"']/g, function(m) {
+    switch (m) {
+      case '&': return '&amp;';
+      case '<': return '&lt;';
+      case '>': return '&gt;';
+      case '"': return '&quot;';
+      case "'": return '&#39;';
+      default: return m;
+    }
+  });
+}
 // Tab Switching Logic
     function switchDocTab(tabId, btn) {
       document.querySelectorAll('.tab-section-content').forEach(el => el.classList.remove('active'));
@@ -33,7 +46,7 @@
       const file = event.target.files[0];
       if (file) {
         document.getElementById('dropzoneText').innerHTML = `
-          <span style="color:#059669;"><i class="fas fa-file-circle-check"></i> تم اختيار: ${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB)</span>
+          <span style="color:#059669;"><i class="fas fa-file-circle-check"></i> تم اختيار: ${escapeHtml(file.name)} (${(file.size / 1024 / 1024).toFixed(2)} MB)</span>
         `;
       }
     }
@@ -58,12 +71,12 @@
       const newRow = table.insertRow(0);
 
       newRow.innerHTML = `
-        <td class="text-num" style="font-weight:800; color:var(--navy);">${docNo}</td>
-        <td>${title}</td>
+        <td class="text-num" style="font-weight:800; color:var(--navy);">${escapeHtml(docNo)}</td>
+        <td>${escapeHtml(title)}</td>
         <td><span class="disc-badge ${discClass}">${disc}</span></td>
         <td class="text-num" style="font-weight:700;">${rev}</td>
         <td><span class="badge status-review"><i class="fas fa-clock"></i> قيد المراجعة</span></td>
-        <td class="text-num">${transmittal}</td>
+        <td class="text-num">${escapeHtml(transmittal)}</td>
         <td>${dateStr}</td>
         <td style="text-align:center;">
           <button class="btn btn-outline btn-sm" onclick="previewDoc('${docNo}')" title="معاينة"><i class="fas fa-eye"></i></button>

@@ -91,7 +91,7 @@
       this._middlewares = [];
       this._idb = new IndexedDBDriver();
       this._debounceTimers = {};
-      this._storageKey = 'MimarERPData_v6';
+      this._storageKey = 'MimarERPData_v8';
 
       // Initialize with window.MimarERP defaults
       this._bootstrap();
@@ -187,6 +187,47 @@
       window.MimarERP.punchListItems = s.fieldOps.punchList;
       window.MimarERP.rfiList = s.fieldOps.rfis;
       window.MimarERP.submittalsList = s.fieldOps.submittals;
+    }
+
+    
+    rehydrateFromMimarERP() {
+      if (!window.MimarERP) return;
+      const m = window.MimarERP;
+      const s = this._state;
+      if (!s) return;
+      if (m.subcontractsMaster) s.commercial.subcontracts = m.subcontractsMaster;
+      if (m.tenderPackagesMaster) s.commercial.tenderPackages = m.tenderPackagesMaster;
+      if (m.contractorsMaster) s.commercial.contractors = m.contractorsMaster;
+      if (m.contractorRatesMaster) s.commercial.contractorRates = m.contractorRatesMaster;
+      if (m.suppliersMaster) s.supplyChain.suppliers = m.suppliersMaster;
+      if (m.supplierItemsMaster) s.supplyChain.supplierItems = m.supplierItemsMaster;
+      if (m.partnerCatalog) s.supplyChain.partnerCatalog = m.partnerCatalog;
+      if (m.priceComparisonMaster) s.supplyChain.priceComparisons = m.priceComparisonMaster;
+      if (m.purchaseOrders) s.supplyChain.purchaseOrders = m.purchaseOrders;
+      if (m.inventoryLedger) s.supplyChain.inventory = m.inventoryLedger;
+      if (m.projects) s.engineering.projects = m.projects;
+      if (m.wbs) s.engineering.wbs = m.wbs;
+      if (m.boq) s.engineering.boq = m.boq;
+      if (m.takeoff) s.engineering.takeoff = m.takeoff;
+      if (m.rateAnalysis) s.engineering.rateAnalysis = m.rateAnalysis;
+      if (m.bimElements) s.engineering.bimElements = m.bimElements;
+      if (m.bimClashesMaster) s.engineering.clashes = m.bimClashesMaster;
+      if (m.rebarBBSItems) s.engineering.rebarBBS = m.rebarBBSItems;
+      if (m.billing) s.finance.billing = m.billing;
+      if (m.financeBillings) s.finance.financeBillings = m.financeBillings;
+      if (m.financeAP) s.finance.financeAP = m.financeAP;
+      if (m.financeBudget) s.finance.financeBudget = m.financeBudget;
+      if (m.cvrLedgerMaster) s.finance.cvrLedger = m.cvrLedgerMaster;
+      if (m.costControlRegister) s.finance.costControl = m.costControlRegister;
+      if (m.siteDiaryLogs) s.fieldOps.siteDiary = m.siteDiaryLogs;
+      if (m.punchListItems) s.fieldOps.punchList = m.punchListItems;
+      if (m.rfiList) s.fieldOps.rfis = m.rfiList;
+      if (m.submittalsList) s.fieldOps.submittals = m.submittalsList;
+      if (m.safetyIncidents) s.fieldOps.safetyIncidents = m.safetyIncidents;
+      if (m.scheduleMaster) s.fieldOps.scheduleMaster = m.scheduleMaster;
+      if (m.currentCompanyId) s.context.currentCompanyId = m.currentCompanyId;
+      if (m.currentProjectId) s.context.currentProjectId = m.currentProjectId;
+      if (m.currentRole) s.context.currentRole = m.currentRole;
     }
 
     getState() {
@@ -290,6 +331,7 @@
 
         // --- SUPPLIERS & CATALOG ---
         case 'CATALOG_ITEM_ADD':
+        case 'CATALOG_ADD_ITEM':
           return {
             ...state,
             supplyChain: {

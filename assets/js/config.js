@@ -1537,7 +1537,8 @@ window.MimarERP = {
       "contract_duration_days": 120,
       "approved_eot_days": 0,
       "contract_value": 183733.98,
-      "direct_cost_budget": 123086.07,
+      "direct_cost_budget": 160000.00,
+      "baseline_direct_budget": 160000.00,
       "vat_pct": 15,
       "vat_amount": 27560.1,
       "contract_value_incl_vat": 211294.08,
@@ -5550,7 +5551,7 @@ window.MimarERP = {
     },
     {
       "record_id": "REC-ENR-100",
-      "supplier_id": "SUP-00006",
+      "supplier_id": "SUP-0006",
       "item_code": "MAT-CON-C15",
       "item_name": "خرسانة عادية خفيفة C15 لفرشة النظافة والصبات التحضيرية مطابق SASO ASTM C94",
       "category": "Concrete Materials",
@@ -5565,7 +5566,7 @@ window.MimarERP = {
     },
     {
       "record_id": "REC-ENR-101",
-      "supplier_id": "SUP-00006",
+      "supplier_id": "SUP-0006",
       "item_code": "MAT-CON-C40",
       "item_name": "خرسانة مسلحة جاهزة C40 مقاومة للأملاح والكبريتات SRC للقواعد واللبشة والأساسات - SBC 301",
       "category": "Concrete Materials",
@@ -5580,7 +5581,7 @@ window.MimarERP = {
     },
     {
       "record_id": "REC-ENR-102",
-      "supplier_id": "SUP-00006",
+      "supplier_id": "SUP-0006",
       "item_code": "MAT-CON-C45",
       "item_name": "خرسانة مسلحة عالية المقاومة C45 للأعمدة وجدران القص (Microsilica + Superplasticizer)",
       "category": "Concrete Materials",
@@ -5595,7 +5596,7 @@ window.MimarERP = {
     },
     {
       "record_id": "REC-ENR-103",
-      "supplier_id": "SUP-00006",
+      "supplier_id": "SUP-0006",
       "item_code": "MAT-CON-PT40",
       "item_name": "خرسانة مخصصة للبلاطات سابقة الإجهاد C40 مبكرة التصلب مع اختبارات الإجهاد عند 3 و7 أيام",
       "category": "Concrete Materials",
@@ -5610,7 +5611,7 @@ window.MimarERP = {
     },
     {
       "record_id": "REC-ENR-104",
-      "supplier_id": "SUP-00005",
+      "supplier_id": "SUP-0005",
       "item_code": "MAT-STL-B500B",
       "item_name": "حديد تسليح مشوه عالي المقاومة B500B توريد وتوضيب أقطار 8 إلى 32 مم مطابق SASO ISO 6935-2",
       "category": "Reinforcing Steel",
@@ -5625,7 +5626,7 @@ window.MimarERP = {
     },
     {
       "record_id": "REC-ENR-105",
-      "supplier_id": "SUP-00005",
+      "supplier_id": "SUP-0005",
       "item_code": "MAT-STL-PT",
       "item_name": "كابلات سابقة الإجهاد مجدولة 7 أسلاك عالية المتانة قطر 12.7 و 15.2 مم (ASTM A416 Grade 270)",
       "category": "Reinforcing Steel",
@@ -5640,7 +5641,7 @@ window.MimarERP = {
     },
     {
       "record_id": "REC-ENR-106",
-      "supplier_id": "SUP-00004",
+      "supplier_id": "SUP-0004",
       "item_code": "MAT-BLK-AAC20",
       "item_name": "بلوك خرساني خلوي خفيف عازل حرارياً (سيبوركس AAC) سماكة 200 مم مطابق كود الطاقة SBC 601",
       "category": "Masonry Blocks",
@@ -5655,7 +5656,7 @@ window.MimarERP = {
     },
     {
       "record_id": "REC-ENR-107",
-      "supplier_id": "SUP-00004",
+      "supplier_id": "SUP-0004",
       "item_code": "MAT-BLK-FR20",
       "item_name": "بلوك أسمنتي مصمت عالي الكثافة مقاوم للحريق 4 ساعات للمصاعد والمناور وغرف الميكانيك - SBC 801",
       "category": "Masonry Blocks",
@@ -5670,7 +5671,7 @@ window.MimarERP = {
     },
     {
       "record_id": "REC-ENR-108",
-      "supplier_id": "SUP-00007",
+      "supplier_id": "SUP-0007",
       "item_code": "MAT-INS-SBS4",
       "item_name": "لفائف بيتومين معدل بالبوليمر SBS سماكة 4 مم مع طبقة حماية للتنك السطحي وعزل اللبشة والأساسات",
       "category": "Insulation & Waterproofing",
@@ -5685,7 +5686,7 @@ window.MimarERP = {
     },
     {
       "record_id": "REC-ENR-109",
-      "supplier_id": "SUP-00007",
+      "supplier_id": "SUP-0007",
       "item_code": "MAT-INS-XPS50",
       "item_name": "ألواح عزل حراري بوليسترين مبثوق XPS سماكة 50 مم كثافة 35 كجم/م³ لنظام الكومبو روف المعكوس",
       "category": "Insulation & Waterproofing",
@@ -5700,7 +5701,7 @@ window.MimarERP = {
     },
     {
       "record_id": "REC-ENR-110",
-      "supplier_id": "SUP-00012",
+      "supplier_id": "SUP-0012",
       "item_code": "MAT-GLZ-CW",
       "item_name": "واجهات زجاجية ستراكشرال كرتن وول دبل جلاس 28 مم معالجة للتحكم الحراري وانعكاس الشمس Low-E",
       "category": "Glazing & Curtain Walls",
@@ -5715,7 +5716,7 @@ window.MimarERP = {
     },
     {
       "record_id": "REC-ENR-111",
-      "supplier_id": "SUP-00012",
+      "supplier_id": "SUP-0012",
       "item_code": "MAT-GLZ-WIN",
       "item_name": "شبابيك ألمنيوم سرايا قطاع حراري معزول (Thermal-Break) مع زجاج مزدوج وشترات كهربائية",
       "category": "Glazing & Curtain Walls",
@@ -5730,7 +5731,7 @@ window.MimarERP = {
     },
     {
       "record_id": "REC-ENR-112",
-      "supplier_id": "SUP-00009",
+      "supplier_id": "SUP-0009",
       "item_code": "MAT-CLS-RS30",
       "item_name": "كسوة حجر الرياض الطبيعي المجلي والمسمسم سماكة 30 مم مع زوايا ومثبتات ميكانيكية ستانلس ستيل",
       "category": "Cladding & Finishes",
@@ -5745,7 +5746,7 @@ window.MimarERP = {
     },
     {
       "record_id": "REC-ENR-113",
-      "supplier_id": "SUP-00010",
+      "supplier_id": "SUP-0010",
       "item_code": "MAT-DOR-FR60",
       "item_name": "أبواب حديد طوارئ ومخارج هروب مقاومة للحريق 90-120 دقيقة مع قفل هلع ومغلاق هيدروليكي UL/FM",
       "category": "Doors & Openings",
@@ -5760,7 +5761,7 @@ window.MimarERP = {
     },
     {
       "record_id": "REC-ENR-114",
-      "supplier_id": "SUP-00010",
+      "supplier_id": "SUP-0010",
       "item_code": "MAT-DOR-WD01",
       "item_name": "أبواب خشب كبس داخلية حشو صلب Solid Core مع قشرة سنديان ودهان بولي يوريثان وكوالين أوروبية",
       "category": "Doors & Openings",
@@ -5775,7 +5776,7 @@ window.MimarERP = {
     },
     {
       "record_id": "REC-ENR-115",
-      "supplier_id": "SUP-00009",
+      "supplier_id": "SUP-0009",
       "item_code": "MAT-TIL-POR60",
       "item_name": "بلاط بورسلان فل بدي 60×120 سم نانو مجلي عالي المقاومة ومقاوم للانزلاق R10 للصاقات والممرات",
       "category": "Flooring & Tiles",
@@ -5790,7 +5791,7 @@ window.MimarERP = {
     },
     {
       "record_id": "REC-ENR-116",
-      "supplier_id": "SUP-00009",
+      "supplier_id": "SUP-0009",
       "item_code": "MAT-TIL-MRB01",
       "item_name": "رخام إسباني كريم مارفيل نخب أول سماكة 20 مم لأرضيات وجدران بهو المدخل الرئيسي والصالات",
       "category": "Flooring & Marble",
@@ -5805,7 +5806,7 @@ window.MimarERP = {
     },
     {
       "record_id": "REC-ENR-117",
-      "supplier_id": "SUP-00004",
+      "supplier_id": "SUP-0004",
       "item_code": "MAT-GYP-MR12",
       "item_name": "أسقف معلقة ألواح جبس بورد مقاوم للرطوبة أخضر MR سماكة 12.5 مم مع الهيكل المعدني المجلفن C-Stud",
       "category": "Ceilings & Partitions",
@@ -5820,7 +5821,7 @@ window.MimarERP = {
     },
     {
       "record_id": "REC-ENR-118",
-      "supplier_id": "SUP-00008",
+      "supplier_id": "SUP-0008",
       "item_code": "MAT-PNT-JOT01",
       "item_name": "دهان داخلي مائي فاخر فينومستيك جوتن 3 أوجه مع الأساس المائي والمعجون الحريري الناعم",
       "category": "Paints & Finishes",
@@ -5835,7 +5836,7 @@ window.MimarERP = {
     },
     {
       "record_id": "REC-ENR-119",
-      "supplier_id": "SUP-00008",
+      "supplier_id": "SUP-0008",
       "item_code": "MAT-PNT-PRF01",
       "item_name": "لياسة ديكورية بروفايل أكريليك خارجية مبرومة مقاومة للأشعة فوق البنفسجية والأتربة والبهتان",
       "category": "Paints & Finishes",
@@ -5850,7 +5851,7 @@ window.MimarERP = {
     },
     {
       "record_id": "REC-ENR-120",
-      "supplier_id": "SUP-00007",
+      "supplier_id": "SUP-0007",
       "item_code": "MAT-EPX-FLR",
       "item_name": "أرضيات إيبوكسي صناعية عالية التحمل Sikafloor لمواقف السيارات والأقبية مقاومة للزيوت والاحتكاك",
       "category": "Special Coatings",
@@ -5865,7 +5866,7 @@ window.MimarERP = {
     },
     {
       "record_id": "REC-ENR-121",
-      "supplier_id": "SUP-00011",
+      "supplier_id": "SUP-0011",
       "item_code": "MAT-MEP-CHL250",
       "item_name": "شيلر مائي تبريد هوائي سعة 250 طن تبريد كفاءة طاقة موسمية عالية VFD متوافق مع كود SBC 601",
       "category": "HVAC Equipment",
@@ -5880,7 +5881,7 @@ window.MimarERP = {
     },
     {
       "record_id": "REC-ENR-122",
-      "supplier_id": "SUP-00011",
+      "supplier_id": "SUP-0011",
       "item_code": "MAT-MEP-FCU03",
       "item_name": "وحدات ملف ومروحة مخفية FCU سعة 3 طن تبريد مع ترموستات ذكي وصمامات تحكم متغيرة التدفق PICV",
       "category": "HVAC Equipment",
@@ -5895,7 +5896,7 @@ window.MimarERP = {
     },
     {
       "record_id": "REC-ENR-123",
-      "supplier_id": "SUP-00010",
+      "supplier_id": "SUP-0010",
       "item_code": "MAT-MEP-SOLAR",
       "item_name": "محطة طاقة شمسية كهروضوئية هجينة على الأسطح خلايا أحادية البلورة كفاءة 22% ومحولات متصلة بالشبكة",
       "category": "Renewable Energy",
@@ -6344,6 +6345,7 @@ window.MimarERP = {
     },
     {
       "contractor_id": "SUB-0011",
+      "contractor_code": "CTR-211",
       "contractor_name": "شركة أوتاد للأساسات والخوازيق (Awtad Foundations & Piling Co.)",
       "trade_name": "أوتاد للأساسات",
       "specialty": "خوازيق وسند جوانب حفر ونزح مياه",
@@ -6365,6 +6367,7 @@ window.MimarERP = {
     },
     {
       "contractor_id": "SUB-0012",
+      "contractor_code": "CTR-212",
       "contractor_name": "شركة الصفا لأنظمة الواجهات الزجاجية (Safa Facade Systems KSA)",
       "trade_name": "الصفا للواجهات",
       "specialty": "واجهات زجاجية وكرتن وول وكلادينج",
@@ -6386,6 +6389,7 @@ window.MimarERP = {
     },
     {
       "contractor_id": "SUB-0013",
+      "contractor_code": "CTR-213",
       "contractor_name": "شركة نجد للمقاولات الكهروميكانيكية (Najd Mechanical & Electrical)",
       "trade_name": "نجد كهروميكانيك (Najd MEP)",
       "specialty": "كهروميكانيك شامل (MEP, HVAC, Fire)",
@@ -6407,6 +6411,7 @@ window.MimarERP = {
     },
     {
       "contractor_id": "SUB-0014",
+      "contractor_code": "CTR-214",
       "contractor_name": "مؤسسة قمرة لأعمال التشطيبات والديكور (Qamra Finishing Works Est.)",
       "trade_name": "قمرة للتشطيبات الفاخرة",
       "specialty": "تشطيبات معمارية وديكور وجبس",
@@ -6428,6 +6433,7 @@ window.MimarERP = {
     },
     {
       "contractor_id": "SUB-0015",
+      "contractor_code": "CTR-215",
       "contractor_name": "شركة تالفين للمقاولات الإنشائية (Talveen Engineering Contracting)",
       "trade_name": "تالفين للمقاولات الهندسية",
       "specialty": "هياكل خرسانية وبلاطات سابقة الإجهاد",
@@ -6449,6 +6455,7 @@ window.MimarERP = {
     },
     {
       "contractor_id": "SUB-0016",
+      "contractor_code": "CTR-216",
       "contractor_name": "شركة ساروانة وشركاه للمقاولات (Sarwaneh & Partners Contracting)",
       "trade_name": "ساروانة للمقاولات",
       "specialty": "مقاولات عامة وأعمال متكاملة تسليم مفتاح",
@@ -6470,6 +6477,7 @@ window.MimarERP = {
     },
     {
       "contractor_id": "SUB-0017",
+      "contractor_code": "CTR-217",
       "contractor_name": "شركة وضاحان للمقاولات العامة (Wadhaan General Contractors)",
       "trade_name": "وضاحان للمقاولات",
       "specialty": "حفريات وردم وخرسانات كتلية وبنية تحتية",
@@ -6491,6 +6499,7 @@ window.MimarERP = {
     },
     {
       "contractor_id": "SUB-0018",
+      "contractor_code": "CTR-218",
       "contractor_name": "شركة كلانمير الخليج للواجهات (Clanmere Facades Gulf)",
       "trade_name": "كلانمير للواجهات المعمارية",
       "specialty": "واجهات زجاجية متقدمة ومظلات شمسية",
@@ -6512,6 +6521,7 @@ window.MimarERP = {
     },
     {
       "contractor_id": "SUB-0019",
+      "contractor_code": "CTR-219",
       "contractor_name": "شركة نخبة الدولية للمقاولات المتخصصة (Nakhbara International)",
       "trade_name": "نخبة للمقاولات المتخصصة",
       "specialty": "عوازل صناعية وأرضيات إيبوكسي وبولي يوريثان",
@@ -7607,7 +7617,7 @@ window.MimarERP = {
       "project_id": "PRJ-2001",
       "company_id": "CMP-1001",
       "cost_code": "CC-03-01",
-      "supplier_id": "SUP-01",
+      "supplier_id": "SUP-0001",
       "subtotal": 41261,
       "vat_amount": 6189,
       "zatca_uuid": "ZATCA-AP-1000"
@@ -7621,7 +7631,7 @@ window.MimarERP = {
       "project_id": "PRJ-2001",
       "company_id": "CMP-1001",
       "cost_code": "CC-09-03",
-      "supplier_id": "SUP-02",
+      "supplier_id": "SUP-0002",
       "subtotal": 57800,
       "vat_amount": 8670,
       "zatca_uuid": "ZATCA-AP-1001"
@@ -7635,7 +7645,7 @@ window.MimarERP = {
       "project_id": "PRJ-2001",
       "company_id": "CMP-1001",
       "cost_code": "CC-09-05",
-      "supplier_id": "SUP-03",
+      "supplier_id": "SUP-0003",
       "subtotal": 25200,
       "vat_amount": 3780,
       "zatca_uuid": "ZATCA-AP-1002"
@@ -7649,7 +7659,7 @@ window.MimarERP = {
       "project_id": "PRJ-2001",
       "company_id": "CMP-1001",
       "cost_code": "CC-07-01",
-      "supplier_id": "SUP-04",
+      "supplier_id": "SUP-0004",
       "subtotal": 14850,
       "vat_amount": 2227,
       "zatca_uuid": "ZATCA-AP-1003"
@@ -7663,7 +7673,7 @@ window.MimarERP = {
       "project_id": "PRJ-2002",
       "company_id": "CMP-1001",
       "cost_code": "CC-03-02",
-      "supplier_id": "SUP-05",
+      "supplier_id": "SUP-0005",
       "subtotal": 427500,
       "vat_amount": 64125,
       "zatca_uuid": "ZATCA-AP-1004"
@@ -7691,7 +7701,7 @@ window.MimarERP = {
       "project_id": "PRJ-2002",
       "company_id": "CMP-1001",
       "cost_code": "CC-05-01",
-      "supplier_id": "SUP-06",
+      "supplier_id": "SUP-0006",
       "subtotal": 91000,
       "vat_amount": 13650,
       "zatca_uuid": "ZATCA-AP-1006"
@@ -7974,7 +7984,8 @@ window.MimarERP = {
       "status": "مكتمل ومسلّم",
       "project_id": "PRJ-2001",
       "company_id": "CMP-1001",
-      "contractor_id": "CTR-201",
+      "contractor_id": "SUB-0001",
+      "contractor_code": "CTR-201",
       "cost_code": "CC-07-02",
       "wbs_code": "WBS-07.1",
       "performance_rating": 92
@@ -7993,7 +8004,8 @@ window.MimarERP = {
       "status": "قيد التنفيذ بالموقع",
       "project_id": "PRJ-2001",
       "company_id": "CMP-1001",
-      "contractor_id": "CTR-202",
+      "contractor_id": "SUB-0002",
+      "contractor_code": "CTR-202",
       "cost_code": "CC-08-01",
       "wbs_code": "WBS-08.1",
       "performance_rating": 88
@@ -8012,7 +8024,8 @@ window.MimarERP = {
       "status": "قيد التنفيذ بالموقع",
       "project_id": "PRJ-2001",
       "company_id": "CMP-1001",
-      "contractor_id": "CTR-203",
+      "contractor_id": "SUB-0003",
+      "contractor_code": "CTR-203",
       "cost_code": "CC-09-04",
       "wbs_code": "WBS-09.2",
       "performance_rating": 90
@@ -8031,7 +8044,8 @@ window.MimarERP = {
       "status": "قيد التنفيذ بالموقع",
       "project_id": "PRJ-2001",
       "company_id": "CMP-1001",
-      "contractor_id": "CTR-204",
+      "contractor_id": "SUB-0004",
+      "contractor_code": "CTR-204",
       "cost_code": "CC-09-03",
       "wbs_code": "WBS-09.3",
       "performance_rating": 85
@@ -8050,7 +8064,8 @@ window.MimarERP = {
       "status": "مكتمل ومسلّم",
       "project_id": "PRJ-2001",
       "company_id": "CMP-1001",
-      "contractor_id": "CTR-205",
+      "contractor_id": "SUB-0005",
+      "contractor_code": "CTR-205",
       "cost_code": "CC-09-05",
       "wbs_code": "WBS-09.4",
       "performance_rating": 94
@@ -8069,7 +8084,8 @@ window.MimarERP = {
       "status": "مكتمل ومسلّم ابتدائي",
       "project_id": "PRJ-2002",
       "company_id": "CMP-1001",
-      "contractor_id": "CTR-206",
+      "contractor_id": "SUB-0006",
+      "contractor_code": "CTR-206",
       "cost_code": "CC-03-01",
       "wbs_code": "WBS-01.1",
       "performance_rating": 91
@@ -8088,7 +8104,8 @@ window.MimarERP = {
       "status": "قيد التنفيذ بالموقع (75%)",
       "project_id": "PRJ-2002",
       "company_id": "CMP-1001",
-      "contractor_id": "CTR-207",
+      "contractor_id": "SUB-0007",
+      "contractor_code": "CTR-207",
       "cost_code": "CC-05-01",
       "wbs_code": "WBS-01.2",
       "performance_rating": 87
@@ -8107,7 +8124,8 @@ window.MimarERP = {
       "status": "قيد التوريد والتركيب (55%)",
       "project_id": "PRJ-2002",
       "company_id": "CMP-1001",
-      "contractor_id": "CTR-208",
+      "contractor_id": "SUB-0008",
+      "contractor_code": "CTR-208",
       "cost_code": "CC-14-01",
       "wbs_code": "WBS-02.1",
       "performance_rating": 95
@@ -8126,7 +8144,8 @@ window.MimarERP = {
       "status": "قيد التمديدات والتركيب (60%)",
       "project_id": "PRJ-2003",
       "company_id": "CMP-1002",
-      "contractor_id": "CTR-209",
+      "contractor_id": "SUB-0009",
+      "contractor_code": "CTR-209",
       "cost_code": "CC-15-01",
       "wbs_code": "WBS-03.1",
       "performance_rating": 89
@@ -8145,7 +8164,8 @@ window.MimarERP = {
       "status": "قيد التنفيذ بالموقع (45%)",
       "project_id": "PRJ-2003",
       "company_id": "CMP-1002",
-      "contractor_id": "CTR-210",
+      "contractor_id": "SUB-0010",
+      "contractor_code": "CTR-210",
       "cost_code": "CC-16-01",
       "wbs_code": "WBS-03.2",
       "performance_rating": 86
@@ -9643,7 +9663,7 @@ window.MimarERP = {
     "po_id": "PO-2026-001",
     "project_id": "PRJ-2001",
     "project_name": "فلل الغروب السكنية",
-    "supplier_id": "SUP-01",
+    "supplier_id": "SUP-0001",
     "supplier_name": "شركة أسمنت ينبع والمدينة",
     "material_desc": "أسمنت بورتلاندي عادي 50 كجم",
     "cost_code": "MAT-CONC-01",
@@ -9666,7 +9686,7 @@ window.MimarERP = {
     "po_id": "PO-2026-002",
     "project_id": "PRJ-2002",
     "project_name": "برج الصحافة التجاري",
-    "supplier_id": "SUP-02",
+    "supplier_id": "SUP-0002",
     "supplier_name": "شركة هضاب الخليج للسيراميك",
     "material_desc": "سيراميك وبورسلان وبلاط أحواش",
     "cost_code": "FIN-CERAMIC-04",
@@ -9689,7 +9709,7 @@ window.MimarERP = {
     "po_id": "PO-2026-003",
     "project_id": "PRJ-2001",
     "project_name": "فلل الغروب السكنية",
-    "supplier_id": "SUP-03",
+    "supplier_id": "SUP-0003",
     "supplier_name": "شركة دهانات الجزيرة",
     "material_desc": "غراء لاصق Santex C2TE ودهانات أكريليك",
     "cost_code": "FIN-PAINT-02",
@@ -9712,7 +9732,7 @@ window.MimarERP = {
     "po_id": "PO-2026-004",
     "project_id": "PRJ-2002",
     "project_name": "برج الصحافة التجاري",
-    "supplier_id": "SUP-04",
+    "supplier_id": "SUP-0004",
     "supplier_name": "شركة حديد سابك للمقاولات",
     "material_desc": "حديد تسليح عالي الإجهاد قطر 16 مم و20 مم Gr.60",
     "cost_code": "MAT-REBAR-02",
@@ -9735,7 +9755,7 @@ window.MimarERP = {
     "po_id": "PO-2026-005",
     "project_id": "PRJ-2004",
     "project_name": "كمباوند الملقا ريزيدنس",
-    "supplier_id": "SUP-05",
+    "supplier_id": "SUP-0005",
     "supplier_name": "شركة مصنع أنابيب الخليج PPR",
     "material_desc": "أنابيب ومحابس تغذية مياه PPR مقاس 1 بوصة معزولة",
     "cost_code": "MEP-PLUMB-01",
@@ -9758,7 +9778,7 @@ window.MimarERP = {
     "po_id": "PO-2026-006",
     "project_id": "PRJ-2003",
     "project_name": "مستودعات الخمرة اللوجستية",
-    "supplier_id": "SUP-06",
+    "supplier_id": "SUP-0006",
     "supplier_name": "شركة كابلات الرياض المحدودة",
     "material_desc": "كابلات نحاسية معزولة XLPE 4x70 mm²",
     "cost_code": "MEP-ELEC-03",
@@ -9784,7 +9804,9 @@ window.MimarERP = {
     "project_id": "PRJ-2001",
     "project_name": "فلل الغروب السكنية",
     "subject": "تأخر تسليم إحداثيات ومناسيب الربط والمخططات المعتمدة من الأمانة",
-    "fidic_clause": "FIDIC 2017 Sub-Clause 1.9 & 8.4",
+    "fidic_clause": "FIDIC 2017 Sub-Clause 1.9 & 8.5 (Extension of Time)",
+      "event_date": "2026-01-05",
+      "notice_compliance": "ضمن المهلة النظامية 28 يوماً (15 يوماً)",
     "eot_days_claimed": 14,
     "eot_days_approved": 14,
     "cost_impact": 48500,
@@ -9799,7 +9821,9 @@ window.MimarERP = {
     "project_id": "PRJ-2002",
     "project_name": "برج الصحافة التجاري",
     "subject": "توقف أعمال الحفر بسبب اكتشاف كابل كهرباء ضغط عالي غير موثق",
-    "fidic_clause": "FIDIC 2017 Sub-Clause 4.12 (Unforeseeable Physical Conditions)",
+    "fidic_clause": "FIDIC 2017 Sub-Clause 4.12 & 8.5 (Unforeseeable Physical Conditions)",
+      "event_date": "2026-01-18",
+      "notice_compliance": "ضمن المهلة النظامية 28 يوماً (17 يوماً)",
     "eot_days_claimed": 21,
     "eot_days_approved": 18,
     "cost_impact": 125000,

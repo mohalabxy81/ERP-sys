@@ -1039,9 +1039,9 @@
       const totalPayable = netBeforeVat + vat;
 
       // ZATCA QR
-      const qrSvg = (window.ZatcaEngine && window.ZatcaEngine.generateQrSvg)
-        ? window.ZatcaEngine.generateQrSvg("شركة إعمار وعمران للإنشاءات", "310123456700003", b.submission_date, totalPayable, vat)
-        : '<div style="border:1px solid #ccc; padding:20px;">[ZATCA QR]</div>';
+      const activeCo = (window.MimarERP && window.MimarERP.companies) ? (window.MimarERP.companies.find(c => c.company_id === (window.MimarERP.currentCompanyId || 'CMP-1001')) || window.MimarERP.companies[0]) : { company_name_ar: 'شركة مِعمار للمقاولات', vat_number: '300123456700003' };
+      const tlvB64 = (window.ZatcaEngine && window.ZatcaEngine.generateZatcaTLV) ? window.ZatcaEngine.generateZatcaTLV(activeCo.company_name_ar, activeCo.vat_number, b.submission_date, totalPayable, vat) : '';
+      const qrSvg = (window.ZatcaEngine && window.ZatcaEngine.generateQrSvg && tlvB64) ? window.ZatcaEngine.generateQrSvg(tlvB64, 160) : '<div style="border:1px dashed #cbd5e1; padding:15px; font-size:11px; color:#64748b; text-align:center;">[ZATCA QR Simulation]</div>';
 
       const printHtml = `
 <!DOCTYPE html>
@@ -1157,11 +1157,10 @@
 </body>
 </html>
 `;
-      const win = window.open("", "_blank", "width=900,height=800");
-      if (win) {
-        win.document.write(printHtml);
-        win.document.close();
-      }
+      const blob = new Blob([printHtml], { type: 'text/html;charset=utf-8' });
+      const blobUrl = URL.createObjectURL(blob);
+      const win = window.open(blobUrl, "_blank", "width=950,height=850");
+      if (win) { setTimeout(() => URL.revokeObjectURL(blobUrl), 60000); }
     },
 
     printPO: function(poId) {
@@ -1227,7 +1226,7 @@
 
   <div class="meta-grid">
     <div>
-      <div class="meta-row"><span class="meta-label">المورد المعتمد:</span><span class="meta-val">${po.supplier_name}</span></div>
+      <div class="meta-row"><span class="meta-label">المورد المعتمد:</span><span class="meta-val">${window.escapeHTML ? window.escapeHTML(po.supplier_name) : po.supplier_name}</span></div>
       <div class="meta-row"><span class="meta-label">رمز المورد:</span><span class="meta-val">${po.supplier_id || 'SUP-01'}</span></div>
       <div class="meta-row"><span class="meta-label">شروط الدفع:</span><span class="meta-val">30 يوماً من قبول الاستلام GRN</span></div>
     </div>
@@ -1252,7 +1251,7 @@
     <tbody>
       <tr>
         <td>1</td>
-        <td><strong>${po.material_desc}</strong></td>
+        <td><strong>${window.escapeHTML ? window.escapeHTML(po.material_desc) : po.material_desc}</strong></td>
         <td>${po.cost_code || 'MAT-01'}</td>
         <td class="num">${Number(po.quantity).toLocaleString("ar-SA")} ${po.unit}</td>
         <td class="num">${Number(po.unit_price).toLocaleString("ar-SA", {minimumFractionDigits:2, maximumFractionDigits:2})}</td>
@@ -1285,8 +1284,10 @@
   </div>
 </body>
 </html>`;
-      const win = window.open("", "_blank", "width=900,height=800");
-      if (win) { win.document.write(printHtml); win.document.close(); }
+      const blob = new Blob([printHtml], { type: 'text/html;charset=utf-8' });
+      const blobUrl = URL.createObjectURL(blob);
+      const win = window.open(blobUrl, "_blank", "width=950,height=850");
+      if (win) { setTimeout(() => URL.revokeObjectURL(blobUrl), 60000); }
     },
 
     printClaim: function(claimId) {
@@ -1350,7 +1351,7 @@
   </div>
 
   <div class="section-title">1. البيان الوقائعي والحدث المسبب للتأخير (Factual Narrative)</div>
-  <p style="font-size:13px; text-align:justify;">${c.subject}. وقع هذا الحدث خارج نطاق سيطرة المقاول وأدى إلى تعطيل الأنشطة الواقعة على المسار الحرج المعتمد في البرنامج الزمني Baseline وفق المادة 8.4 من عقد الفيديك.</p>
+  <p style="font-size:13px; text-align:justify;">${window.escapeHTML ? window.escapeHTML(c.subject) : c.subject}. وقع هذا الحدث خارج نطاق سيطرة المقاول وأدى إلى تعطيل الأنشطة الواقعة على المسار الحرج المعتمد في البرنامج الزمني Baseline وفق المادة 8.4 من عقد الفيديك.</p>
 
   <div class="section-title">2. الأثر الزمني والمالي المطلوب (Claim Particulars & Quantification)</div>
   <table>
@@ -1387,8 +1388,10 @@
   </div>
 </body>
 </html>`;
-      const win = window.open("", "_blank", "width=900,height=800");
-      if (win) { win.document.write(printHtml); win.document.close(); }
+      const blob = new Blob([printHtml], { type: 'text/html;charset=utf-8' });
+      const blobUrl = URL.createObjectURL(blob);
+      const win = window.open(blobUrl, "_blank", "width=950,height=850");
+      if (win) { setTimeout(() => URL.revokeObjectURL(blobUrl), 60000); }
     },
 
     printNCR: function(ncrId) {

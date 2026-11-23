@@ -119,7 +119,7 @@ function saveToLocalStorage() {
 
     // Synchronous LocalStorage backup with safe quota try/catch
     try {
-      localStorage.setItem('MimarERPData_v6', JSON.stringify(snap));
+      localStorage.setItem('MimarERPData_v8', JSON.stringify(snap));
     } catch(quotaErr) {
       console.info('LocalStorage quota reached, persisted safely in IndexedDB (MimarEcoStorage)');
     }
@@ -131,7 +131,7 @@ function saveToLocalStorage() {
 
 function loadFromLocalStorage() {
   try {
-    const raw = localStorage.getItem('MimarERPData_v6');
+    const raw = localStorage.getItem('MimarERPData_v8') || localStorage.getItem('MimarERPData_v6');
     if (!raw) return;
     const snap = JSON.parse(raw);
     if (!window.MimarERP) window.MimarERP = {};
@@ -443,7 +443,7 @@ function showToast(msg, duration = 3000) {
     toast.className = 'toast-notice';
     document.body.appendChild(toast);
   }
-  toast.innerHTML = msg;
+  toast.textContent = msg;
   toast.classList.add('show');
   clearTimeout(toast._timeout);
   toast._timeout = setTimeout(() => {
@@ -992,7 +992,7 @@ function openAddSubcontractModal(record = null) {
       { key: 'original_value', label: 'قيمة العقد الأصلية (SAR)', type: 'number', required: true, default: 350000 },
       { key: 'approved_vos', label: 'أوامر التغيير المعتمدة (SAR)', type: 'number', default: 0 },
       { key: 'executed_measured', label: 'الأعمال المنفذة بالحصر (SAR)', type: 'number', default: 0 },
-      { key: 'retention_pct', label: 'نسبة الحجز الضامن %', type: 'number', default: 5 },
+      { key: 'retention_pct', label: 'نسبة الحجز الضامن %', type: 'number', default: 10 },
       { key: 'status', label: 'حالة العقد', type: 'select', options: ['نشط وقيد التنفيذ','مكتمل ومسلم','قيد التسوية النهائية'], default: 'نشط وقيد التنفيذ' }
     ],
     onSave(data, rec) {
@@ -1244,7 +1244,8 @@ function openAddBillingIPCModal(record = null) {
       const prev = rec ? (Number(rec.previous_amount) || 0) : ((MimarERP.billing?.[MimarERP.billing.length - 1]?.total_certified) || 0);
       data.previous_amount = prev;
       data.total_certified = prev + cur;
-      data.retention_val = (cur * (Number(data.retention_pct) || 5)) / 100;
+      const retRate = (data.retention_pct !== undefined && data.retention_pct !== null && !isNaN(Number(data.retention_pct))) ? Number(data.retention_pct) : 10;
+      data.retention_val = (cur * retRate) / 100;
       data.net_payable = cur - data.retention_val;
       data.vat_15_pct = data.net_payable * 0.15;
       data.total_payable_incl_vat = data.net_payable + data.vat_15_pct;
@@ -2543,7 +2544,7 @@ window.renderSubcontractsTable = function() {
     const measured = Number(sc.executed_measured || 0);
     const billings = Number(sc.approved_billings || sc.executed_measured || 0);
     const retention = Number(sc.retention_val || (measured * 0.10));
-    const paid = Number(sc.net_paid || (measured - retention));
+    const paid = (sc.net_paid !== undefined && sc.net_paid !== null) ? Number(sc.net_paid) : (measured - retention);
 
     totalCommitment += (orig + vos);
     totalMeasured += measured;
@@ -2952,7 +2953,7 @@ window.renderContractorsMatrixTable = function() {
   }
 };
 
-// 5.25 Rebar BBS Table
+// 5.25 Rebar BBS Table (Dynamic Summary Cards + BS 8666 Integration)
 window.renderRebarBBS = function() {
   const tbody = document.getElementById("tbl-rebar-bbs-body") || document.querySelector("#tbl-rebar-bbs tbody");
   if (!tbody) return;
@@ -2960,25 +2961,55 @@ window.renderRebarBBS = function() {
   tbody.innerHTML = "";
   const list = MimarERP.rebarBBSItems || [];
 
+  let totalNetKg = 0;
+  let totalGrossKg = 0;
+  let totalBarsCount = 0;
+
   list.forEach((b, idx) => {
     const tr = document.createElement("tr");
+    const netKg = Number(b.total_weight_kg) || 0;
+    const scrapPct = Number(b.scrap_allowance_pct) !== undefined && !isNaN(Number(b.scrap_allowance_pct)) ? Number(b.scrap_allowance_pct) : 5;
+    const grossKg = netKg * (1 + (scrapPct / 100));
+    const bars = Number(b.total_bars) || 0;
+
+    totalNetKg += netKg;
+    totalGrossKg += grossKg;
+    totalBarsCount += bars;
+
+    const safeMark = (b.bar_mark || '').replace(/'/g, "\\'");
+
     tr.innerHTML = `
-      <td><strong>${b.member}</strong></td>
-      <td class="text-num"><strong>${b.bar_mark}</strong></td>
-      <td>${b.shape_code}</td>
+      <td><strong>${window.escapeHTML ? window.escapeHTML(b.member) : b.member}</strong></td>
+      <td class="text-num"><strong>${window.escapeHTML ? window.escapeHTML(b.bar_mark) : b.bar_mark}</strong></td>
+      <td>${window.escapeHTML ? window.escapeHTML(b.shape_code) : b.shape_code}</td>
       <td class="text-center">T${b.diameter}</td>
       <td class="text-center">${b.num_elements}</td>
       <td class="text-center">${b.bars_per_element}</td>
-      <td class="text-center"><strong style="color:var(--teal)">${b.total_bars}</strong></td>
-      <td class="text-num">${Number(b.cut_length).toFixed(2)}</td>
-      <td class="text-num">${Number(b.total_length).toFixed(2)}</td>
-      <td class="text-num">${Number(b.unit_weight).toFixed(3)}</td>
-      <td class="text-num"><strong>${Number(b.total_weight_kg).toFixed(1)}</strong></td>
-      <td class="text-center">${b.scrap_allowance_pct || 5}%</td>
-      ${renderActionButtons(`openAddRebarBBSModal(MimarERP.rebarBBSItems[${idx}])`, `deleteRebarBBSItem('${b.bar_mark}')`)}
+      <td class="text-center"><strong style="color:var(--teal)">${bars}</strong></td>
+      <td class="text-num">${Number(b.cut_length || 0).toFixed(2)}</td>
+      <td class="text-num">${Number(b.total_length || 0).toFixed(2)}</td>
+      <td class="text-num">${Number(b.unit_weight || 0).toFixed(3)}</td>
+      <td class="text-num"><strong>${netKg.toFixed(1)}</strong></td>
+      <td class="text-center">${scrapPct}%</td>
+      ${renderActionButtons(`openAddRebarBBSModal(MimarERP.rebarBBSItems[${idx}])`, `deleteRebarBBSItem('${safeMark}')`)}
     `;
     tbody.appendChild(tr);
   });
+
+  // Dynamically update the 4 BBS Summary Cards in index.html
+  const wasteKg = Math.max(totalGrossKg - totalNetKg, 0);
+  const netTon = (totalNetKg / 1000).toFixed(2);
+  const wasteTon = (wasteKg / 1000).toFixed(2);
+  const grossTon = (totalGrossKg / 1000).toFixed(2);
+
+  const elNet = document.getElementById('bbs-summary-net-ton');
+  if (elNet) elNet.textContent = netTon + ' طن';
+  const elWaste = document.getElementById('bbs-summary-waste-ton');
+  if (elWaste) elWaste.textContent = wasteTon + ' طن';
+  const elGross = document.getElementById('bbs-summary-gross-ton');
+  if (elGross) elGross.textContent = grossTon + ' طن';
+  const elBars = document.getElementById('bbs-summary-total-bars');
+  if (elBars) elBars.textContent = totalBarsCount.toLocaleString('ar-SA');
 };
 
 // 5.26 Clash Detection Table

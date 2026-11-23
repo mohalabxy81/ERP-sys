@@ -942,17 +942,49 @@ function render3WayMatchTable() {
   const data = MimarERP.purchaseOrders || [];
   data.forEach(po => {
     const tr = document.createElement("tr");
-    const isMatched = po.variance_pct === 0;
-    const varBadge = isMatched ? "badge-green" : "badge-amber";
+    const poAmt = Number(po.total_amount) || 0;
+    const grnAmt = Number(po.grn_received_amount);
+    const invAmt = Number(po.invoice_amount);
+    const hasGRN = !isNaN(grnAmt);
+    const hasInv = !isNaN(invAmt);
+
+    let variancePct = 0;
+    let isMatched = false;
+    let matchStatus = "بانتظار الفاتورة أو الاستلام";
+    let statusBadge = "badge-amber";
+
+    if (hasGRN && hasInv) {
+      const diff = Math.abs(invAmt - poAmt);
+      variancePct = poAmt > 0 ? (diff / poAmt) * 100 : 0;
+      if (variancePct <= 0.05 && Math.abs(grnAmt - poAmt) <= 0.05) {
+        isMatched = true;
+        matchStatus = "مصرح بالصرف المالي (3-Way Matched)";
+        statusBadge = "badge-green";
+      } else {
+        isMatched = false;
+        matchStatus = `موقوف — تباين مالي (${variancePct.toFixed(1)}%)`;
+        statusBadge = "badge-red";
+      }
+    } else if (po.match_status) {
+      matchStatus = po.match_status;
+      statusBadge = po.status_badge || (matchStatus.includes("مصرح") ? "badge-green" : "badge-amber");
+    }
+
+    const varText = isMatched ? "0% (مطابق تماماً)" : (variancePct > 0 ? `تباين ${variancePct.toFixed(1)}%` : "قيد التدقيق");
+    const varBadge = isMatched ? "badge-green" : (variancePct > 0 ? "badge-red" : "badge-amber");
+
+    const fmt = n => Number(n || 0).toLocaleString("ar-SA", {minimumFractionDigits:2, maximumFractionDigits:2});
+    const safeEsc = s => window.escapeHTML ? window.escapeHTML(s) : (s || '');
+
     tr.innerHTML = `
-      <td class="text-num"><strong style="color:var(--teal)">${po.po_id}</strong></td>
-      <td>${po.grn_id} (${po.supplier_name})</td>
-      <td class="text-num font-mono">${po.invoice_ref}</td>
-      <td class="text-num font-mono">${Number(po.total_amount).toLocaleString("ar-SA", {minimumFractionDigits:2, maximumFractionDigits:2})}</td>
-      <td class="text-num font-mono">${Number(po.grn_received_amount || po.total_amount).toLocaleString("ar-SA", {minimumFractionDigits:2, maximumFractionDigits:2})}</td>
-      <td class="text-num font-mono" style="font-weight:700;">${Number(po.invoice_amount || po.total_amount).toLocaleString("ar-SA", {minimumFractionDigits:2, maximumFractionDigits:2})}</td>
-      <td class="text-center"><span class="badge ${varBadge}">${po.variance_pct || 0}% متطابق</span></td>
-      <td><span class="badge badge-green">${po.match_status || 'مصرح بالصرف المالي'}</span></td>
+      <td class="text-num"><strong style="color:var(--teal)">${safeEsc(po.po_id)}</strong></td>
+      <td>${safeEsc(po.grn_id || '—')} (${safeEsc(po.supplier_name || '')})</td>
+      <td class="text-num font-mono">${safeEsc(po.invoice_ref || '—')}</td>
+      <td class="text-num font-mono">${fmt(poAmt)}</td>
+      <td class="text-num font-mono">${hasGRN ? fmt(grnAmt) : '—'}</td>
+      <td class="text-num font-mono" style="font-weight:700;">${hasInv ? fmt(invAmt) : '—'}</td>
+      <td class="text-center"><span class="badge ${varBadge}">${varText}</span></td>
+      <td><span class="badge ${statusBadge}">${safeEsc(matchStatus)}</span></td>
     `;
     tbody.appendChild(tr);
   });
@@ -3570,7 +3602,7 @@ function saveToLocalStorage() {
   try {
     const snap = {};
     ERP_PERSIST_KEYS.forEach(k => { if (MimarERP[k] !== undefined) snap[k] = MimarERP[k]; });
-    localStorage.setItem("MimarERPData_v5", JSON.stringify(snap));
+    localStorage.setItem("MimarERPData_v8", JSON.stringify(snap));
   } catch (err) {
     console.warn("Could not save to localStorage:", err);
   }
@@ -3578,11 +3610,14 @@ function saveToLocalStorage() {
 
 function loadFromLocalStorage() {
   try {
-    const saved = localStorage.getItem("MimarERPData_v5") || localStorage.getItem("MimarERP_SavedState");
+    const saved = localStorage.getItem("MimarERPData_v8") || localStorage.getItem("MimarERPData_v6") || localStorage.getItem("MimarERPData_v5") || localStorage.getItem("MimarERP_SavedState");
     if (saved) {
       const parsed = JSON.parse(saved);
       Object.assign(MimarERP, parsed);
-      console.log("MimarERP: Successfully restored saved state from localStorage.");
+      if (window.EnterpriseStore && typeof window.EnterpriseStore.rehydrateFromMimarERP === 'function') {
+        window.EnterpriseStore.rehydrateFromMimarERP();
+      }
+      console.log("MimarERP: Successfully restored saved state from unified storage.");
     }
   } catch (err) {
     console.warn("Could not load from localStorage:", err);
