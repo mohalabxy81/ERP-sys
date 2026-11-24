@@ -90,10 +90,15 @@
   // ==========================================================================
 
   const ROLES = {
+    SUPER_ADMIN: 'SuperAdmin',
+    COMPANY_ADMIN: 'CompanyAdmin',
     DIRECTOR: 'ExecutiveDirector',
     PM: 'ProjectManager',
     COST_ENG: 'CostControlEngineer',
+    PROCUREMENT: 'ProcurementManager',
     SITE_ENG: 'SiteEngineer',
+    QAQC: 'QAQCManager',
+    FINANCE: 'FinanceAccountant',
     AUDITOR: 'Auditor'
   };
 
@@ -112,11 +117,15 @@
   };
 
   const ROLE_PERMISSIONS = {
+    [ROLES.SUPER_ADMIN]: Object.values(PERMISSIONS),
+    [ROLES.COMPANY_ADMIN]: Object.values(PERMISSIONS),
     [ROLES.DIRECTOR]: Object.values(PERMISSIONS),
     [ROLES.PM]: [
       PERMISSIONS.VIEW_FINANCIALS,
       PERMISSIONS.APPROVE_IPC,
       PERMISSIONS.CERTIFY_BILLING,
+      PERMISSIONS.DELETE_MASTER_DATA,
+      PERMISSIONS.DELETE_CONTRACT,
       PERMISSIONS.CREATE_VARIATION,
       PERMISSIONS.CREATE_PO,
       PERMISSIONS.APPROVE_SUBMITTAL,
@@ -126,10 +135,25 @@
       PERMISSIONS.VIEW_FINANCIALS,
       PERMISSIONS.CREATE_VARIATION,
       PERMISSIONS.MODIFY_RATES,
-      PERMISSIONS.CREATE_PO
+      PERMISSIONS.CREATE_PO,
+      PERMISSIONS.DELETE_MASTER_DATA
+    ],
+    [ROLES.PROCUREMENT]: [
+      PERMISSIONS.VIEW_FINANCIALS,
+      PERMISSIONS.CREATE_PO,
+      PERMISSIONS.DELETE_MASTER_DATA
     ],
     [ROLES.SITE_ENG]: [
       PERMISSIONS.CLOSE_PUNCH_ITEM
+    ],
+    [ROLES.QAQC]: [
+      PERMISSIONS.APPROVE_SUBMITTAL,
+      PERMISSIONS.CLOSE_PUNCH_ITEM
+    ],
+    [ROLES.FINANCE]: [
+      PERMISSIONS.VIEW_FINANCIALS,
+      PERMISSIONS.APPROVE_IPC,
+      PERMISSIONS.CERTIFY_BILLING
     ],
     [ROLES.AUDITOR]: [
       PERMISSIONS.VIEW_FINANCIALS,
@@ -139,7 +163,7 @@
 
   class PolicyGatekeeper {
     constructor() {
-      this._activeRole = ROLES.PM; // Default role
+      this._activeRole = ROLES.SUPER_ADMIN; // Default role
       this._subscribers = [];
     }
 
@@ -148,20 +172,38 @@
      */
     normalizeRole(uiRole) {
       switch ((uiRole || '').toUpperCase()) {
+        case 'SUPERADMIN':
+        case 'SUPER_ADMIN':
+        case 'ADMIN':
+          return ROLES.SUPER_ADMIN;
+        case 'COMPANYADMIN':
+        case 'COMPANY_ADMIN':
+          return ROLES.COMPANY_ADMIN;
         case 'DIR':
         case 'DIRECTOR':
         case 'EXECUTIVE':
           return ROLES.DIRECTOR;
         case 'COST':
-        case 'QS':
+        case 'COSTCONTROL':
         case 'COST_ENG':
+        case 'QS':
           return ROLES.COST_ENG;
+        case 'PROCUREMENT':
+        case 'PURCHASING':
+          return ROLES.PROCUREMENT;
         case 'SITE':
         case 'ENG':
+        case 'SITEENG':
         case 'SITE_ENG':
           return ROLES.SITE_ENG;
-        case 'AUDITOR':
+        case 'QAQC':
         case 'QA':
+        case 'QC':
+          return ROLES.QAQC;
+        case 'FINANCE':
+        case 'ACCOUNTANT':
+          return ROLES.FINANCE;
+        case 'AUDITOR':
           return ROLES.AUDITOR;
         case 'PM':
         default:
@@ -203,10 +245,15 @@
 
     getRoleTitleAr(role) {
       switch (role) {
+        case ROLES.SUPER_ADMIN: return 'مدير المنظومة (Super Admin)';
+        case ROLES.COMPANY_ADMIN: return 'مدير الشركة (Company Admin)';
         case ROLES.DIRECTOR: return 'المدير التنفيذي (Executive Director)';
         case ROLES.PM: return 'مدير المشروع (Project Manager)';
-        case ROLES.COST_ENG: return 'مهندس التكاليف والعقود (Cost / QS Engineer)';
+        case ROLES.COST_ENG: return 'مراقب التكاليف وحساب الكميات (Cost / QS Engineer)';
+        case ROLES.PROCUREMENT: return 'مدير المشتريات (Procurement Manager)';
         case ROLES.SITE_ENG: return 'مهندس الموقع الميداني (Site Engineer)';
+        case ROLES.QAQC: return 'مدير ضبط وتوكيد الجودة (QA/QC Manager)';
+        case ROLES.FINANCE: return 'المحاسب المالي (Project Accountant)';
         case ROLES.AUDITOR: return 'المراجع والمدقق الداخلي (Auditor)';
         default: return role;
       }
